@@ -76,13 +76,70 @@
     }
     button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.5); }
     button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-    #response { margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.35); border-radius: 12px; max-height: 400px; overflow-y: auto; display: none; }
-    #response pre { color: #a5b4fc; font-size: 12px; white-space: pre-wrap; word-break: break-all; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.6; }
+
+    /* Progress -------------------------------------------------- */
+    .progress-container {
+      margin-top: 16px; display: none;
+    }
+    .progress-bar {
+      width: 100%; height: 8px; background: rgba(255,255,255,0.08);
+      border-radius: 10px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);
+      border-radius: 10px;
+      transition: width 0.8s ease;
+    }
+    .progress-fill.indeterminate {
+      width: 30%;
+      animation: indeterminate 1.5s ease-in-out infinite;
+    }
+    @keyframes indeterminate {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(400%); }
+    }
+    .step-list {
+      margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.5);
+    }
+    .step { padding: 4px 0; transition: color 0.3s; }
+    .step.active { color: #a5b4fc; }
+    .step.done { color: #4ade80; }
+    .step.error { color: #f87171; }
+    .step .step-icon { display: inline-block; width: 16px; margin-right: 4px; text-align: center; }
+
+    /* Response / download --------------------------------------- */
+    #response {
+      margin-top: 16px; padding: 16px; background: rgba(0,0,0,0.35);
+      border-radius: 12px; max-height: 400px; overflow-y: auto; display: none;
+    }
+    #response pre {
+      color: #a5b4fc; font-size: 12px; white-space: pre-wrap; word-break: break-all;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.6;
+    }
     .status-ok { color: #4ade80 !important; }
     .status-error { color: #f87171 !important; }
-    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 8px; vertical-align: middle; }
+
+    .download-btn {
+      display: none;
+      width: 100%; padding: 14px; margin-top: 12px;
+      background: #059669; color: #fff; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 700; cursor: pointer; text-align: center;
+      transition: all 0.2s; text-decoration: none;
+    }
+    .download-btn:hover { background: #047857; }
+
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
+      margin-right: 8px; vertical-align: middle;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .info-box { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 12px; color: rgba(255,255,255,0.55); }
+    .info-box {
+      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 12px; color: rgba(255,255,255,0.55);
+    }
   </style>
 </head>
 <body>
@@ -182,6 +239,22 @@
     <div id="pagesContainer"></div>
     <button type="button" class="btn btn-add" id="addPageBtn">+ Új oldal hozzáadása</button>
 
+    <!-- Progress bar -->
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="step-list" id="stepList">
+        <div class="step" data-step="0"><span class="step-icon">⏳</span> Bemenet feldolgozása</div>
+        <div class="step" data-step="1"><span class="step-icon">⏳</span> AI prompt összeállítása</div>
+        <div class="step" data-step="2"><span class="step-icon">⏳</span> DeepSeek API hívás (ez pár másodperc)</div>
+        <div class="step" data-step="3"><span class="step-icon">⏳</span> Válasz feldolgozása és fájlba mentés</div>
+      </div>
+    </div>
+
+    <!-- Letöltés gomb -->
+    <a class="download-btn" id="downloadBtn" href="#" target="_blank">⬇️ Generált fájl letöltése</a>
+
     <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
   </form>
 
@@ -189,54 +262,45 @@
 </div>
 
 <script>
-// Automatikus URL érzékelés – ugyanarról a szerverről töltjük be
 const SERVER_BASE = window.location.origin;
 const WEBHOOK_URL = SERVER_BASE + '/webhook/gravity-generate';
 const N8N_URL = 'http://192.168.4.148:5678';
 document.getElementById('webhookUrl').textContent = WEBHOOK_URL;
 
-// ---- Szerver státusz ellenőrzése (same-origin, működik!) ----
+// ---- Státuszellenőrzés ----
 const serverStatus = document.getElementById('serverStatus');
 const statusDot = document.getElementById('statusDot');
-
 function updateStatus(online) {
   if (online) {
     serverStatus.innerHTML = 'Online ✅ <a href="' + N8N_URL + '" target="_blank" style="color:#4ade80;text-decoration:underline;">(n8n)</a>';
-    serverStatus.style.color = '#4ade80';
-    statusDot.style.background = '#4ade80';
+    serverStatus.style.color = '#4ade80'; statusDot.style.background = '#4ade80';
   } else {
     serverStatus.textContent = 'Offline ❌';
-    serverStatus.style.color = '#f87171';
-    statusDot.style.background = '#f87171';
+    serverStatus.style.color = '#f87171'; statusDot.style.background = '#f87171';
   }
 }
-
 async function checkServerStatus() {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-    await fetch('/healthz', { signal: controller.signal });
-    clearTimeout(timeoutId);
-    updateStatus(true);
-  } catch (err) {
-    updateStatus(false);
-  }
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), 5000);
+    await fetch('/healthz', { signal: c.signal });
+    clearTimeout(t); updateStatus(true);
+  } catch (e) { updateStatus(false); }
 }
-
-// Ellenőrzés azonnal, majd 30 másodpercenként
 checkServerStatus();
 setInterval(checkServerStatus, 30000);
 
 // ---- Hero slider ----
 const heroHeight = document.getElementById('heroHeight');
-const heroHeightValue = document.getElementById('heroHeightValue');
-heroHeight.addEventListener('input', () => { heroHeightValue.textContent = heroHeight.value; });
+document.getElementById('heroHeightValue').textContent = heroHeight.value;
+heroHeight.addEventListener('input', () => {
+  document.getElementById('heroHeightValue').textContent = heroHeight.value;
+});
 
 // ---- Logo file ----
 const logoFile = document.getElementById('logoFile');
 const logoFileName = document.getElementById('logoFileName');
-let logoBase64 = null;
-let logoFilename = null;
+let logoBase64 = null, logoFilename = null;
 logoFile.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) { logoFileName.textContent = 'Nincs kiválasztva'; logoBase64 = null; logoFilename = null; return; }
@@ -256,39 +320,7 @@ const defaultPages = [
   { name: 'Kapcsolat', slug: 'contact', description: 'Kapcsolatfelvételi űrlap, elérhetőségek, térkép', subpages: [] }
 ];
 
-function createPageEntry(pageData = null) {
-  const idx = pageCounter++;
-  const isDefault = !!pageData;
-  const name = pageData ? pageData.name : '';
-  const slug = pageData ? pageData.slug : '';
-  const desc = pageData ? pageData.description : '';
-  const subpages = pageData ? (pageData.subpages || []) : [];
-
-  const div = document.createElement('div');
-  div.className = 'page-entry';
-  div.dataset.pageIndex = idx;
-  div.innerHTML = `
-    <div class="page-header">
-      <input type="text" class="page-name" placeholder="Oldal neve" value="${escapeHtml(name)}" style="flex:2;">
-      <input type="text" class="page-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">
-      ${isDefault ? '' : '<button type="button" class="btn btn-del remove-page">✕</button>'}
-    </div>
-    <div class="form-group" style="margin-bottom:4px;">
-      <label>Oldal tartalma / leírás</label>
-      <textarea class="page-description" rows="2" placeholder="Mi jelenjen meg ezen az oldalon?">${escapeHtml(desc)}</textarea>
-    </div>
-    <div class="subpages-container"></div>
-    <button type="button" class="btn btn-sm add-subpage">+ Aloldal</button>
-  `;
-
-  const subContainer = div.querySelector('.subpages-container');
-  subpages.forEach(sp => addSubpageEntry(subContainer, sp.name, sp.slug, sp.description));
-  div.querySelector('.add-subpage').addEventListener('click', () => addSubpageEntry(subContainer, '', '', ''));
-  const removeBtn = div.querySelector('.remove-page');
-  if (removeBtn) removeBtn.addEventListener('click', () => div.remove());
-
-  return div;
-}
+function escapeHtml(str) { return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"'); }
 
 function addSubpageEntry(container, name = '', slug = '', desc = '') {
   const div = document.createElement('div');
@@ -303,10 +335,69 @@ function addSubpageEntry(container, name = '', slug = '', desc = '') {
   container.appendChild(div);
 }
 
-function escapeHtml(str) { return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"'); }
+function createPageEntry(pageData = null) {
+  const idx = pageCounter++;
+  const isDefault = !!pageData;
+  const name = pageData ? pageData.name : '';
+  const slug = pageData ? pageData.slug : '';
+  const desc = pageData ? pageData.description : '';
+  const subpages = pageData ? (pageData.subpages || []) : [];
+
+  const div = document.createElement('div');
+  div.className = 'page-entry';
+  div.innerHTML = `
+    <div class="page-header">
+      <input type="text" class="page-name" placeholder="Oldal neve" value="${escapeHtml(name)}" style="flex:2;">
+      <input type="text" class="page-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">
+      ${isDefault ? '' : '<button type="button" class="btn btn-del remove-page">✕</button>'}
+    </div>
+    <div class="form-group" style="margin-bottom:4px;">
+      <label>Oldal tartalma / leírás</label>
+      <textarea class="page-description" rows="2" placeholder="Mi jelenjen meg ezen az oldalon?">${escapeHtml(desc)}</textarea>
+    </div>
+    <div class="subpages-container"></div>
+    <button type="button" class="btn btn-sm add-subpage">+ Aloldal</button>
+  `;
+  const subContainer = div.querySelector('.subpages-container');
+  subpages.forEach(sp => addSubpageEntry(subContainer, sp.name, sp.slug, sp.description));
+  div.querySelector('.add-subpage').addEventListener('click', () => addSubpageEntry(subContainer, '', '', ''));
+  const removeBtn = div.querySelector('.remove-page');
+  if (removeBtn) removeBtn.addEventListener('click', () => div.remove());
+  return div;
+}
 
 defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
 document.getElementById('addPageBtn').addEventListener('click', () => pagesContainer.appendChild(createPageEntry()));
+
+// ---- Progress / steps ----
+const progressContainer = document.getElementById('progressContainer');
+const progressFill = document.getElementById('progressFill');
+const steps = document.querySelectorAll('.step');
+const downloadBtn = document.getElementById('downloadBtn');
+
+function resetUI() {
+  progressContainer.style.display = 'none';
+  progressFill.className = 'progress-fill';
+  progressFill.style.width = '0%';
+  downloadBtn.style.display = 'none';
+  downloadBtn.href = '#';
+  steps.forEach(s => { s.className = 'step'; s.querySelector('.step-icon').textContent = '⏳'; });
+}
+
+function setStep(index, state) {
+  const s = steps[index];
+  if (!s) return;
+  if (state === 'active') {
+    s.className = 'step active';
+    s.querySelector('.step-icon').textContent = '🔄';
+  } else if (state === 'done') {
+    s.className = 'step done';
+    s.querySelector('.step-icon').textContent = '✅';
+  } else if (state === 'error') {
+    s.className = 'step error';
+    s.querySelector('.step-icon').textContent = '❌';
+  }
+}
 
 // ---- Submit ----
 const form = document.getElementById('generatorForm');
@@ -345,21 +436,74 @@ form.addEventListener('submit', async (e) => {
     pages: pages
   };
 
+  // UI reset
+  resetUI();
+  responseContent.textContent = '';
+  responseContent.className = '';
+  responseDiv.style.display = 'none';
+
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span>Generálás folyamatban...';
-  responseDiv.style.display = 'block';
-  responseContent.textContent = '⏳ Küldés a DeepSeek API felé...';
-  responseContent.className = '';
+
+  // Progress bar megjelenítése
+  progressContainer.style.display = 'block';
+  progressFill.className = 'progress-fill indeterminate';
+
+  // Animált lépések (becslés)
+  setStep(0, 'active');
+  const stepTimers = [];
+
+  stepTimers.push(setTimeout(() => { setStep(0, 'done'); setStep(1, 'active'); progressFill.style.width = '25%'; }, 500));
+  stepTimers.push(setTimeout(() => { setStep(1, 'done'); setStep(2, 'active'); progressFill.style.width = '50%'; }, 1500));
+  // A 2. lépés (API hívás) a leghosszabb, a tényleges válaszig ezt tartjuk aktívan
 
   try {
-    const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // API válasz megjött – lépés kész
+    stepTimers.forEach(t => clearTimeout(t));
+    setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'done');
+    setStep(3, 'active');
+    progressFill.className = 'progress-fill';
+    progressFill.style.width = '75%';
+
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.message || data.error || `HTTP ${res.status}`);
+
+    // Sikeres – minden kész
+    setStep(3, 'done');
+    progressFill.style.width = '100%';
+
     responseContent.className = 'status-ok';
     responseContent.textContent = JSON.stringify(data, null, 2);
+    responseDiv.style.display = 'block';
+
+    // Letöltés gomb
+    if (data.saved_to) {
+      const filename = data.saved_to.split('/').pop();
+      downloadBtn.href = '/output/' + filename;
+      downloadBtn.textContent = '⬇️ ' + filename + ' letöltése';
+      downloadBtn.style.display = 'block';
+    }
+
+    // 2 mp után eltüntetjük a progress bar-t
+    setTimeout(() => { progressFill.style.width = '0%'; }, 2000);
+
   } catch (err) {
+    stepTimers.forEach(t => clearTimeout(t));
+    setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'error');
+    setStep(3, 'error');
+    progressFill.className = 'progress-fill';
+    progressFill.style.background = '#f87171';
+    progressFill.style.width = '100%';
+
     responseContent.className = 'status-error';
     responseContent.textContent = '❌ HIBA: ' + err.message + '\n\nEllenőrizd:\n1. Szerver: ' + SERVER_BASE + '\n2. Workflow Active?\n3. API kulcs helyes?';
+    responseDiv.style.display = 'block';
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerHTML = '⚡ Weboldal generálása AI-val';
