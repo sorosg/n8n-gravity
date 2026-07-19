@@ -133,6 +133,8 @@
 
   <div class="info-box">
     🔗 Webhook: <strong id="webhookUrl">http://192.168.4.148:5678/webhook/gravity-generate</strong>
+    <br>🖥️ Szerver státusz: <span id="serverStatus">Ellenőrzés...</span>
+    <span id="statusDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-left:6px;"></span>
     <br>⚡ A workflow-nak <strong>Active</strong> állapotban kell lennie az n8n-ben!
   </div>
 
@@ -239,8 +241,36 @@
 </div>
 
 <script>
-const WEBHOOK_URL = 'http://192.168.4.148:5678/webhook/gravity-generate';
+const SERVER_BASE = 'http://192.168.4.148:5678';
+const WEBHOOK_URL = SERVER_BASE + '/webhook/gravity-generate';
 document.getElementById('webhookUrl').textContent = WEBHOOK_URL;
+
+// ---- Szerver státusz ellenőrzése (élő) ----
+const serverStatus = document.getElementById('serverStatus');
+const statusDot = document.getElementById('statusDot');
+
+async function checkServerStatus() {
+  try {
+    const res = await fetch(SERVER_BASE + '/healthz', { method: 'GET', signal: AbortSignal.timeout(5000) });
+    if (res.ok) {
+      serverStatus.textContent = 'Online ✅';
+      serverStatus.style.color = '#4ade80';
+      statusDot.style.background = '#4ade80';
+      return true;
+    } else {
+      throw new Error('HTTP ' + res.status);
+    }
+  } catch (err) {
+    serverStatus.textContent = 'Offline ❌';
+    serverStatus.style.color = '#f87171';
+    statusDot.style.background = '#f87171';
+    return false;
+  }
+}
+
+// Ellenőrzés azonnal, majd 30 másodpercenként
+checkServerStatus();
+setInterval(checkServerStatus, 30000);
 
 // ---- Hero slider ----
 const heroHeight = document.getElementById('heroHeight');
