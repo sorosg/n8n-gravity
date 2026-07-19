@@ -29,6 +29,35 @@
 
 ---
 
+---
+
+## Gyors áttekintés
+
+| Jellemző | Érték |
+|----------|-------|
+| **Szerver** | `192.168.4.148` (Ubuntu, Docker) |
+| **Webes űrlap** | `http://192.168.4.148:8080` |
+| **n8n felület** | `http://192.168.4.148:5678` |
+| **AI motor** | DeepSeek (deepseek-chat) |
+| **Költség** | ~0,15-0,30 Ft / generálás |
+| **Telepítés** | `git clone` + `sudo ./install.sh` |
+| **Verzió** | v0.3.3 |
+
+---
+
+## Elérési címek
+
+| Szolgáltatás | URL |
+|-------------|-----|
+| **🌐 Gravity CMS Generátor űrlap** | `http://192.168.4.148:8080` |
+| **🧠 n8n felület** | `http://192.168.4.148:5678` |
+| **📁 Generált fájlok** | `http://192.168.4.148:8080/output/` |
+| **📖 epub-translate** (meglévő) | `http://192.168.4.148` (80-as port) |
+
+> **Részletes architektúra:** [ARCHITECTURE.md](./ARCHITECTURE.md)
+
+---
+
 ## Mi ez a projekt?
 
 Ez a projekt egy **teljes körű automatizációs rendszer**, amely az [n8n](https://n8n.io) workflow automatizáló platformot használja arra, hogy AI segítségével (DeepSeek API) **teljes Gravity CMS weboldal struktúrákat generáljon le**.
