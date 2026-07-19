@@ -23,8 +23,39 @@
     <h3>🏢 Alapadatok</h3>
     <div class="form-group"><label>Cégnév *</label><input type="text" id="businessName" placeholder="pl. Digitális Megoldások Kft." required></div>
     <div class="row">
-      <div class="form-group"><label>Weboldal típusa</label><select id="projectType"><option value="landing_page">Landing Page</option><option value="blog">Blog</option><option value="portfolio">Portfólió</option><option value="shop">Webshop</option><option value="admin">Admin felület</option></select></div>
-      <div class="form-group"><label>Nyelv</label><select id="language"><option value="hu" selected>Magyar</option><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option></select></div>
+      <div class="form-group">
+        <label>Weboldal típusa</label>
+        <select id="projectType">
+          <option value="landing_page">📄 Landing Page – egyoldalas, figyelemfelkeltő</option>
+          <option value="corporate">🏢 Céges weboldal – többoldalas, professzionális</option>
+          <option value="blog">📝 Blog – cikkes, hírportál jellegű</option>
+          <option value="portfolio">🖼️ Portfólió – munkák bemutatása</option>
+          <option value="shop">🛒 Webshop – termékkatalógus, kosár</option>
+          <option value="admin">⚙️ Admin felület – belső dashboard</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nyelv</label>
+        <select id="language">
+          <option value="hu" selected>Magyar</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="fr">Français</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Design stílus</label>
+        <select id="designStyle">
+          <option value="modern">✨ Modern – letisztult, friss</option>
+          <option value="minimal">🤍 Minimalista – egyszerű, elegáns</option>
+          <option value="classic">🏛️ Klasszikus – hagyományos elrendezés</option>
+          <option value="bold">🔥 Feltűnő – erős színek, nagy elemek</option>
+          <option value="corporate">💼 Elegáns üzleti – visszafogott, professzionális</option>
+          <option value="creative">🎨 Kreatív – egyedi, művészi</option>
+        </select>
+      </div>
     </div>
     <div class="form-group"><label>Projekt leírása</label><textarea id="description" placeholder="Részletes leírás..."></textarea></div>
 
@@ -66,11 +97,6 @@
       </div>
     </div>
 
-    <div class="form-group">
-      <label>🖼️ Fő logó</label>
-      <div class="file-upload"><label class="file-label" for="logoFile">📁 Fájl tallózása...</label><input type="file" id="logoFile" accept="image/*"><span class="file-name" id="logoFileName">Nincs kiválasztva</span></div>
-    </div>
-
     <h3>📋 Fejléc (Header)</h3>
     <div class="checkbox-grid">
       <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_logo" value="logo" checked><label for="hdr_logo">Logó</label></div>
@@ -81,6 +107,10 @@
       <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_phone" value="phone"><label for="hdr_phone">Telefonszám</label></div>
       <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_lang" value="language_switcher"><label for="hdr_lang">Nyelvválasztó</label></div>
       <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_sticky" value="sticky"><label for="hdr_sticky">Tapadós (sticky) fejléc</label></div>
+    </div>
+    <div class="form-group" style="margin-top:12px;">
+      <label>🖼️ Fejléc logó</label>
+      <div class="file-upload"><label class="file-label" for="headerLogoFile">📁 Fájl tallózása...</label><input type="file" id="headerLogoFile" accept="image/*"><span class="file-name" id="headerLogoFileName">Nincs kiválasztva</span></div>
     </div>
 
     <h3>🦸 Hero szekció</h3>
@@ -106,6 +136,10 @@
       <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_copyright" value="copyright" checked><label for="ftr_copyright">Copyright</label></div>
       <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_sitemap" value="sitemap"><label for="ftr_sitemap">Oldaltérkép</label></div>
       <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_privacy" value="privacy_links"><label for="ftr_privacy">Adatvédelmi / ÁSZF</label></div>
+    </div>
+    <div class="form-group" style="margin-top:12px;">
+      <label>🖼️ Lábléc logó</label>
+      <div class="file-upload"><label class="file-label" for="footerLogoFile">📁 Fájl tallózása...</label><input type="file" id="footerLogoFile" accept="image/*"><span class="file-name" id="footerLogoFileName">Nincs kiválasztva</span></div>
     </div>
 
     <h3>📑 Oldalak és aloldalak</h3>

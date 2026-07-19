@@ -100,24 +100,31 @@ heroImageFile.addEventListener('change', (e) => {
   reader.readAsDataURL(file);
 });
 
-// Logo
-const logoFile = document.getElementById('logoFile');
-const logoFileName = document.getElementById('logoFileName');
-let logoBase64 = null;
-let logoFilename = null;
+// Header Logo
+const headerLogoFile = document.getElementById('headerLogoFile');
+const headerLogoFileName = document.getElementById('headerLogoFileName');
+let headerLogoBase64 = null, headerLogoFilename = null;
 
-logoFile.addEventListener('change', (e) => {
+headerLogoFile.addEventListener('change', (e) => {
   const file = e.target.files[0];
-  if (!file) {
-    logoFileName.textContent = 'Nincs kiválasztva';
-    logoBase64 = null;
-    logoFilename = null;
-    return;
-  }
-  logoFileName.textContent = file.name;
-  logoFilename = file.name;
+  if (!file) { headerLogoFileName.textContent = 'Nincs kiválasztva'; headerLogoBase64 = null; headerLogoFilename = null; return; }
+  headerLogoFileName.textContent = file.name; headerLogoFilename = file.name;
   const reader = new FileReader();
-  reader.onload = () => { logoBase64 = reader.result; };
+  reader.onload = () => { headerLogoBase64 = reader.result; };
+  reader.readAsDataURL(file);
+});
+
+// Footer Logo
+const footerLogoFile = document.getElementById('footerLogoFile');
+const footerLogoFileName = document.getElementById('footerLogoFileName');
+let footerLogoBase64 = null, footerLogoFilename = null;
+
+footerLogoFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) { footerLogoFileName.textContent = 'Nincs kiválasztva'; footerLogoBase64 = null; footerLogoFilename = null; return; }
+  footerLogoFileName.textContent = file.name; footerLogoFilename = file.name;
+  const reader = new FileReader();
+  reader.onload = () => { footerLogoBase64 = reader.result; };
   reader.readAsDataURL(file);
 });
 
@@ -263,7 +270,8 @@ form.addEventListener('submit', async (e) => {
       headerBg: getColorOrAi('headerBg', 'ai_headerBg'),
       footerBg: getColorOrAi('footerBg', 'ai_footerBg')
     },
-    logo: logoBase64 ? { filename: logoFilename, data: logoBase64 } : null,
+    headerLogo: headerLogoBase64 ? { filename: headerLogoFilename, data: headerLogoBase64 } : null,
+    footerLogo: footerLogoBase64 ? { filename: footerLogoFilename, data: footerLogoBase64 } : null,
     header: getChecked('.header-opt'),
     hero: {
       enabled: document.getElementById('heroEnabled').checked,
