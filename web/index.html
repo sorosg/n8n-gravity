@@ -22,6 +22,11 @@
 
   <form id="generatorForm">
 
+    <div class="form-group">
+      <label>🔑 API Kulcs felülbírálása <span class="label-desc">– opcionális: ha itt megadsz egy kulcsot, ezt használja a rendszer a .env fájlban lévő helyett</span></label>
+      <input type="password" id="apiKeyOverride" placeholder="sk-... (ha üres, a .env fájlban lévőt használja)">
+    </div>
+
     <h3>🏢 Alapadatok</h3>
     <div class="form-group"><label>Cégnév *</label><input type="text" id="businessName" placeholder="pl. Digitális Megoldások Kft." required></div>
     <div class="row">

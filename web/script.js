@@ -201,6 +201,7 @@ form.addEventListener('submit', async (e) => {
     languages: languages,
     description: document.getElementById('description').value.trim(),
     designStyle: document.getElementById('designStyle').value,
+    apiKeyOverride: document.getElementById('apiKeyOverride').value.trim(),
     aiModel: document.getElementById('aiModel').value,
     customPrompt: document.getElementById('customPrompt').value.trim(),
     notifyEmail: document.getElementById('notifyEmail').value.trim(),
