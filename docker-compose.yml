@@ -1,6 +1,6 @@
 # ============================================================
 # n8n + Gravity CMS Automatizáció Docker Stack
-# AI-vezérelt weboldal generálás DeepSeek API-val
+# AI-vezérelt weboldal generálás DeepSeek API-val + Teszt CMS
 # ============================================================
 
 services:
@@ -22,7 +22,6 @@ services:
       - N8N_USER_MANAGEMENT_DISABLED=${N8N_USER_MANAGEMENT_DISABLED:-false}
       - N8N_SECURE_COOKIE=false
       - N8N_DIAGNOSTICS_ENABLED=false
-      # Adatbázis kapcsolat PostgreSQL-hez (ajánlott éles környezetben)
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${DB_HOST:-postgres}
       - DB_POSTGRESDB_PORT=${DB_PORT:-5432}
@@ -30,30 +29,23 @@ services:
       - DB_POSTGRESDB_USER=${DB_USER:-n8n}
       - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD:-n8n_password}
       - DB_POSTGRESDB_SCHEMA=${DB_SCHEMA:-public}
-      # Webhook URL (külső eléréshez szükséges)
       - WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://localhost:${N8N_PORT:-5678}}
-      # Fájlok tárolása
       - N8N_USER_FOLDER=/home/node/.n8n
-      # AI integráció - API kulcsok környezeti változóként
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
       - N8N_AI_DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
       - N8N_AI_OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      # Időzóna
       - GENERIC_TIMEZONE=Europe/Budapest
       - TZ=Europe/Budapest
-      # Külső modulok engedélyezése (egyedi node-ok)
       - N8N_EXTERNAL_EXTENSIONS_ENABLED=${N8N_EXTERNAL_EXTENSIONS:-false}
-      # Végrehajtási beállítások
       - EXECUTIONS_DATA_PRUNE=true
-      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_MAX_AGE:-168}  # 7 nap alapértelmezetten
+      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_MAX_AGE:-168}
       - EXECUTIONS_DATA_PRUNE_MAX_COUNT=${EXECUTIONS_PRUNE_MAX:-50000}
     volumes:
       - n8n_data:/home/node/.n8n
       - ./workflows:/home/node/.n8n/workflows
       - ./scripts:/home/node/scripts
       - ./output:/home/node/output
-      # Ha egyedi n8n node-okat szeretnél használni:
-      # - ./custom-nodes:/home/node/.n8n/custom
+      - ./gravity-cms/user/pages:/home/node/gravity-pages  # Gravity CMS oldalak mount-olva
     networks:
       - n8n_network
     depends_on:
@@ -84,6 +76,62 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----- Webes felület (nginx) -----
+  web:
+    image: nginx:alpine
+    container_name: n8n-gravity-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./web:/usr/share/nginx/html:ro
+      - ./output:/output:ro
+      - ./gravity-cms:/gravity-cms:ro
+    networks:
+      - n8n_network
+    depends_on:
+      - n8n
+      - gravity
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----- Gravity CMS teszt környezet (PHP built-in server) -----
+  gravity:
+    image: php:8.2-cli-alpine
+    container_name: n8n-gravity-cms
+    restart: unless-stopped
+    ports:
+      - "${GRAVITY_PORT:-8085}:80"
+    working_dir: /gravity-cms
+    volumes:
+      - ./gravity-cms:/gravity-cms
+    networks:
+      - n8n_network
+    command: >
+      sh -c "
+        cd /gravity-cms &&
+        if [ ! -f index.php ]; then
+          echo 'Gravity CMS letöltése...' &&
+          wget -q https://github.com/getgrav/grav/releases/download/1.7.44/grav-admin-v1.7.44.zip -O /tmp/grav.zip &&
+          unzip -qo /tmp/grav.zip -d /tmp/grav &&
+          cp -r /tmp/grav/grav-admin/* . &&
+          rm -rf /tmp/grav /tmp/grav.zip &&
+          chmod -R 777 cache logs backup tmp user &&
+          echo 'Gravity CMS telepítve!'
+        fi &&
+        echo 'Gravity CMS indítása a 80-as porton...' &&
+        php -S 0.0.0.0:80 system/router.php
+      "
     logging:
       driver: "json-file"
       options:
@@ -133,27 +181,6 @@ services:
       - full
       - ai
       - gpu
-
-  # ----- Webes felület (nginx) -----
-  web:
-    image: nginx:alpine
-    container_name: n8n-gravity-web
-    restart: unless-stopped
-    ports:
-      - "${WEB_PORT:-8080}:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./web:/usr/share/nginx/html:ro
-      - ./output:/output:ro
-    networks:
-      - n8n_network
-    depends_on:
-      - n8n
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   # ----- (Opcionális) Portainer CE: Docker menedzsment -----
   portainer:
