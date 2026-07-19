@@ -128,6 +128,22 @@
     </div>
     <div class="checkbox-row"><input type="checkbox" id="heroEnabled" checked><label>🦸 Hero</label></div>
     <div class="form-group"><label>Magasság: <span id="heroHeightValue">600</span>px</label><input type="range" id="heroHeight" min="300" max="1000" value="600" step="50"></div>
+
+    <div class="form-group">
+      <label>🖼️ Hero háttérkép</label>
+      <div class="checkbox-row"><input type="radio" name="heroBgMode" id="heroBgNone" value="none" checked onchange="toggleHeroBgMode()"><label for="heroBgNone">🎨 Nem kérek háttérképet (sima háttérszín)</label></div>
+      <div class="checkbox-row"><input type="radio" name="heroBgMode" id="heroBgAi" value="ai" onchange="toggleHeroBgMode()"><label for="heroBgAi">🤖 AI generáljon háttérképet</label></div>
+      <div class="checkbox-row"><input type="radio" name="heroBgMode" id="heroBgUpload" value="upload" onchange="toggleHeroBgMode()"><label for="heroBgUpload">📁 Saját kép feltöltése</label></div>
+    </div>
+    <div class="form-group" id="heroBgAiPromptGroup" style="display:none;">
+      <label>🤖 Háttérkép prompt (írd le milyen képet szeretnél)</label>
+      <textarea id="heroBgPrompt" rows="2" placeholder="Pl.: Modern irodaház belső tér, világos színekkel, természetes fénnyel..."></textarea>
+    </div>
+    <div class="form-group" id="heroBgUploadGroup" style="display:none;">
+      <label>🖼️ Hero háttérkép feltöltése</label>
+      <div class="file-upload"><label class="file-label" for="heroBgFile">📁 Tallózás...</label><input type="file" id="heroBgFile" accept="image/*"><span class="file-name" id="heroBgFileName">Nincs kiválasztva</span></div>
+    </div>
+
     <div class="checkbox-grid">
       <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_links" value="quick_links" checked><label>Linkek</label></div>
       <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_contact" value="contact_info" checked><label>Elérhetőség</label></div>

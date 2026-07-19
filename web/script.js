@@ -33,6 +33,12 @@ function toggleLogoMode() {
   document.getElementById('logoAiGroup').style.display = mode === 'ai' ? 'block' : 'none';
 }
 
+function toggleHeroBgMode() {
+  const mode = document.querySelector('input[name="heroBgMode"]:checked').value;
+  document.getElementById('heroBgAiPromptGroup').style.display = mode === 'ai' ? 'block' : 'none';
+  document.getElementById('heroBgUploadGroup').style.display = mode === 'upload' ? 'block' : 'none';
+}
+
 /* ---- Képoptimalizálás (canvas resize > 800px + WebP) ---- */
 async function optimizeImage(file, maxWidth = 800, quality = 0.8) {
   if (!file) return null;
@@ -97,6 +103,28 @@ footerLogoFile.addEventListener('change', async (e) => {
     const reader = new FileReader(); reader.onload = () => { footerLogoBase64 = reader.result; };
     reader.readAsDataURL(file);
     document.getElementById('footerLogoFileName').textContent = file.name + ' (eredeti)';
+  }
+});
+
+/* ---- Hero background image ---- */
+const heroBgFile = document.getElementById('heroBgFile');
+const heroBgFileName = document.getElementById('heroBgFileName');
+let heroBgBase64 = null, heroBgFilename = null, heroBgOptimized = null;
+
+heroBgFile.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) { heroBgFileName.textContent = 'Nincs kiválasztva'; heroBgBase64 = null; heroBgFilename = null; return; }
+  const optimized = await optimizeImage(file);
+  if (optimized) {
+    heroBgOptimized = optimized;
+    heroBgBase64 = optimized.data;
+    heroBgFilename = optimized.filename;
+    heroBgFileName.textContent = '✅ ' + optimized.filename + ' (' + (optimized.data.length / 1024).toFixed(0) + ' KB)';
+  } else {
+    heroBgFilename = file.name;
+    const reader = new FileReader(); reader.onload = () => { heroBgBase64 = reader.result; };
+    reader.readAsDataURL(file);
+    heroBgFileName.textContent = file.name + ' (eredeti)';
   }
 });
 
@@ -187,7 +215,13 @@ form.addEventListener('submit', async (e) => {
     headerLogo: (logoMode === 'upload' && headerLogoBase64) ? { filename: headerLogoFilename, data: headerLogoBase64, optimized: !!headerLogoOptimized } : null,
     footerLogo: (logoMode === 'upload' && footerLogoBase64) ? { filename: footerLogoFilename, data: footerLogoBase64, optimized: !!footerLogoOptimized } : null,
     header: getChecked('.header-opt'),
-    hero: { enabled: document.getElementById('heroEnabled').checked, height: parseInt(heroHeight.value) },
+    hero: {
+      enabled: document.getElementById('heroEnabled').checked,
+      height: parseInt(heroHeight.value),
+      bgMode: document.querySelector('input[name="heroBgMode"]:checked').value,
+      bgPrompt: document.getElementById('heroBgPrompt').value.trim(),
+      bgImage: heroBgBase64 ? { filename: heroBgFilename, data: heroBgBase64, optimized: !!heroBgOptimized } : null
+    },
     footer: getChecked('.footer-opt'),
     pages: pages
   };
