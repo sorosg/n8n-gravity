@@ -16,14 +16,15 @@
     .container {
       background: rgba(255,255,255,0.06); backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.12); border-radius: 24px;
-      padding: 40px; max-width: 800px; width: 100%;
+      padding: 40px; max-width: 860px; width: 100%;
       box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     }
     h1 { color: #fff; font-size: 26px; text-align: center; margin-bottom: 6px; }
     .subtitle { color: rgba(255,255,255,0.5); text-align: center; font-size: 13px; margin-bottom: 30px; }
-    h3 { color: rgba(255,255,255,0.9); font-size: 15px; margin: 24px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+    h3 { color: rgba(255,255,255,0.9); font-size: 15px; margin: 28px 0 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
     .form-group { margin-bottom: 16px; }
     label { display: block; color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .label-desc { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 400; text-transform: none; margin-left: 4px; }
     input, select, textarea {
       width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.15);
       border-radius: 10px; background: rgba(255,255,255,0.07);
@@ -38,6 +39,8 @@
     select option { background: #1e1b4b; color: #fff; }
     .row { display: flex; gap: 12px; }
     .row .form-group { flex: 1; }
+    .row-3 { display: flex; gap: 12px; }
+    .row-3 .form-group { flex: 1; }
     input[type="color"] {
       width: 100%; height: 44px; padding: 4px 8px; cursor: pointer;
       border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; background: rgba(255,255,255,0.07);
@@ -47,6 +50,7 @@
     .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
     .checkbox-row input[type="checkbox"] { width: auto; accent-color: #6366f1; }
     .checkbox-row label { margin-bottom: 0; text-transform: none; font-size: 14px; font-weight: 400; }
+    .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
     .page-entry { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
     .page-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .page-header input { flex: 1; }
@@ -72,74 +76,32 @@
     button[type="submit"] {
       width: 100%; padding: 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
       color: #fff; border: none; border-radius: 14px; font-size: 17px;
-      font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: all 0.3s; margin-top: 12px;
+      font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: all 0.3s; margin-top: 16px;
     }
     button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.5); }
     button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    /* Progress -------------------------------------------------- */
-    .progress-container {
-      margin-top: 16px; display: none;
-    }
-    .progress-bar {
-      width: 100%; height: 8px; background: rgba(255,255,255,0.08);
-      border-radius: 10px; overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%; width: 0%;
-      background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);
-      border-radius: 10px;
-      transition: width 0.8s ease;
-    }
-    .progress-fill.indeterminate {
-      width: 30%;
-      animation: indeterminate 1.5s ease-in-out infinite;
-    }
-    @keyframes indeterminate {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(400%); }
-    }
-    .step-list {
-      margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.5);
-    }
+    .progress-container { margin-top: 16px; display: none; }
+    .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa); border-radius: 10px; transition: width 0.8s ease; }
+    .progress-fill.indeterminate { width: 30%; animation: indeterminate 1.5s ease-in-out infinite; }
+    @keyframes indeterminate { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
+    .step-list { margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.5); }
     .step { padding: 4px 0; transition: color 0.3s; }
     .step.active { color: #a5b4fc; }
     .step.done { color: #4ade80; }
     .step.error { color: #f87171; }
     .step .step-icon { display: inline-block; width: 16px; margin-right: 4px; text-align: center; }
-
-    /* Response / download --------------------------------------- */
-    #response {
-      margin-top: 16px; padding: 16px; background: rgba(0,0,0,0.35);
-      border-radius: 12px; max-height: 400px; overflow-y: auto; display: none;
-    }
-    #response pre {
-      color: #a5b4fc; font-size: 12px; white-space: pre-wrap; word-break: break-all;
-      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.6;
-    }
+    #response { margin-top: 16px; padding: 16px; background: rgba(0,0,0,0.35); border-radius: 12px; max-height: 400px; overflow-y: auto; display: none; }
+    #response pre { color: #a5b4fc; font-size: 12px; white-space: pre-wrap; word-break: break-all; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.6; }
     .status-ok { color: #4ade80 !important; }
     .status-error { color: #f87171 !important; }
-
-    .download-btn {
-      display: none;
-      width: 100%; padding: 14px; margin-top: 12px;
-      background: #059669; color: #fff; border: none; border-radius: 10px;
-      font-size: 15px; font-weight: 700; cursor: pointer; text-align: center;
-      transition: all 0.2s; text-decoration: none;
-    }
+    .download-btn { display: none; width: 100%; padding: 14px; margin-top: 12px; background: #059669; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; text-decoration: none; }
     .download-btn:hover { background: #047857; }
-
-    .spinner {
-      display: inline-block; width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
-      border-radius: 50%; animation: spin 0.6s linear infinite;
-      margin-right: 8px; vertical-align: middle;
-    }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 8px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .info-box {
-      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
-      border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 12px; color: rgba(255,255,255,0.55);
-    }
+    .info-box { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 12px; color: rgba(255,255,255,0.55); }
+    .inspiration-link { color: #a5b4fc; text-decoration: underline; font-size: 11px; }
+    .inspiration-link:hover { color: #c4b5fd; }
   </style>
 </head>
 <body>
@@ -149,14 +111,13 @@
 
   <div class="info-box">
     🔗 Webhook: <strong id="webhookUrl">/webhook/gravity-generate</strong>
-    <br>🖥️ Szerver státusz: <span id="serverStatus">Ellenőrzés...</span>
-    <span id="statusDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-left:6px;"></span>
-    <br>⚡ A workflow-nak <strong>Active</strong> állapotban kell lennie az n8n-ben!
-    <br>🔗 <a href="http://192.168.4.148:5678" target="_blank" style="color:#a5b4fc;">n8n felület megnyitása →</a>
-    <br>📁 <a href="/output/" target="_blank" style="color:#a5b4fc;">Generált fájlok böngészése →</a>
+    <br>🖥️ Szerver státusz: <span id="serverStatus">Ellenőrzés...</span><span id="statusDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-left:6px;"></span>
+    <br>🔗 <a href="http://192.168.4.148:5678" target="_blank" style="color:#a5b4fc;">n8n felület →</a> | <a href="/output/" target="_blank" style="color:#a5b4fc;">📁 Fájlok →</a>
   </div>
 
   <form id="generatorForm">
+
+    <!-- === ALAPADATOK === -->
     <h3>🏢 Alapadatok</h3>
     <div class="form-group">
       <label>Cégnév / Projekt név *</label>
@@ -185,35 +146,35 @@
     </div>
     <div class="form-group">
       <label>Projekt leírása</label>
-      <textarea id="description" placeholder="Részletes leírás a cégről, tevékenységről, célcsoportról..."></textarea>
+      <textarea id="description" placeholder="Részletes leírás a cégről, tevékenységről, célcsoportról... (minél részletesebb, annál jobb az AI tartalom)"></textarea>
     </div>
 
-    <h3>🎨 Megjelenés</h3>
+    <!-- === SZÍNEK === -->
+    <h3>🎨 Színek <a href="https://coolors.co" target="_blank" class="inspiration-link">(inspiráció: coolors.co →)</a></h3>
     <div class="row">
       <div class="form-group">
-        <label>Design stílus</label>
-        <select id="designStyle">
-          <option value="modern" selected>Modern</option>
-          <option value="minimal">Minimalista</option>
-          <option value="classic">Klasszikus</option>
-          <option value="bold">Feltűnő / Vállalati</option>
-          <option value="corporate">Elegáns üzleti</option>
-        </select>
-      </div>
-    </div>
-    <div class="row">
-      <div class="form-group">
-        <label>Elsődleges szín</label>
+        <label>Elsődleges (Primary) <span class="label-desc">– főcímsorok, legfontosabb hangsúlyos elemek</span></label>
         <input type="color" id="primaryColor" value="#6366f1">
       </div>
       <div class="form-group">
-        <label>Másodlagos szín</label>
+        <label>Másodlagos (Secondary) <span class="label-desc">– alcímek, kiemelt részek</span></label>
         <input type="color" id="secondaryColor" value="#8b5cf6">
       </div>
     </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Szöveg (Text) <span class="label-desc">– normál bekezdések, leírások</span></label>
+        <input type="color" id="textColor" value="#1f2937">
+      </div>
+      <div class="form-group">
+        <label>Kiemelés (Accent) <span class="label-desc">– gombok, linkek, hover effektek</span></label>
+        <input type="color" id="accentColor" value="#f59e0b">
+      </div>
+    </div>
 
+    <!-- === LOGÓ === -->
     <div class="form-group">
-      <label>🖼️ Logó tallózása</label>
+      <label>🖼️ Fő logó (globális, header-ben és footer-ben is használható)</label>
       <div class="file-upload">
         <label class="file-label" for="logoFile">📁 Fájl tallózása...</label>
         <input type="file" id="logoFile" accept="image/*">
@@ -221,6 +182,23 @@
       </div>
     </div>
 
+    <!-- === HEADER === -->
+    <h3>📋 Fejléc (Header)</h3>
+    <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:10px;">
+      Jelöld be, mik szerepeljenek a fejlécben. A logó automatikusan a fent tallózott fájlt használja.
+    </p>
+    <div class="checkbox-grid">
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_logo" value="logo" checked><label for="hdr_logo">Logó</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_nav" value="navigation" checked><label for="hdr_nav">Navigációs menü</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_cta" value="cta_button"><label for="hdr_cta">CTA gomb (pl. Ajánlatkérés)</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_search" value="search"><label for="hdr_search">Keresőmező</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_social" value="social_icons"><label for="hdr_social">Közösségi média ikonok</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_phone" value="phone"><label for="hdr_phone">Telefonszám</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_lang" value="language_switcher"><label for="hdr_lang">Nyelvválasztó</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_sticky" value="sticky"><label for="hdr_sticky">Tapadós (sticky) fejléc</label></div>
+    </div>
+
+    <!-- === HERO === -->
     <h3>🦸 Hero szekció (főoldali banner)</h3>
     <div class="checkbox-row">
       <input type="checkbox" id="heroEnabled" checked>
@@ -231,7 +209,54 @@
       <input type="range" id="heroHeight" min="300" max="1000" value="600" step="50">
       <div class="range-value">300px (kicsi) – 1000px (teljes képernyős)</div>
     </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="heroImageEnabled">
+      <label for="heroImageEnabled">Tartalmazzon képet a hero</label>
+    </div>
+    <div class="form-group" id="heroImageGroup" style="display:none;">
+      <label>Kép forrása</label>
+      <select id="heroImageSource">
+        <option value="ai">AI generáljon a weboldalhoz illőt</option>
+        <option value="upload">Saját kép tallózása</option>
+      </select>
+      <div class="file-upload" id="heroImageUpload" style="display:none;margin-top:8px;">
+        <label class="file-label" for="heroImageFile">📁 Kép tallózása...</label>
+        <input type="file" id="heroImageFile" accept="image/*">
+        <span class="file-name" id="heroImageFileName">Nincs kiválasztva</span>
+      </div>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="heroAnimationEnabled">
+      <label for="heroAnimationEnabled">Tartalmazzon animációt a hero (pl. fade-in, parallax, particles)</label>
+    </div>
+    <div class="form-group" id="heroAnimationGroup" style="display:none;">
+      <label>Animáció típusa</label>
+      <select id="heroAnimationType">
+        <option value="fade_in">Fade-in (áttűnés)</option>
+        <option value="parallax">Parallax (mélységi elmozdulás)</option>
+        <option value="particles">Részecske effekt</option>
+        <option value="typing">Gépelés animáció</option>
+        <option value="slide_up">Felcsúszás</option>
+      </select>
+    </div>
 
+    <!-- === FOOTER === -->
+    <h3>📄 Lábléc (Footer)</h3>
+    <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:10px;">
+      Jelöld be, mik szerepeljenek a láblécben.
+    </p>
+    <div class="checkbox-grid">
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_logo" value="logo" checked><label for="ftr_logo">Logó</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_links" value="quick_links" checked><label for="ftr_links">Gyors linkek</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_contact" value="contact_info" checked><label for="ftr_contact">Elérhetőségek</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_social" value="social_icons" checked><label for="ftr_social">Közösségi média ikonok</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_newsletter" value="newsletter"><label for="ftr_newsletter">Hírlevél feliratkozás</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_copyright" value="copyright" checked><label for="ftr_copyright">Copyright szöveg</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_sitemap" value="sitemap"><label for="ftr_sitemap">Oldaltérkép link</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_privacy" value="privacy_links"><label for="ftr_privacy">Adatvédelmi / ÁSZF linkek</label></div>
+    </div>
+
+    <!-- === OLDALAK === -->
     <h3>📑 Oldalak és aloldalak</h3>
     <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;">
       Adj meg tetszőleges oldalakat. Minden oldalhoz megadhatsz leírást, és hozzáadhatsz aloldalakat.
@@ -241,20 +266,16 @@
 
     <!-- Progress bar -->
     <div class="progress-container" id="progressContainer">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       <div class="step-list" id="stepList">
         <div class="step" data-step="0"><span class="step-icon">⏳</span> Bemenet feldolgozása</div>
         <div class="step" data-step="1"><span class="step-icon">⏳</span> AI prompt összeállítása</div>
-        <div class="step" data-step="2"><span class="step-icon">⏳</span> DeepSeek API hívás (ez pár másodperc)</div>
+        <div class="step" data-step="2"><span class="step-icon">⏳</span> DeepSeek API hívás (pár másodperc)</div>
         <div class="step" data-step="3"><span class="step-icon">⏳</span> Válasz feldolgozása és fájlba mentés</div>
       </div>
     </div>
 
-    <!-- Letöltés gomb -->
     <a class="download-btn" id="downloadBtn" href="#" target="_blank">⬇️ Generált fájl letöltése</a>
-
     <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
   </form>
 
@@ -293,8 +314,40 @@ setInterval(checkServerStatus, 30000);
 // ---- Hero slider ----
 const heroHeight = document.getElementById('heroHeight');
 document.getElementById('heroHeightValue').textContent = heroHeight.value;
-heroHeight.addEventListener('input', () => {
-  document.getElementById('heroHeightValue').textContent = heroHeight.value;
+heroHeight.addEventListener('input', () => { document.getElementById('heroHeightValue').textContent = heroHeight.value; });
+
+// ---- Hero image toggle ----
+const heroImageEnabled = document.getElementById('heroImageEnabled');
+const heroImageGroup = document.getElementById('heroImageGroup');
+const heroImageSource = document.getElementById('heroImageSource');
+const heroImageUpload = document.getElementById('heroImageUpload');
+heroImageEnabled.addEventListener('change', () => {
+  heroImageGroup.style.display = heroImageEnabled.checked ? 'block' : 'none';
+  heroImageUpload.style.display = heroImageEnabled.checked && heroImageSource.value === 'upload' ? 'flex' : 'none';
+});
+heroImageSource.addEventListener('change', () => {
+  heroImageUpload.style.display = heroImageSource.value === 'upload' ? 'flex' : 'none';
+});
+
+// ---- Hero animation toggle ----
+const heroAnimationEnabled = document.getElementById('heroAnimationEnabled');
+const heroAnimationGroup = document.getElementById('heroAnimationGroup');
+heroAnimationEnabled.addEventListener('change', () => {
+  heroAnimationGroup.style.display = heroAnimationEnabled.checked ? 'block' : 'none';
+});
+
+// ---- Hero image file ----
+const heroImageFile = document.getElementById('heroImageFile');
+const heroImageFileName = document.getElementById('heroImageFileName');
+let heroImageBase64 = null, heroImageFilename = null;
+heroImageFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) { heroImageFileName.textContent = 'Nincs kiválasztva'; heroImageBase64 = null; heroImageFilename = null; return; }
+  heroImageFileName.textContent = file.name;
+  heroImageFilename = file.name;
+  const reader = new FileReader();
+  reader.onload = () => { heroImageBase64 = reader.result; };
+  reader.readAsDataURL(file);
 });
 
 // ---- Logo file ----
@@ -304,8 +357,7 @@ let logoBase64 = null, logoFilename = null;
 logoFile.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) { logoFileName.textContent = 'Nincs kiválasztva'; logoBase64 = null; logoFilename = null; return; }
-  logoFileName.textContent = file.name;
-  logoFilename = file.name;
+  logoFileName.textContent = file.name; logoFilename = file.name;
   const reader = new FileReader();
   reader.onload = () => { logoBase64 = reader.result; };
   reader.readAsDataURL(file);
@@ -321,20 +373,13 @@ const defaultPages = [
 ];
 
 function escapeHtml(str) { return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"'); }
-
 function addSubpageEntry(container, name = '', slug = '', desc = '') {
   const div = document.createElement('div');
   div.className = 'subpage-entry';
-  div.innerHTML = `
-    <input type="text" class="subpage-name" placeholder="Aloldal neve" value="${escapeHtml(name)}" style="flex:2;">
-    <input type="text" class="subpage-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">
-    <input type="text" class="subpage-desc" placeholder="Tartalom leírás" value="${escapeHtml(desc)}" style="flex:2;">
-    <button type="button" class="btn btn-del remove-subpage" style="font-size:11px;padding:4px 8px;">✕</button>
-  `;
+  div.innerHTML = `<input type="text" class="subpage-name" placeholder="Aloldal neve" value="${escapeHtml(name)}" style="flex:2;"><input type="text" class="subpage-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;"><input type="text" class="subpage-desc" placeholder="Tartalom leírás" value="${escapeHtml(desc)}" style="flex:2;"><button type="button" class="btn btn-del remove-subpage" style="font-size:11px;padding:4px 8px;">✕</button>`;
   div.querySelector('.remove-subpage').addEventListener('click', () => div.remove());
   container.appendChild(div);
 }
-
 function createPageEntry(pageData = null) {
   const idx = pageCounter++;
   const isDefault = !!pageData;
@@ -342,22 +387,9 @@ function createPageEntry(pageData = null) {
   const slug = pageData ? pageData.slug : '';
   const desc = pageData ? pageData.description : '';
   const subpages = pageData ? (pageData.subpages || []) : [];
-
   const div = document.createElement('div');
   div.className = 'page-entry';
-  div.innerHTML = `
-    <div class="page-header">
-      <input type="text" class="page-name" placeholder="Oldal neve" value="${escapeHtml(name)}" style="flex:2;">
-      <input type="text" class="page-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">
-      ${isDefault ? '' : '<button type="button" class="btn btn-del remove-page">✕</button>'}
-    </div>
-    <div class="form-group" style="margin-bottom:4px;">
-      <label>Oldal tartalma / leírás</label>
-      <textarea class="page-description" rows="2" placeholder="Mi jelenjen meg ezen az oldalon?">${escapeHtml(desc)}</textarea>
-    </div>
-    <div class="subpages-container"></div>
-    <button type="button" class="btn btn-sm add-subpage">+ Aloldal</button>
-  `;
+  div.innerHTML = `<div class="page-header"><input type="text" class="page-name" placeholder="Oldal neve" value="${escapeHtml(name)}" style="flex:2;"><input type="text" class="page-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">${isDefault ? '' : '<button type="button" class="btn btn-del remove-page">✕</button>'}</div><div class="form-group" style="margin-bottom:4px;"><label>Oldal tartalma / leírás</label><textarea class="page-description" rows="2" placeholder="Mi jelenjen meg ezen az oldalon?">${escapeHtml(desc)}</textarea></div><div class="subpages-container"></div><button type="button" class="btn btn-sm add-subpage">+ Aloldal</button>`;
   const subContainer = div.querySelector('.subpages-container');
   subpages.forEach(sp => addSubpageEntry(subContainer, sp.name, sp.slug, sp.description));
   div.querySelector('.add-subpage').addEventListener('click', () => addSubpageEntry(subContainer, '', '', ''));
@@ -365,7 +397,6 @@ function createPageEntry(pageData = null) {
   if (removeBtn) removeBtn.addEventListener('click', () => div.remove());
   return div;
 }
-
 defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
 document.getElementById('addPageBtn').addEventListener('click', () => pagesContainer.appendChild(createPageEntry()));
 
@@ -379,24 +410,22 @@ function resetUI() {
   progressContainer.style.display = 'none';
   progressFill.className = 'progress-fill';
   progressFill.style.width = '0%';
-  downloadBtn.style.display = 'none';
-  downloadBtn.href = '#';
+  downloadBtn.style.display = 'none'; downloadBtn.href = '#';
   steps.forEach(s => { s.className = 'step'; s.querySelector('.step-icon').textContent = '⏳'; });
 }
-
 function setStep(index, state) {
   const s = steps[index];
   if (!s) return;
-  if (state === 'active') {
-    s.className = 'step active';
-    s.querySelector('.step-icon').textContent = '🔄';
-  } else if (state === 'done') {
-    s.className = 'step done';
-    s.querySelector('.step-icon').textContent = '✅';
-  } else if (state === 'error') {
-    s.className = 'step error';
-    s.querySelector('.step-icon').textContent = '❌';
-  }
+  if (state === 'active') { s.className = 'step active'; s.querySelector('.step-icon').textContent = '🔄'; }
+  else if (state === 'done') { s.className = 'step done'; s.querySelector('.step-icon').textContent = '✅'; }
+  else if (state === 'error') { s.className = 'step error'; s.querySelector('.step-icon').textContent = '❌'; }
+}
+
+// ---- Collect checkbox values ----
+function getCheckedValues(selector) {
+  const vals = [];
+  document.querySelectorAll(selector + ':checked').forEach(cb => vals.push(cb.value));
+  return vals;
 }
 
 // ---- Submit ----
@@ -429,78 +458,60 @@ form.addEventListener('submit', async (e) => {
     language: document.getElementById('language').value,
     description: document.getElementById('description').value.trim(),
     designStyle: document.getElementById('designStyle').value,
-    primaryColor: document.getElementById('primaryColor').value,
-    secondaryColor: document.getElementById('secondaryColor').value,
+    colors: {
+      primary: document.getElementById('primaryColor').value,
+      secondary: document.getElementById('secondaryColor').value,
+      text: document.getElementById('textColor').value,
+      accent: document.getElementById('accentColor').value
+    },
     logo: logoBase64 ? { filename: logoFilename, data: logoBase64 } : null,
-    hero: { enabled: document.getElementById('heroEnabled').checked, height: parseInt(heroHeight.value) },
+    header: getCheckedValues('.header-opt'),
+    hero: {
+      enabled: document.getElementById('heroEnabled').checked,
+      height: parseInt(heroHeight.value),
+      image: heroImageEnabled.checked ? { source: heroImageSource.value, data: heroImageSource.value === 'upload' && heroImageBase64 ? { filename: heroImageFilename, data: heroImageBase64 } : null } : null,
+      animation: heroAnimationEnabled.checked ? document.getElementById('heroAnimationType').value : null
+    },
+    footer: getCheckedValues('.footer-opt'),
     pages: pages
   };
 
-  // UI reset
   resetUI();
-  responseContent.textContent = '';
-  responseContent.className = '';
-  responseDiv.style.display = 'none';
-
+  responseContent.textContent = ''; responseContent.className = ''; responseDiv.style.display = 'none';
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span>Generálás folyamatban...';
-
-  // Progress bar megjelenítése
   progressContainer.style.display = 'block';
   progressFill.className = 'progress-fill indeterminate';
-
-  // Animált lépések (becslés)
   setStep(0, 'active');
   const stepTimers = [];
-
   stepTimers.push(setTimeout(() => { setStep(0, 'done'); setStep(1, 'active'); progressFill.style.width = '25%'; }, 500));
   stepTimers.push(setTimeout(() => { setStep(1, 'done'); setStep(2, 'active'); progressFill.style.width = '50%'; }, 1500));
-  // A 2. lépés (API hívás) a leghosszabb, a tényleges válaszig ezt tartjuk aktívan
 
   try {
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    // API válasz megjött – lépés kész
+    const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     stepTimers.forEach(t => clearTimeout(t));
-    setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'done');
-    setStep(3, 'active');
-    progressFill.className = 'progress-fill';
-    progressFill.style.width = '75%';
+    setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'done'); setStep(3, 'active');
+    progressFill.className = 'progress-fill'; progressFill.style.width = '75%';
 
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.message || data.error || `HTTP ${res.status}`);
 
-    // Sikeres – minden kész
-    setStep(3, 'done');
-    progressFill.style.width = '100%';
-
+    setStep(3, 'done'); progressFill.style.width = '100%';
     responseContent.className = 'status-ok';
     responseContent.textContent = JSON.stringify(data, null, 2);
     responseDiv.style.display = 'block';
 
-    // Letöltés gomb
     if (data.saved_to) {
       const filename = data.saved_to.split('/').pop();
       downloadBtn.href = '/output/' + filename;
       downloadBtn.textContent = '⬇️ ' + filename + ' letöltése';
       downloadBtn.style.display = 'block';
     }
-
-    // 2 mp után eltüntetjük a progress bar-t
     setTimeout(() => { progressFill.style.width = '0%'; }, 2000);
-
   } catch (err) {
     stepTimers.forEach(t => clearTimeout(t));
-    setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'error');
-    setStep(3, 'error');
-    progressFill.className = 'progress-fill';
-    progressFill.style.background = '#f87171';
-    progressFill.style.width = '100%';
-
+    setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'error'); setStep(3, 'error');
+    progressFill.className = 'progress-fill'; progressFill.style.background = '#f87171'; progressFill.style.width = '100%';
     responseContent.className = 'status-error';
     responseContent.textContent = '❌ HIBA: ' + err.message + '\n\nEllenőrizd:\n1. Szerver: ' + SERVER_BASE + '\n2. Workflow Active?\n3. API kulcs helyes?';
     responseDiv.style.display = 'block';
