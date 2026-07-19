@@ -1,0 +1,60 @@
+# ================================================================
+# n8n-gravity .gitignore
+# Projekt specifikus kizárások + általános Docker/Node minták
+# ================================================================
+
+# ----- Környezeti fájlok (API kulcsok, jelszavak) -----
+.env
+.env.local
+.env.production
+*.env.backup.*
+
+# ----- n8n adatok -----
+n8n_data/
+n8n_export/
+output/
+scripts/output/
+
+# ----- Docker -----
+docker-compose.override.yml
+
+# ----- Operációs rendszer fájlok -----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ----- Szerkesztő / IDE -----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ----- Node.js (ha egyedi n8n node-okat fejlesztesz) -----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----- Log fájlok -----
+*.log
+logs/
+
+# ----- Archívumok -----
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+
+# ----- Backup -----
+*.backup
+*.backup.*
+*.bak
