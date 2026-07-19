@@ -262,6 +262,8 @@ form.addEventListener('submit', async (e) => {
     language: document.getElementById('language').value,
     description: document.getElementById('description').value.trim(),
     designStyle: document.getElementById('designStyle').value,
+    aiModel: document.getElementById('aiModel').value,
+    customPrompt: document.getElementById('customPrompt').value.trim(),
     colors: {
       primary: getColorOrAi('primaryColor', 'ai_primary'),
       secondary: getColorOrAi('secondaryColor', 'ai_secondary'),

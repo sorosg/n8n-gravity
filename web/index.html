@@ -9,13 +9,15 @@
 <body>
 <div class="container">
   <h1>🚀 Gravity CMS Generátor</h1>
-  <p class="subtitle">AI-vezérelt weboldal tervezés • DeepSeek API</p>
+  <p class="subtitle">AI-vezérelt weboldal tervezés • Több AI modell • Gravity CMS preview</p>
 
   <div class="info-box">
     🔗 Webhook: <strong id="webhookUrl">/webhook/gravity-generate</strong>
     <br>🖥️ Szerver: <span id="serverStatus">Ellenőrzés...</span>
     <span id="statusDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-left:6px;"></span>
-    <br>🔗 <a href="http://192.168.4.148:5678" target="_blank" style="color:#a5b4fc;">n8n →</a> | <a href="/output/" target="_blank" style="color:#a5b4fc;">📁 Fájlok →</a>
+    <br>🔗 <a href="http://192.168.4.148:5678" target="_blank" style="color:#a5b4fc;">n8n →</a> |
+    <a href="/output/" target="_blank" style="color:#a5b4fc;">📁 Fájlok →</a> |
+    <a href="/gravity/" target="_blank" style="color:#a5b4fc;">🧪 Gravity CMS →</a>
   </div>
 
   <form id="generatorForm">
@@ -56,8 +58,21 @@
           <option value="creative">🎨 Kreatív – egyedi, művészi</option>
         </select>
       </div>
+      <div class="form-group">
+        <label>AI Modell</label>
+        <select id="aiModel">
+          <option value="deepseek-chat">🤖 DeepSeek Chat (legolcsóbb)</option>
+          <option value="deepseek-reasoner">🧠 DeepSeek Reasoner (alaposabb)</option>
+          <option value="gpt-4o">🧠 OpenAI GPT-4o</option>
+          <option value="claude-3-5-sonnet">📝 Claude 3.5 Sonnet</option>
+        </select>
+      </div>
     </div>
     <div class="form-group"><label>Projekt leírása</label><textarea id="description" placeholder="Részletes leírás..."></textarea></div>
+    <div class="form-group">
+      <label>✏️ Egyedi prompt módosítása <span class="label-desc">– opcionális: testreszabhatod az AI utasítását. Üresen hagyva az alapértelmezett prompt fut.</span></label>
+      <textarea id="customPrompt" rows="3" placeholder="Pl.: Legyen sötét téma, használj gradiens hátteret, a célcsoport fiatal vállalkozók..."></textarea>
+    </div>
 
     <h3>🎨 Színek <a href="https://coolors.co" target="_blank" class="inspiration-link">(inspiráció: coolors.co →)</a></h3>
     <div class="row">
@@ -151,8 +166,8 @@
       <div class="step-list">
         <div class="step" data-step="0"><span class="step-icon">⏳</span> Bemenet feldolgozása</div>
         <div class="step" data-step="1"><span class="step-icon">⏳</span> Prompt összeállítása</div>
-        <div class="step" data-step="2"><span class="step-icon">⏳</span> DeepSeek API hívás</div>
-        <div class="step" data-step="3"><span class="step-icon">⏳</span> Válasz feldolgozása</div>
+        <div class="step" data-step="2"><span class="step-icon">⏳</span> AI API hívás</div>
+        <div class="step" data-step="3"><span class="step-icon">⏳</span> Válasz feldolgozása + Gravity CMS deploy</div>
       </div>
     </div>
     <a class="download-btn" id="downloadBtn" href="#" target="_blank">⬇️ Fájl letöltése</a>
