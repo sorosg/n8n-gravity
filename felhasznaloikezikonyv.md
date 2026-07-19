@@ -299,7 +299,10 @@ A `nano` egy egyszerű, parancssoros szövegszerkesztő. Így használd:
 
 | Művelet | Windows (Tabby) | Mac |
 |---------|-----------------|-----|
-| **Beillesztés** | `Ctrl + Shift + V` vagy Jobb klikk → Paste | `Cmd + V` |
+| **Beillesztés (1. próba)** | **Jobb klikk** a terminálban → **Paste** | `Cmd + V` |
+| **Beillesztés (2. próba)** | `Shift + Insert` | – |
+| **Beillesztés (3. próba)** | `Ctrl + Insert` (másolás után) | – |
+| **Beillesztés (4. próba)** | `Ctrl + Shift + V` (egyes kliensekben) | – |
 | **Mentés** | `Ctrl + O` (majd Enter a megerősítéshez) | `Ctrl + O` |
 | **Kilépés** | `Ctrl + X` | `Ctrl + X` |
 | **Keresés** | `Ctrl + W` | `Ctrl + W` |
