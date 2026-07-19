@@ -249,23 +249,22 @@ document.getElementById('webhookUrl').textContent = WEBHOOK_URL;
 const serverStatus = document.getElementById('serverStatus');
 const statusDot = document.getElementById('statusDot');
 
-async function checkServerStatus() {
-  try {
-    const res = await fetch(SERVER_BASE + '/healthz', { method: 'GET', signal: AbortSignal.timeout(5000) });
-    if (res.ok) {
-      serverStatus.textContent = 'Online ✅';
-      serverStatus.style.color = '#4ade80';
-      statusDot.style.background = '#4ade80';
-      return true;
-    } else {
-      throw new Error('HTTP ' + res.status);
-    }
-  } catch (err) {
+function checkServerStatus() {
+  const img = new Image();
+  const ts = Date.now();
+
+  img.onload = () => {
+    serverStatus.textContent = 'Online ✅';
+    serverStatus.style.color = '#4ade80';
+    statusDot.style.background = '#4ade80';
+  };
+  img.onerror = () => {
     serverStatus.textContent = 'Offline ❌';
     serverStatus.style.color = '#f87171';
     statusDot.style.background = '#f87171';
-    return false;
-  }
+  };
+  // Favicon vagy bármilyen létező erőforrás betöltése – ha betölt, a szerver él
+  img.src = SERVER_BASE + '/favicon.ico?t=' + ts;
 }
 
 // Ellenőrzés azonnal, majd 30 másodpercenként
