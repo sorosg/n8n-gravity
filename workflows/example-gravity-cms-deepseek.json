@@ -2,7 +2,10 @@
   "name": "Gravity CMS Weboldal Generátor - DeepSeek AI",
   "nodes": [
     {
-      "parameters": {},
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {}
+      },
       "id": "trigger-webhook",
       "name": "Webhook (Indító)",
       "type": "n8n-nodes-base.webhook",
