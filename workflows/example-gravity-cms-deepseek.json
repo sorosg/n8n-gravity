@@ -78,28 +78,6 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [1100, 300]
-    },
-    {
-      "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "status",
-              "value": "success"
-            },
-            {
-              "name": "message",
-              "value": "Gravity CMS oldalstruktúra sikeresen generálva"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "final-response",
-      "name": "Válasz küldése",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [1520, 300]
     }
   ],
   "connections": {
@@ -148,15 +126,7 @@
       ]
     },
     "Válasz feldolgozás": {
-      "main": [
-        [
-          {
-            "node": "Válasz küldése",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": []
     }
   },
   "settings": {
