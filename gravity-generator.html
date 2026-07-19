@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n-gravity – Gravity CMS Weboldal Generátor</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+    h1 {
+      color: #fff;
+      font-size: 24px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .subtitle {
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 15px;
+      font-family: inherit;
+      transition: all 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #6366f1;
+      background: rgba(255,255,255,0.14);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    select { cursor: pointer; }
+    select option { background: #1e1b4b; color: #fff; }
+    .row { display: flex; gap: 12px; }
+    .row .form-group { flex: 1; }
+    .pages-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .page-checkbox { display: none; }
+    .page-label {
+      padding: 8px 16px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .page-checkbox:checked + .page-label {
+      background: #6366f1;
+      border-color: #6366f1;
+      color: #fff;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99,102,241,0.4);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    #response {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+    #response pre {
+      color: #a5b4fc;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      line-height: 1.6;
+    }
+    .status-ok { color: #4ade80 !important; }
+    .status-error { color: #f87171 !important; }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .info-box {
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🚀 Gravity CMS Generátor</h1>
+  <p class="subtitle">AI-vezérelt weboldal tervezés • DeepSeek API</p>
+
+  <div class="info-box">
+    🔗 Webhook: <strong id="webhookUrl">http://192.168.4.148:5678/webhook/gravity-generate</strong>
+    <br>⚡ A workflow-nak <strong>Active</strong> állapotban kell lennie az n8n-ben!
+  </div>
+
+  <form id="generatorForm">
+    <div class="form-group">
+      <label>🏢 Cégnév / Projekt név *</label>
+      <input type="text" id="businessName" placeholder="pl. Digitális Megoldások Kft." required>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>📄 Weboldal típusa</label>
+        <select id="projectType">
+          <option value="landing_page">Landing Page</option>
+          <option value="blog">Blog</option>
+          <option value="portfolio">Portfólió</option>
+          <option value="shop">Webshop</option>
+          <option value="admin">Admin felület</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>🌍 Nyelv</label>
+        <select id="language">
+          <option value="hu" selected>Magyar</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="fr">Français</option>
+          <option value="es">Español</option>
+          <option value="it">Italiano</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>🎨 Design stílus</label>
+        <select id="designStyle">
+          <option value="modern" selected>Modern</option>
+          <option value="minimal">Minimalista</option>
+          <option value="classic">Klasszikus</option>
+          <option value="bold">Feltűnő / Vállalati</option>
+          <option value="corporate">Elegáns üzleti</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>📝 Projekt leírása</label>
+      <textarea id="description" placeholder="Rövid leírás a cégről, tevékenységről... (minél részletesebb, annál jobb az AI által generált tartalom)"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>📑 Oldalak (kattints a kiválasztáshoz)</label>
+      <div class="pages-group">
+        <input type="checkbox" class="page-checkbox" id="page_home" value="home" checked>
+        <label class="page-label" for="page_home">🏠 Kezdőlap</label>
+
+        <input type="checkbox" class="page-checkbox" id="page_about" value="about" checked>
+        <label class="page-label" for="page_about">ℹ️ Rólunk</label>
+
+        <input type="checkbox" class="page-checkbox" id="page_services" value="services">
+        <label class="page-label" for="page_services">🛠️ Szolgáltatások</label>
+
+        <input type="checkbox" class="page-checkbox" id="page_portfolio" value="portfolio">
+        <label class="page-label" for="page_portfolio">🖼️ Portfólió</label>
+
+        <input type="checkbox" class="page-checkbox" id="page_contact" value="contact" checked>
+        <label class="page-label" for="page_contact">📞 Kapcsolat</label>
+
+        <input type="checkbox" class="page-checkbox" id="page_pricing" value="pricing">
+        <label class="page-label" for="page_pricing">💰 Árak</label>
+
+        <input type="checkbox" class="page-checkbox" id="page_blog" value="blog">
+        <label class="page-label" for="page_blog">📝 Blog</label>
+      </div>
+    </div>
+
+    <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
+  </form>
+
+  <div id="response">
+    <pre id="responseContent"></pre>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('generatorForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const responseDiv = document.getElementById('response');
+  const responseContent = document.getElementById('responseContent');
+  const webhookUrlEl = document.getElementById('webhookUrl');
+
+  const WEBHOOK_URL = 'http://192.168.4.148:5678/webhook/gravity-generate';
+  webhookUrlEl.textContent = WEBHOOK_URL;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Összegyűjtjük a kiválasztott oldalakat
+    const selectedPages = [];
+    document.querySelectorAll('.page-checkbox:checked').forEach(cb => {
+      selectedPages.push(cb.value);
+    });
+
+    // Ha nincs kiválasztott oldal, alapértelmezett
+    if (selectedPages.length === 0) {
+      selectedPages.push('home', 'about', 'contact');
+    }
+
+    const payload = {
+      businessName: document.getElementById('businessName').value.trim(),
+      projectType: document.getElementById('projectType').value,
+      language: document.getElementById('language').value,
+      description: document.getElementById('description').value.trim(),
+      pages: selectedPages,
+      designStyle: document.getElementById('designStyle').value
+    };
+
+    // UI: töltés
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Generálás folyamatban...';
+    responseDiv.style.display = 'block';
+    responseContent.textContent = '⏳ Küldés a DeepSeek API felé...';
+    responseContent.className = '';
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error || (data.status && data.status !== 'success')) {
+        throw new Error(data.message || data.error || `HTTP ${res.status}`);
+      }
+
+      responseContent.className = 'status-ok';
+      responseContent.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      responseContent.className = 'status-error';
+      responseContent.textContent = '❌ HIBA: ' + err.message +
+        '\n\nEllenőrizd:\n' +
+        '1. A szerver elérhető? (http://192.168.4.148:5678)\n' +
+        '2. A workflow Active állapotban van? (n8n-ben a kapcsoló)\n' +
+        '3. A DeepSeek API kulcs helyes?\n' +
+        '4. A webhook URL: ' + WEBHOOK_URL;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '⚡ Weboldal generálása AI-val';
+    }
+  });
+</script>
+</body>
+</html>
