@@ -317,20 +317,57 @@ setup_env() {
 }
 
 setup_firewall() {
-    log_step "Tűzfal beállítása (UFW)"
+    log_step "Tűzfal beállítása"
 
+    local port_opened=false
+
+    # 1. Próbáljuk UFW-vel (Ubuntu alapértelmezett tűzfala)
     if command -v ufw &>/dev/null; then
-        # Csak ha a tűzfal aktív
-        if sudo ufw status | grep -q "Status: active"; then
-            log_info "UFW szabályok hozzáadása..."
-            sudo ufw allow 5678/tcp comment 'n8n web UI'
-            sudo ufw allow 6333/tcp comment 'Qdrant API'
-            sudo ufw allow 9443/tcp comment 'Portainer HTTPS'
-            log_success "Tűzfal szabályok beállítva."
+        log_info "UFW szabályok hozzáadása..."
+        sudo ufw allow 5678/tcp comment 'n8n web UI' 2>/dev/null || true
+        sudo ufw allow 6333/tcp comment 'Qdrant API' 2>/dev/null || true
+        sudo ufw allow 9443/tcp comment 'Portainer HTTPS' 2>/dev/null || true
+
+        # Ha UFW inaktív, kérdezzük meg, hogy aktiváljuk-e
+        if ! sudo ufw status | grep -q "Status: active"; then
+            log_warn "Az UFW tűzfal jelenleg inaktív."
+            read -rp "Szeretnéd aktiválni az UFW-t? (ajánlott) [I/n] " -n 1 -r
+            echo
+            if [[ -z "${REPLY}" ]] || [[ $REPLY =~ ^[Ii]$ ]]; then
+                log_info "UFW aktiválása..."
+                sudo ufw --force enable
+                log_success "UFW tűzfal aktiválva + szabályok hozzáadva."
+                port_opened=true
+            else
+                log_info "UFW inaktív maradt. A portok manuálisan lettek engedélyezve,"
+                log_info "és az UFW aktiválása után azonnal működni fognak."
+            fi
         else
-            log_info "UFW nem aktív, tűzfal szabályok kihagyva."
-            log_info "Aktiváláshoz: sudo ufw enable, majd futtasd újra ezt a scriptet."
+            log_success "UFW tűzfal szabályok hozzáadva."
+            port_opened=true
         fi
+    fi
+
+    # 2. Ha nincs UFW, próbáljuk közvetlen iptables-szel
+    if ! command -v ufw &>/dev/null && command -v iptables &>/dev/null; then
+        log_info "UFW nem található, iptables szabályok hozzáadása..."
+        sudo iptables -A INPUT -p tcp --dport 5678 -j ACCEPT 2>/dev/null || true
+        sudo iptables -A INPUT -p tcp --dport 6333 -j ACCEPT 2>/dev/null || true
+        sudo iptables -A INPUT -p tcp --dport 9443 -j ACCEPT 2>/dev/null || true
+        log_success "iptables szabályok hozzáadva."
+        port_opened=true
+    fi
+
+    # 3. Végezetül ellenőrizzük, hogy a port tényleg nyitva van-e
+    echo ""
+    log_info "Port ellenőrzése: 5678..."
+    if ss -tlnp 2>/dev/null | grep -q ":5678 " || netstat -tlnp 2>/dev/null | grep -q ":5678 "; then
+        log_success "Az 5678-as port nyitva van és figyel!"
+    else
+        log_warn "Az 5678-as port jelenleg nem figyel (lehet, hogy a konténer még nem indult el)."
+        log_warn "Ha a konténerek már futnak, ellenőrizd a tűzfalat:"
+        log_warn "  sudo ufw status"
+        log_warn "  sudo ufw allow 5678/tcp"
     fi
 }
 
