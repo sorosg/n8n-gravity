@@ -43,7 +43,7 @@
             },
             {
               "name": "Authorization",
-              "value": "Bearer {{$credentials.accessToken}}"
+              "value": "=Bearer {{ $env.DEEPSEEK_API_KEY }}"
             }
           ]
         },
@@ -67,12 +67,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [880, 300],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "1",
-          "name": "DeepSeek API"
-        }
-      }
+      "credentials": {}
     },
     {
       "parameters": {
