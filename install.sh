@@ -59,11 +59,28 @@ check_root() {
 
         if sudo usermod -aG docker "${target_user}" 2>/dev/null; then
             log_success "${target_user} hozzáadva a docker csoporthoz."
-            log_warn "A változtatások aktiválásához lépj ki és jelentkezz be újra,"
-            log_warn "VAGY futtasd ezt a parancsot: newgrp docker"
-            log_warn "VAGY használd a scriptet sudo-val: sudo ./install.sh"
-            log_info "A telepítés folytatódik, de lehet, hogy a docker parancsok"
-            log_info "csak a következő bejelentkezés után fognak működni."
+            echo ""
+            log_warn "═══════════════════════════════════════════════"
+            log_warn " A docker csoporttagság csak ÚJ bejelentkezés"
+            log_warn " után lép életbe. Két lehetőséged van:"
+            log_warn ""
+            log_warn " 1. Lépj ki az SSH-ból és jelentkezz be újra,"
+            log_warn "    majd futtasd: cd ~/n8n-gravity && ./install.sh"
+            log_warn ""
+            log_warn " 2. VAGY futtasd a scriptet sudo-val:"
+            log_warn "    sudo ./install.sh"
+            log_warn "═══════════════════════════════════════════════"
+            echo ""
+            read -rp "Szeretnéd, hogy a script sudo-val újraindítsa magát? [I/n] " -n 1 -r
+            echo
+            if [[ -z "${REPLY}" ]] || [[ $REPLY =~ ^[Ii]$ ]]; then
+                log_info "Újraindítás sudo-val..."
+                exec sudo bash "$0" "$@"
+                # ide nem jutunk el, mert az exec lecseréli a process-t
+            else
+                log_error "Kilépés. Futtasd újra: sudo ./install.sh"
+                exit 1
+            fi
         else
             log_error "Nem sikerült hozzáadni a docker csoporthoz."
             log_error "Root joggal próbáld: sudo ./install.sh"
