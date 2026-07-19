@@ -1,5 +1,5 @@
 {
-  "name": "Gravity CMS Weboldal Generátor - v0.9.7",
+  "name": "Gravity CMS Weboldal Generátor - v0.9.8",
   "nodes": [
     {
       "parameters": { "httpMethod": "POST", "options": {} },
@@ -32,10 +32,10 @@
     },
     {
       "parameters": {
-        "jsCode": "// n8n beépített HTTP kliens használata (nem kell require!)\nconst data = $input.all()[0].json;\nconst prompt = data.prompt;\nconst aiModel = data.aiModel || 'deepseek-v4-flash';\nconst apiKey = data.apiKey || $env.DEEPSEEK_API_KEY || '';\n\nif (!apiKey) throw new Error('Hiányzó API kulcs! Add meg a webes űrlapon vagy a .env fájlban.');\n\nconst response = await $request({\n  method: 'POST',\n  url: 'https://api.deepseek.com/v1/chat/completions',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer ' + apiKey\n  },\n  body: {\n    model: aiModel,\n    messages: [\n      { role: 'system', content: 'You are an expert Gravity CMS developer. Respond with valid JSON only, no markdown.' },\n      { role: 'user', content: prompt }\n    ],\n    temperature: 0.7,\n    max_tokens: 4096,\n    response_format: { type: 'json_object' }\n  },\n  timeout: 120000\n});\n\nreturn response;"
+        "jsCode": "// fetch API használata (Node.js 18+ globális, n8n-ben elérhető)\nconst data = $input.all()[0].json;\nconst prompt = data.prompt;\nconst aiModel = data.aiModel || 'deepseek-v4-flash';\nconst apiKey = data.apiKey || $env.DEEPSEEK_API_KEY || '';\n\nif (!apiKey) throw new Error('Hiányzó API kulcs!');\n\nconst response = await fetch('https://api.deepseek.com/v1/chat/completions', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer ' + apiKey\n  },\n  body: JSON.stringify({\n    model: aiModel,\n    messages: [\n      { role: 'system', content: 'You are an expert Gravity CMS developer. Respond with valid JSON only, no markdown.' },\n      { role: 'user', content: prompt }\n    ],\n    temperature: 0.7,\n    max_tokens: 4096,\n    response_format: { type: 'json_object' }\n  })\n});\n\nconst json = await response.json();\nif (json.error) throw new Error(json.error.message || JSON.stringify(json.error));\nreturn json;\n// eslint-disable-next-line no-unreachable\nreturn {};"
       },
       "id": "api-call",
-      "name": "DeepSeek API hívás ($request)",
+      "name": "DeepSeek API hívás (fetch)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [880, 300]
@@ -54,13 +54,13 @@
   "connections": {
     "Webhook (Indító)": { "main": [[ { "node": "Bemenet feldolgozása (Code)", "type": "main", "index": 0 } ]] },
     "Bemenet feldolgozása (Code)": { "main": [[ { "node": "Prompt összeállítás", "type": "main", "index": 0 } ]] },
-    "Prompt összeállítás": { "main": [[ { "node": "DeepSeek API hívás ($request)", "type": "main", "index": 0 } ]] },
-    "DeepSeek API hívás ($request)": { "main": [[ { "node": "Válasz feldolgozás + CMS + SVG", "type": "main", "index": 0 } ]] },
+    "Prompt összeállítás": { "main": [[ { "node": "DeepSeek API hívás (fetch)", "type": "main", "index": 0 } ]] },
+    "DeepSeek API hívás (fetch)": { "main": [[ { "node": "Válasz feldolgozás + CMS + SVG", "type": "main", "index": 0 } ]] },
     "Válasz feldolgozás + CMS + SVG": { "main": [] }
   },
   "settings": { "executionOrder": "v1", "callerPolicy": "workflowsFromSameOwner", "saveManualExecutions": true },
-  "versionId": "2.2.7",
+  "versionId": "2.2.8",
   "active": false,
-  "description": "v0.9.7: $request használata Code node-ban (require('https') nélkül)",
+  "description": "v0.9.8: fetch() API használata (require('https') helyett)",
   "tags": [{ "name": "gravity-cms" }, { "name": "ai" }]
 }
