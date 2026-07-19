@@ -382,10 +382,13 @@ curl http://192.168.4.184:5678/healthz
 
 1. Egy onboarding képernyő fogad (átugorható)
 2. A főoldalon a **Workflows** fület fogod látni
-3. Bal oldali menüpontok:
+3. Bal oldali menüpontok (☰ hamburger menüvel nyitható ki):
    - 🏠 **Workflows** – a workflow-id listája
+   - 🔑 **Credentials** – API kulcsok és hozzáférések kezelése (**itt, nem a Settingsben!**)
    - 🕐 **Executions** – végrehajtási előzmények
-   - 🎛️ **Settings** – beállítások, credential-ök, API hozzáférés
+   - ⚙️ **Settings** – általános beállítások, API hozzáférés
+
+> ⚠️ **Fontos:** Ha a bal oldalsáv össze van csukva (csak ikonok látszanak), kattints a **kulcs ikonra (🔑)** a Credentials megnyitásához, vagy kattints a ☰ gombra a menü kinyitásához.
 
 > **Megjegyzés:** A `http://192.168.4.184` (80-as port) továbbra is az epub-translate felületét mutatja. Az n8n a **5678**-as porton érhető el, így a két alkalmazás nem zavarja egymást!
 
