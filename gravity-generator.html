@@ -10,146 +10,119 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       padding: 20px;
     }
     .container {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px;
-      padding: 40px;
-      max-width: 600px;
-      width: 100%;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      background: rgba(255,255,255,0.06); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 24px;
+      padding: 40px; max-width: 800px; width: 100%;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     }
-    h1 {
-      color: #fff;
-      font-size: 24px;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-    .subtitle {
-      color: rgba(255,255,255,0.55);
-      text-align: center;
-      font-size: 13px;
-      margin-bottom: 28px;
-    }
-    .form-group {
-      margin-bottom: 18px;
-    }
+    h1 { color: #fff; font-size: 26px; text-align: center; margin-bottom: 6px; }
+    .subtitle { color: rgba(255,255,255,0.5); text-align: center; font-size: 13px; margin-bottom: 30px; }
+    h3 { color: rgba(255,255,255,0.9); font-size: 15px; margin: 24px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+    .form-group { margin-bottom: 16px; }
     label {
-      display: block;
-      color: rgba(255,255,255,0.8);
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      display: block; color: rgba(255,255,255,0.8); font-size: 12px;
+      font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;
     }
     input, select, textarea {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 10px;
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      font-size: 15px;
-      font-family: inherit;
-      transition: all 0.2s;
-      outline: none;
+      width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px; background: rgba(255,255,255,0.07);
+      color: #fff; font-size: 14px; font-family: inherit; transition: all 0.2s; outline: none;
     }
     input:focus, select:focus, textarea:focus {
-      border-color: #6366f1;
-      background: rgba(255,255,255,0.14);
+      border-color: #6366f1; background: rgba(255,255,255,0.12);
       box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
     }
-    textarea { resize: vertical; min-height: 80px; }
+    textarea { resize: vertical; min-height: 70px; }
     select { cursor: pointer; }
     select option { background: #1e1b4b; color: #fff; }
     .row { display: flex; gap: 12px; }
     .row .form-group { flex: 1; }
-    .pages-group { display: flex; flex-wrap: wrap; gap: 8px; }
-    .page-checkbox { display: none; }
-    .page-label {
-      padding: 8px 16px;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 20px;
-      color: rgba(255,255,255,0.7);
-      font-size: 13px;
-      cursor: pointer;
+    input[type="color"] {
+      width: 100%; height: 44px; padding: 4px 8px; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+      background: rgba(255,255,255,0.07);
+    }
+    input[type="range"] { width: 100%; margin: 6px 0; accent-color: #6366f1; }
+    .range-value { color: rgba(255,255,255,0.6); font-size: 12px; text-align: right; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .checkbox-row input[type="checkbox"] { width: auto; accent-color: #6366f1; }
+    .checkbox-row label { margin-bottom: 0; text-transform: none; font-size: 14px; font-weight: 400; }
+
+    /* Pages & subpages ----------------------------------------- */
+    .page-entry {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 14px; margin-bottom: 12px;
+    }
+    .page-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .page-header input { flex: 1; }
+    .btn {
+      padding: 6px 14px; border: none; border-radius: 8px; cursor: pointer;
+      font-size: 13px; font-weight: 600; transition: all 0.2s;
+    }
+    .btn-add { background: #059669; color: #fff; }
+    .btn-add:hover { background: #047857; }
+    .btn-del { background: #dc2626; color: #fff; }
+    .btn-del:hover { background: #b91c1c; }
+    .btn-sm { background: rgba(99,102,241,0.3); color: #a5b4fc; padding: 4px 10px; font-size: 11px; }
+    .btn-sm:hover { background: rgba(99,102,241,0.5); }
+    .subpage-entry {
+      display: flex; align-items: center; gap: 6px;
+      margin-left: 20px; margin-bottom: 6px;
+    }
+    .subpage-entry input { flex: 1; font-size: 13px; padding: 8px 10px; }
+    .subpages-container { margin-top: 6px; }
+
+    /* File upload ----------------------------------------------- */
+    .file-upload {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .file-upload input[type="file"] { display: none; }
+    .file-label {
+      padding: 10px 18px; background: rgba(99,102,241,0.25); color: #a5b4fc;
+      border: 1px dashed rgba(99,102,241,0.5); border-radius: 10px;
+      cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap;
       transition: all 0.2s;
-      user-select: none;
     }
-    .page-checkbox:checked + .page-label {
-      background: #6366f1;
-      border-color: #6366f1;
-      color: #fff;
+    .file-label:hover { background: rgba(99,102,241,0.4); }
+    .file-name { color: rgba(255,255,255,0.6); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Submit button --------------------------------------------- */
+    button[type="submit"] {
+      width: 100%; padding: 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 14px; font-size: 17px;
+      font-weight: 700; cursor: pointer; letter-spacing: 0.5px;
+      transition: all 0.3s; margin-top: 12px;
     }
-    button {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      transition: all 0.3s;
-      margin-top: 8px;
+    button[type="submit"]:hover {
+      transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.5);
     }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(99,102,241,0.4);
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
+    button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
     #response {
-      margin-top: 20px;
-      padding: 16px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 10px;
-      max-height: 400px;
-      overflow-y: auto;
-      display: none;
+      margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.35);
+      border-radius: 12px; max-height: 400px; overflow-y: auto; display: none;
     }
     #response pre {
-      color: #a5b4fc;
-      font-size: 12px;
-      white-space: pre-wrap;
-      word-break: break-all;
-      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-      line-height: 1.6;
+      color: #a5b4fc; font-size: 12px; white-space: pre-wrap; word-break: break-all;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.6;
     }
     .status-ok { color: #4ade80 !important; }
     .status-error { color: #f87171 !important; }
     .spinner {
-      display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
+      margin-right: 8px; vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .info-box {
-      background: rgba(99,102,241,0.15);
-      border: 1px solid rgba(99,102,241,0.3);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 20px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.6);
+      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 10px; padding: 10px 16px; margin-bottom: 20px;
+      font-size: 12px; color: rgba(255,255,255,0.55);
     }
   </style>
 </head>
@@ -164,14 +137,16 @@
   </div>
 
   <form id="generatorForm">
+
+    <!-- ---- ALAPADATOK ---- -->
+    <h3>🏢 Alapadatok</h3>
     <div class="form-group">
-      <label>🏢 Cégnév / Projekt név *</label>
+      <label>Cégnév / Projekt név *</label>
       <input type="text" id="businessName" placeholder="pl. Digitális Megoldások Kft." required>
     </div>
-
     <div class="row">
       <div class="form-group">
-        <label>📄 Weboldal típusa</label>
+        <label>Weboldal típusa</label>
         <select id="projectType">
           <option value="landing_page">Landing Page</option>
           <option value="blog">Blog</option>
@@ -181,21 +156,25 @@
         </select>
       </div>
       <div class="form-group">
-        <label>🌍 Nyelv</label>
+        <label>Nyelv</label>
         <select id="language">
           <option value="hu" selected>Magyar</option>
           <option value="en">English</option>
           <option value="de">Deutsch</option>
           <option value="fr">Français</option>
-          <option value="es">Español</option>
-          <option value="it">Italiano</option>
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label>Projekt leírása</label>
+      <textarea id="description" placeholder="Részletes leírás a cégről, tevékenységről, célcsoportról..."></textarea>
+    </div>
 
+    <!-- ---- MEGJELENÉS ---- -->
+    <h3>🎨 Megjelenés</h3>
     <div class="row">
       <div class="form-group">
-        <label>🎨 Design stílus</label>
+        <label>Design stílus</label>
         <select id="designStyle">
           <option value="modern" selected>Modern</option>
           <option value="minimal">Minimalista</option>
@@ -205,38 +184,52 @@
         </select>
       </div>
     </div>
-
-    <div class="form-group">
-      <label>📝 Projekt leírása</label>
-      <textarea id="description" placeholder="Rövid leírás a cégről, tevékenységről... (minél részletesebb, annál jobb az AI által generált tartalom)"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>📑 Oldalak (kattints a kiválasztáshoz)</label>
-      <div class="pages-group">
-        <input type="checkbox" class="page-checkbox" id="page_home" value="home" checked>
-        <label class="page-label" for="page_home">🏠 Kezdőlap</label>
-
-        <input type="checkbox" class="page-checkbox" id="page_about" value="about" checked>
-        <label class="page-label" for="page_about">ℹ️ Rólunk</label>
-
-        <input type="checkbox" class="page-checkbox" id="page_services" value="services">
-        <label class="page-label" for="page_services">🛠️ Szolgáltatások</label>
-
-        <input type="checkbox" class="page-checkbox" id="page_portfolio" value="portfolio">
-        <label class="page-label" for="page_portfolio">🖼️ Portfólió</label>
-
-        <input type="checkbox" class="page-checkbox" id="page_contact" value="contact" checked>
-        <label class="page-label" for="page_contact">📞 Kapcsolat</label>
-
-        <input type="checkbox" class="page-checkbox" id="page_pricing" value="pricing">
-        <label class="page-label" for="page_pricing">💰 Árak</label>
-
-        <input type="checkbox" class="page-checkbox" id="page_blog" value="blog">
-        <label class="page-label" for="page_blog">📝 Blog</label>
+    <div class="row">
+      <div class="form-group">
+        <label>Elsődleges szín</label>
+        <input type="color" id="primaryColor" value="#6366f1">
+      </div>
+      <div class="form-group">
+        <label>Másodlagos szín</label>
+        <input type="color" id="secondaryColor" value="#8b5cf6">
       </div>
     </div>
 
+    <!-- ---- LOGÓ ---- -->
+    <div class="form-group">
+      <label>🖼️ Logó tallózása</label>
+      <div class="file-upload">
+        <label class="file-label" for="logoFile">📁 Fájl tallózása...</label>
+        <input type="file" id="logoFile" accept="image/*">
+        <span class="file-name" id="logoFileName">Nincs kiválasztva</span>
+      </div>
+    </div>
+
+    <!-- ---- HERO ---- -->
+    <h3>🦸 Hero szekció (főoldali banner)</h3>
+    <div class="checkbox-row">
+      <input type="checkbox" id="heroEnabled" checked>
+      <label for="heroEnabled">Legyen Hero szekció a főoldalon</label>
+    </div>
+    <div class="form-group" id="heroHeightGroup">
+      <label>Hero magasság: <span id="heroHeightValue">600</span>px</label>
+      <input type="range" id="heroHeight" min="300" max="1000" value="600" step="50">
+      <div class="range-value">300px (kicsi) – 1000px (teljes képernyős)</div>
+    </div>
+
+    <!-- ---- OLDALAK ---- -->
+    <h3>📑 Oldalak és aloldalak</h3>
+    <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;">
+      Adj meg tetszőleges oldalakat. Minden oldalhoz megadhatsz leírást (mi szerepeljen rajta), és hozzáadhatsz aloldalakat.
+    </p>
+
+    <div id="pagesContainer">
+      <!-- default pages -->
+    </div>
+
+    <button type="button" class="btn btn-add" id="addPageBtn">+ Új oldal hozzáadása</button>
+
+    <!-- ---- SUBMIT ---- -->
     <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
   </form>
 
@@ -246,73 +239,176 @@
 </div>
 
 <script>
-  const form = document.getElementById('generatorForm');
-  const submitBtn = document.getElementById('submitBtn');
-  const responseDiv = document.getElementById('response');
-  const responseContent = document.getElementById('responseContent');
-  const webhookUrlEl = document.getElementById('webhookUrl');
+const WEBHOOK_URL = 'http://192.168.4.148:5678/webhook/gravity-generate';
+document.getElementById('webhookUrl').textContent = WEBHOOK_URL;
 
-  const WEBHOOK_URL = 'http://192.168.4.148:5678/webhook/gravity-generate';
-  webhookUrlEl.textContent = WEBHOOK_URL;
+// ---- Hero slider ----
+const heroHeight = document.getElementById('heroHeight');
+const heroHeightValue = document.getElementById('heroHeightValue');
+heroHeight.addEventListener('input', () => { heroHeightValue.textContent = heroHeight.value; });
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+// ---- Logo file ----
+const logoFile = document.getElementById('logoFile');
+const logoFileName = document.getElementById('logoFileName');
+let logoBase64 = null;
+let logoFilename = null;
+logoFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) { logoFileName.textContent = 'Nincs kiválasztva'; logoBase64 = null; logoFilename = null; return; }
+  logoFileName.textContent = file.name;
+  logoFilename = file.name;
+  const reader = new FileReader();
+  reader.onload = () => { logoBase64 = reader.result; };
+  reader.readAsDataURL(file);
+});
 
-    // Összegyűjtjük a kiválasztott oldalakat
-    const selectedPages = [];
-    document.querySelectorAll('.page-checkbox:checked').forEach(cb => {
-      selectedPages.push(cb.value);
+// ---- Dynamic pages ----
+let pageCounter = 0;
+const pagesContainer = document.getElementById('pagesContainer');
+const defaultPages = [
+  { name: 'Kezdőlap', slug: 'home', description: 'Főoldal hero szekcióval, bemutatkozással, szolgáltatások áttekintésével', subpages: [] },
+  { name: 'Rólunk', slug: 'about', description: 'Cégtörténet, csapat bemutatása, értékek', subpages: [] },
+  { name: 'Kapcsolat', slug: 'contact', description: 'Kapcsolatfelvételi űrlap, elérhetőségek, térkép', subpages: [] }
+];
+
+function createPageEntry(pageData = null) {
+  const idx = pageCounter++;
+  const isDefault = !!pageData;
+  const name = pageData ? pageData.name : '';
+  const slug = pageData ? pageData.slug : '';
+  const desc = pageData ? pageData.description : '';
+  const subpages = pageData ? (pageData.subpages || []) : [];
+
+  const div = document.createElement('div');
+  div.className = 'page-entry';
+  div.dataset.pageIndex = idx;
+  div.innerHTML = `
+    <div class="page-header">
+      <input type="text" class="page-name" placeholder="Oldal neve (pl. Szolgáltatások)" value="${escapeHtml(name)}" style="flex:2;">
+      <input type="text" class="page-slug" placeholder="URL slug (pl. services)" value="${escapeHtml(slug)}" style="flex:1;">
+      ${isDefault ? '' : '<button type="button" class="btn btn-del remove-page">✕</button>'}
+    </div>
+    <div class="form-group" style="margin-bottom:4px;">
+      <label>Oldal tartalma / leírás</label>
+      <textarea class="page-description" rows="2" placeholder="Mi jelenjen meg ezen az oldalon? (pl. Szolgáltatások felsorolása, árak...)">${escapeHtml(desc)}</textarea>
+    </div>
+    <div class="subpages-container" data-subpages="${idx}"></div>
+    <button type="button" class="btn btn-sm add-subpage">+ Aloldal</button>
+  `;
+
+  // Aloldalak
+  const subContainer = div.querySelector('.subpages-container');
+  subpages.forEach(sp => addSubpageEntry(subContainer, sp.name, sp.slug, sp.description));
+
+  // Aloldal gomb
+  div.querySelector('.add-subpage').addEventListener('click', () => {
+    addSubpageEntry(subContainer, '', '', '');
+  });
+
+  // Törlés gomb
+  const removeBtn = div.querySelector('.remove-page');
+  if (removeBtn) {
+    removeBtn.addEventListener('click', () => div.remove());
+  }
+
+  return div;
+}
+
+function addSubpageEntry(container, name = '', slug = '', desc = '') {
+  const div = document.createElement('div');
+  div.className = 'subpage-entry';
+  div.innerHTML = `
+    <input type="text" class="subpage-name" placeholder="Aloldal neve" value="${escapeHtml(name)}" style="flex:2;">
+    <input type="text" class="subpage-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">
+    <input type="text" class="subpage-desc" placeholder="Tartalom leírás" value="${escapeHtml(desc)}" style="flex:2;">
+    <button type="button" class="btn btn-del remove-subpage" style="font-size:11px;padding:4px 8px;">✕</button>
+  `;
+  div.querySelector('.remove-subpage').addEventListener('click', () => div.remove());
+  container.appendChild(div);
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+}
+
+// Alap oldalak
+defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
+document.getElementById('addPageBtn').addEventListener('click', () => {
+  pagesContainer.appendChild(createPageEntry());
+});
+
+// ---- Submit ----
+const form = document.getElementById('generatorForm');
+const submitBtn = document.getElementById('submitBtn');
+const responseDiv = document.getElementById('response');
+const responseContent = document.getElementById('responseContent');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Oldalak összegyűjtése
+  const pages = [];
+  document.querySelectorAll('.page-entry').forEach(entry => {
+    const name = entry.querySelector('.page-name')?.value.trim() || '';
+    const slug = entry.querySelector('.page-slug')?.value.trim() || name.toLowerCase().replace(/\s+/g, '_');
+    const description = entry.querySelector('.page-description')?.value.trim() || '';
+    const subpages = [];
+    entry.querySelectorAll('.subpage-entry').forEach(sp => {
+      const spName = sp.querySelector('.subpage-name')?.value.trim() || '';
+      const spSlug = sp.querySelector('.subpage-slug')?.value.trim() || spName.toLowerCase().replace(/\s+/g, '_');
+      const spDesc = sp.querySelector('.subpage-desc')?.value.trim() || '';
+      if (spName) subpages.push({ name: spName, slug: spSlug, description: spDesc });
+    });
+    pages.push({ name, slug, description, subpages });
+  });
+
+  const payload = {
+    businessName: document.getElementById('businessName').value.trim(),
+    projectType: document.getElementById('projectType').value,
+    language: document.getElementById('language').value,
+    description: document.getElementById('description').value.trim(),
+    designStyle: document.getElementById('designStyle').value,
+    primaryColor: document.getElementById('primaryColor').value,
+    secondaryColor: document.getElementById('secondaryColor').value,
+    logo: logoBase64 ? { filename: logoFilename, data: logoBase64 } : null,
+    hero: {
+      enabled: document.getElementById('heroEnabled').checked,
+      height: parseInt(heroHeight.value)
+    },
+    pages: pages
+  };
+
+  // UI: töltés
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span>Generálás folyamatban...';
+  responseDiv.style.display = 'block';
+  responseContent.textContent = '⏳ Küldés a DeepSeek API felé...';
+  responseContent.className = '';
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
 
-    // Ha nincs kiválasztott oldal, alapértelmezett
-    if (selectedPages.length === 0) {
-      selectedPages.push('home', 'about', 'contact');
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      throw new Error(data.message || data.error || `HTTP ${res.status}`);
     }
 
-    const payload = {
-      businessName: document.getElementById('businessName').value.trim(),
-      projectType: document.getElementById('projectType').value,
-      language: document.getElementById('language').value,
-      description: document.getElementById('description').value.trim(),
-      pages: selectedPages,
-      designStyle: document.getElementById('designStyle').value
-    };
-
-    // UI: töltés
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span>Generálás folyamatban...';
-    responseDiv.style.display = 'block';
-    responseContent.textContent = '⏳ Küldés a DeepSeek API felé...';
-    responseContent.className = '';
-
-    try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error || (data.status && data.status !== 'success')) {
-        throw new Error(data.message || data.error || `HTTP ${res.status}`);
-      }
-
-      responseContent.className = 'status-ok';
-      responseContent.textContent = JSON.stringify(data, null, 2);
-    } catch (err) {
-      responseContent.className = 'status-error';
-      responseContent.textContent = '❌ HIBA: ' + err.message +
-        '\n\nEllenőrizd:\n' +
-        '1. A szerver elérhető? (http://192.168.4.148:5678)\n' +
-        '2. A workflow Active állapotban van? (n8n-ben a kapcsoló)\n' +
-        '3. A DeepSeek API kulcs helyes?\n' +
-        '4. A webhook URL: ' + WEBHOOK_URL;
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '⚡ Weboldal generálása AI-val';
-    }
-  });
+    responseContent.className = 'status-ok';
+    responseContent.textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    responseContent.className = 'status-error';
+    responseContent.textContent = '❌ HIBA: ' + err.message +
+      '\n\nEllenőrizd:\n1. Szerver: http://192.168.4.148:5678\n2. Workflow Active?\n3. API kulcs helyes?\n4. Webhook URL: ' + WEBHOOK_URL;
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '⚡ Weboldal generálása AI-val';
+  }
+});
 </script>
 </body>
 </html>

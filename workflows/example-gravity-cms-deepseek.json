@@ -15,7 +15,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Bemenő adatok feldolgozása a webhook-ból\n// Többféle hozzáférési mód (n8n verziófüggő)\nlet input = {};\ntry { input = $input.item.json; } catch(e) {}\ntry { if (!input || !input.businessName) input = $json; } catch(e) {}\n\nconst projectType = input.projectType || 'landing_page';\nconst businessName = input.businessName || 'My Business';\nconst language = input.language || 'hu';\nconst description = input.description || '';\nconst pages = input.pages || ['home', 'about', 'contact'];\nconst designStyle = input.designStyle || 'modern';\n\nreturn {\n  businessName,\n  projectType,\n  language,\n  description,\n  pages,\n  designStyle\n};"
+        "jsCode": "// Bemenő adatok feldolgozása a webhook-ból\n// Többféle hozzáférési mód (n8n verziófüggő)\nlet input = {};\ntry { input = $input.item.json; } catch(e) {}\ntry { if (!input || !input.businessName) input = $json; } catch(e) {}\n\nconst projectType = input.projectType || 'landing_page';\nconst businessName = input.businessName || 'My Business';\nconst language = input.language || 'hu';\nconst description = input.description || '';\nconst designStyle = input.designStyle || 'modern';\nconst primaryColor = input.primaryColor || '#6366f1';\nconst secondaryColor = input.secondaryColor || '#8b5cf6';\nconst hero = input.hero || { enabled: true, height: 600 };\nconst logo = input.logo || null;\n\n// Oldalak: lehet string tömb (régi formátum) vagy objektum tömb (új formátum)\nlet pages = input.pages || [];\nif (pages.length > 0 && typeof pages[0] === 'string') {\n  pages = pages.map(p => ({ name: p, slug: p.toLowerCase(), description: '', subpages: [] }));\n}\nif (pages.length === 0) {\n  pages = [\n    { name: 'Kezdőlap', slug: 'home', description: '', subpages: [] },\n    { name: 'Rólunk', slug: 'about', description: '', subpages: [] },\n    { name: 'Kapcsolat', slug: 'contact', description: '', subpages: [] }\n  ];\n}\n\nreturn {\n  businessName,\n  projectType,\n  language,\n  description,\n  designStyle,\n  primaryColor,\n  secondaryColor,\n  hero,\n  logo,\n  pages\n};"
       },
       "id": "prepare-input",
       "name": "Bemenet feldolgozása (Code)",
@@ -25,7 +25,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// DeepSeek API prompt összeállítása Gravity CMS fájlok generálásához\nconst data = $input.all()[0].json;\n\nconst prompt = `You are a Gravity CMS expert. Generate a complete Gravity CMS website structure for a ${data.projectType} project.\n\nBusiness/Project Name: ${data.businessName}\nDescription: ${data.description}\nLanguage: ${data.language}\nDesign Style: ${data.designStyle}\nRequired Pages: ${data.pages.join(', ')}\n\nPlease generate the following Gravity CMS files. Output MUST be valid JSON with this exact structure:\n\n{\n  \"pages\": {\n    \"home\": {\n      \"template\": \"default\",\n      \"route\": \"/\",\n      \"title\": \"page title in ${data.language}\",\n      \"content\": {\n        \"hero\": {\n          \"title\": \"compelling hero title in ${data.language}\",\n          \"subtitle\": \"subtitle in ${data.language}\",\n          \"cta_text\": \"call to action in ${data.language}\",\n          \"cta_link\": \"/contact\"\n        },\n        \"sections\": [\n          {\n            \"type\": \"features|testimonials|pricing|gallery|text\",\n            \"title\": \"section title in ${data.language}\",\n            \"content\": \"section content in ${data.language}\"\n          }\n        ]\n      },\n      \"meta\": {\n        \"title\": \"SEO title in ${data.language}\",\n        \"description\": \"SEO description in ${data.language}\"\n      }\n    }\n  },\n  \"config\": {\n    \"system\": {\n      \"site_name\": \"${data.businessName}\",\n      \"language\": \"${data.language}\",\n      \"timezone\": \"Europe/Budapest\"\n    },\n    \"theme\": {\n      \"name\": \"${data.designStyle}\",\n      \"primary_color\": \"#hexcolor\",\n      \"secondary_color\": \"#hexcolor\",\n      \"font_family\": \"suggested Google Font\"\n    },\n    \"plugins\": [\"suggested-gravity-plugins\"]\n  },\n  \"admin_structure\": {\n    \"blueprints\": {},\n    \"forms\": []\n  }\n}\n\nMake the content professional, SEO-optimized, and tailored for the ${data.language} language market. Use realistic, industry-appropriate content.`;\n\nreturn { prompt };"
+        "jsCode": "const data = $input.all()[0].json;\n\n// Oldalak szöveges felsorolása\nconst pageList = data.pages.map(p => {\n  let line = p.name + ' (' + p.slug + ')';\n  if (p.description) line += ': ' + p.description;\n  if (p.subpages && p.subpages.length > 0) {\n    line += ' [Aloldalak: ' + p.subpages.map(sp => sp.name + '(' + sp.slug + ')' + (sp.description ? ': ' + sp.description : '')).join(', ') + ']';\n  }\n  return line;\n}).join('\\n');\n\nconst heroInfo = data.hero && data.hero.enabled \n  ? `Hero section: YES, height: ${data.hero.height}px. Generate a compelling hero with title, subtitle, CTA button.`\n  : 'Hero section: NO. Do not include a hero section.';\n\nconst prompt = `You are a Gravity CMS expert. Generate a complete Gravity CMS website structure.\n\nProject: ${data.businessName}\nType: ${data.projectType}\nLanguage: ${data.language}\nDescription: ${data.description}\nDesign: ${data.designStyle}\nPrimary color: ${data.primaryColor}\nSecondary color: ${data.secondaryColor}\n${heroInfo}\n\nPages to generate with custom descriptions:\n${pageList}\n\nOutput MUST be valid JSON:\n{\n  \"pages\": {\n    \"[slug]\": {\n      \"template\": \"default\",\n      \"route\": \"/[slug]\",\n      \"title\": \"page title in ${data.language}\",\n      \"content\": {\n        \"hero\": { \"title\": \"...\", \"subtitle\": \"...\", \"cta_text\": \"...\", \"cta_link\": \"/contact\" },\n        \"sections\": [{ \"type\": \"features|testimonials|pricing|gallery|text|custom\", \"title\": \"...\", \"content\": \"...\" }]\n      },\n      \"meta\": { \"title\": \"SEO title\", \"description\": \"SEO description\" },\n      \"subpages\": { \"[subslug]\": { ... } }\n    }\n  },\n  \"config\": {\n    \"system\": { \"site_name\": \"${data.businessName}\", \"language\": \"${data.language}\" },\n    \"theme\": { \"name\": \"${data.designStyle}\", \"primary_color\": \"${data.primaryColor}\", \"secondary_color\": \"${data.secondaryColor}\" },\n    \"plugins\": [\"recommended-gravity-plugins\"]\n  },\n  \"admin_structure\": { \"blueprints\": {}, \"forms\": [] }\n}\n\nUse the provided page descriptions to generate relevant content. Make content professional, SEO-optimized.`;\n\nreturn { prompt };"
       },
       "id": "build-prompt",
       "name": "DeepSeek Prompt összeállítás",
@@ -40,30 +40,15 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $env.DEEPSEEK_API_KEY }}"
-            }
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.DEEPSEEK_API_KEY }}" }
           ]
         },
         "sendBody": true,
-        "bodyParameters": {
-          "parameters": []
-        },
+        "bodyParameters": { "parameters": [] },
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"deepseek-chat\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert Gravity CMS developer. You always respond with valid JSON only, no markdown formatting, no explanations.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"={{ $json.prompt }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 4096,\n  \"response_format\": {\n    \"type\": \"json_object\"\n  }\n}",
-        "options": {
-          "timeout": 60000,
-          "response": {
-            "response": {
-              "responseFormat": "json"
-            }
-          }
-        }
+        "jsonBody": "{\"model\":\"deepseek-chat\",\"messages\":[{\"role\":\"system\",\"content\":\"You are an expert Gravity CMS developer. Respond with valid JSON only, no markdown.\"},{\"role\":\"user\",\"content\":\"={{ $json.prompt }}\"}],\"temperature\":0.7,\"max_tokens\":4096,\"response_format\":{\"type\":\"json_object\"}}",
+        "options": { "timeout": 60000 }
       },
       "id": "deepseek-api",
       "name": "DeepSeek API hívás",
@@ -74,7 +59,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// DeepSeek válasz feldolgozása és Gravity CMS struktúra kinyerése\nconst fs = require('fs');\nconst path = require('path');\n\nconst response = $input.all()[0].json;\n\nlet content;\ntry {\n  // A DeepSeek válasz a choices[0].message.content mezőben van\n  const aiResponse = response.choices[0].message.content;\n  \n  // Parse-oljuk a JSON-t (a model lehet, hogy markdown code block-ként adja vissza)\n  let jsonStr = aiResponse;\n  if (jsonStr.includes('```json')) {\n    jsonStr = jsonStr.split('```json')[1].split('```')[0].trim();\n  } else if (jsonStr.includes('```')) {\n    jsonStr = jsonStr.split('```')[1].split('```')[0].trim();\n  }\n  \n  content = JSON.parse(jsonStr);\n} catch (e) {\n  // Ha nem sikerül parse-olni, használjuk a nyers választ\n  content = { error: \"Failed to parse AI response\", raw: response.choices[0].message.content };\n}\n\n// ----- Fájlba mentés -----\nconst outputDir = '/home/node/output';\nconst businessName = $items('Bemenet feldolgozása (Code)').$node['Bemenet feldolgozása (Code)'].json.businessName || 'unknown';\nconst safeName = businessName.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 30);\nconst timestamp = new Date().toISOString().replace(/[:.]/g, '-');\nconst filename = path.join(outputDir, `${safeName}_${timestamp}.json`);\n\ntry {\n  if (!fs.existsSync(outputDir)) {\n    fs.mkdirSync(outputDir, { recursive: true });\n  }\n  fs.writeFileSync(filename, JSON.stringify(content, null, 2), 'utf8');\n  console.log('Fájl mentve: ' + filename);\n} catch (err) {\n  console.error('Fájl mentési hiba: ' + err.message);\n}\n\nreturn {\n  generated: content,\n  saved_to: filename,\n  timestamp: new Date().toISOString(),\n  model: response.model || 'deepseek-chat',\n  usage: response.usage || {}\n};"
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst response = $input.all()[0].json;\n\nlet content;\ntry {\n  const aiResponse = response.choices[0].message.content;\n  let jsonStr = aiResponse;\n  if (jsonStr.includes('```json')) jsonStr = jsonStr.split('```json')[1].split('```')[0].trim();\n  else if (jsonStr.includes('```')) jsonStr = jsonStr.split('```')[1].split('```')[0].trim();\n  content = JSON.parse(jsonStr);\n} catch (e) {\n  content = { error: \"Failed to parse AI response\", raw: response.choices[0].message.content };\n}\n\n// Fájlba mentés\nconst outputDir = '/home/node/output';\nconst bizName = ($items('Bemenet feldolgozása (Code)').$node['Bemenet feldolgozása (Code)'].json || {}).businessName || 'unknown';\nconst safeName = bizName.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 30);\nconst ts = new Date().toISOString().replace(/[:.]/g, '-');\nconst filename = path.join(outputDir, safeName + '_' + ts + '.json');\n\ntry {\n  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });\n  fs.writeFileSync(filename, JSON.stringify(content, null, 2), 'utf8');\n} catch (err) {}\n\nreturn { generated: content, saved_to: filename, timestamp: new Date().toISOString(), model: response.model || 'deepseek-chat', usage: response.usage || {} };"
       },
       "id": "process-response",
       "name": "Válasz feldolgozás",
@@ -85,73 +70,24 @@
   ],
   "connections": {
     "Webhook (Indító)": {
-      "main": [
-        [
-          {
-            "node": "Bemenet feldolgozása (Code)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[ { "node": "Bemenet feldolgozása (Code)", "type": "main", "index": 0 } ]]
     },
     "Bemenet feldolgozása (Code)": {
-      "main": [
-        [
-          {
-            "node": "DeepSeek Prompt összeállítás",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[ { "node": "DeepSeek Prompt összeállítás", "type": "main", "index": 0 } ]]
     },
     "DeepSeek Prompt összeállítás": {
-      "main": [
-        [
-          {
-            "node": "DeepSeek API hívás",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[ { "node": "DeepSeek API hívás", "type": "main", "index": 0 } ]]
     },
     "DeepSeek API hívás": {
-      "main": [
-        [
-          {
-            "node": "Válasz feldolgozás",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[ { "node": "Válasz feldolgozás", "type": "main", "index": 0 } ]]
     },
-    "Válasz feldolgozás": {
-      "main": []
-    }
+    "Válasz feldolgozás": { "main": [] }
   },
-  "settings": {
-    "executionOrder": "v1",
-    "callerPolicy": "workflowsFromSameOwner",
-    "saveManualExecutions": true
-  },
-  "versionId": "1.0.0",
+  "settings": { "executionOrder": "v1", "callerPolicy": "workflowsFromSameOwner", "saveManualExecutions": true },
+  "versionId": "1.1.0",
   "active": false,
-  "description": "AI-vezérelt Gravity CMS weboldal generátor, DeepSeek API használatával. Webhook-on keresztül fogad kéréseket és JSON formátumban adja vissza a komplett oldalstruktúrát.",
+  "description": "AI-vezérelt Gravity CMS weboldal generátor, DeepSeek API-val. Támogatja: hero, színek, logó, dinamikus oldalak aloldalakkal, egyedi tartalomleírások.",
   "tags": [
-    {
-      "name": "gravity-cms",
-      "id": "1"
-    },
-    {
-      "name": "ai",
-      "id": "2"
-    },
-    {
-      "name": "deepseek",
-      "id": "3"
-    }
+    { "name": "gravity-cms" }, { "name": "ai" }, { "name": "deepseek" }
   ]
 }
