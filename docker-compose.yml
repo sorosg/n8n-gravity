@@ -1,5 +1,3 @@
-version: "3.9"
-
 # ============================================================
 # n8n + Gravity CMS Automatizáció Docker Stack
 # AI-vezérelt weboldal generálás DeepSeek API-val
