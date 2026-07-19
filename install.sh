@@ -282,19 +282,22 @@ setup_env() {
     log_info "Ha most üresen hagyod, később a nano .env paranccsal megadhatod."
     echo ""
 
-    read -rp "DeepSeek API kulcs: " deepseek_key
+    read -rp "DeepSeek API kulcs (teljes, pl. sk-...): " deepseek_key
 
     if [[ -n "${deepseek_key}" ]]; then
-        # Ellenőrizzük, hogy sk- kezdetű-e
-        if [[ "${deepseek_key}" == sk-* ]]; then
+        # Ellenőrizzük, hogy érvényesnek tűnik-e (legalább 20 karakter)
+        if [[ ${#deepseek_key} -ge 20 ]]; then
             # Escape-éljük a speciális karaktereket, hogy a sed ne törjön el
             local escaped_key
             escaped_key=$(printf '%s\n' "${deepseek_key}" | sed -e 's/[\/&]/\\&/g')
             sed -i "s|DEEPSEEK_API_KEY=.*|DEEPSEEK_API_KEY=${escaped_key}|g" "${env_file}"
             log_success "DeepSeek API kulcs elmentve!"
+            log_info "A kulcs hossza: ${#deepseek_key} karakter"
         else
-            log_warn "A megadott kulcs nem 'sk-' kezdetű. Lehet, hogy hibás."
-            log_warn "A kulcs NEM lett elmentve. Ellenőrizd és használd a nano-t:"
+            log_warn "A megadott kulcs túl rövid (${#deepseek_key} karakter, minimum 20 szükséges)."
+            log_warn "Győződj meg róla, hogy a TELJES kulcsot másoltad ki a DeepSeek oldaláról."
+            log_warn "A kulcs általában 'sk-' kezdetű és 35-55 karakter hosszú."
+            log_warn "A kulcs NEM lett elmentve. Próbáld újra:"
             log_warn "  nano ${env_file}"
         fi
     else
