@@ -15,7 +15,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Bemenő adatok feldolgozása a webhook-ból\n// A webhook JSON body-jából kiolvassuk a kérés paramétereit\n\nconst input = $input.all()[0].json;\n\n// Alapértelmezett értékek beállítása\nconst projectType = input.projectType || 'landing_page';\nconst businessName = input.businessName || 'My Business';\nconst language = input.language || $env.GRAVITY_DEFAULT_LANGUAGE || 'hu';\nconst description = input.description || '';\nconst pages = input.pages || ['home', 'about', 'contact'];\nconst designStyle = input.designStyle || 'modern';\n\nreturn {\n  businessName,\n  projectType,\n  language,\n  description,\n  pages,\n  designStyle\n};"
+        "jsCode": "// Bemenő adatok feldolgozása a webhook-ból\n// Többféle hozzáférési mód (n8n verziófüggő)\nlet input = {};\ntry { input = $input.item.json; } catch(e) {}\ntry { if (!input || !input.businessName) input = $json; } catch(e) {}\n\nconst projectType = input.projectType || 'landing_page';\nconst businessName = input.businessName || 'My Business';\nconst language = input.language || 'hu';\nconst description = input.description || '';\nconst pages = input.pages || ['home', 'about', 'contact'];\nconst designStyle = input.designStyle || 'modern';\n\nreturn {\n  businessName,\n  projectType,\n  language,\n  description,\n  pages,\n  designStyle\n};"
       },
       "id": "prepare-input",
       "name": "Bemenet feldolgozása (Code)",
