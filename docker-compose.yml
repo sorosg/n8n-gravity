@@ -51,6 +51,7 @@ services:
       - n8n_data:/home/node/.n8n
       - ./workflows:/home/node/.n8n/workflows
       - ./scripts:/home/node/scripts
+      - ./output:/home/node/output
       # Ha egyedi n8n node-okat szeretnél használni:
       # - ./custom-nodes:/home/node/.n8n/custom
     networks:
