@@ -293,13 +293,36 @@ DB_PASSWORD=egy_masik_eros_jelszo
 N8N_PORT=5678
 ```
 
+#### Nano szerkesztő gyors útmutató (a .env fájl szerkesztéséhez)
+
+A `nano` egy egyszerű, parancssoros szövegszerkesztő. Így használd:
+
+| Művelet | Windows (Tabby) | Mac |
+|---------|-----------------|-----|
+| **Beillesztés** | `Ctrl + Shift + V` vagy Jobb klikk → Paste | `Cmd + V` |
+| **Mentés** | `Ctrl + O` (majd Enter a megerősítéshez) | `Ctrl + O` |
+| **Kilépés** | `Ctrl + X` | `Ctrl + X` |
+| **Keresés** | `Ctrl + W` | `Ctrl + W` |
+| **Sor eleje/ vége** | `Ctrl + A` / `Ctrl + E` | `Ctrl + A` / `Ctrl + E` |
+
+> **Tipp:** A DeepSeek API kulcsodat (`sk-...`) a Windows vágólapról a `Ctrl + Shift + V` billentyűkombinációval tudod beilleszteni a nano-ba. A sima `Ctrl + V` nem működik terminálban! Ha ez sem működne, használd a **Jobb egérgomb → Paste** lehetőséget.
+
+**A szerkesztés lépései:**
+
+1. `nano .env` – megnyitja a fájlt
+2. Nyilakkal navigálj a `DEEPSEEK_API_KEY=sk-your-deepseek-api-key-here` sorhoz
+3. Töröld a helyőrző szöveget (Backspace / Delete)
+4. Illeszd be az API kulcsodat: **`Ctrl + Shift + V`** (Windows/Tabby) vagy **Jobb klikk → Paste**
+5. `Ctrl + O` → **Enter** – mentés
+6. `Ctrl + X` – kilépés
+
 **API kulcs beszerzése:**
 
 1. Regisztrálj itt: https://platform.deepseek.com
 2. Menj az API Keys menübe
 3. Kattints a **Create API Key** gombra
 4. Másold ki a kulcsot (csak egyszer látható!)
-5. Illeszd be a `.env` fájlba: `DEEPSEEK_API_KEY=sk-...`
+5. Illeszd be a `.env` fájlba a fenti módszerrel: `DEEPSEEK_API_KEY=sk-...`
 
 ### 4.3 Telepítő futtatása
 
