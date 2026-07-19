@@ -1,5 +1,5 @@
 {
-  "name": "Gravity CMS Weboldal Generátor - v0.9.3",
+  "name": "Gravity CMS Weboldal Generátor - v0.9.4",
   "nodes": [
     {
       "parameters": { "httpMethod": "POST", "options": {} },
@@ -22,35 +22,23 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $input.all()[0].json;\nconst lang = data.languages[0] || 'hu';\n\nconst pageList = data.pages.map(p => {\n  let line = p.name + ' (' + p.slug + ')';\n  if (p.description) line += ': ' + p.description;\n  if (p.subpages && p.subpages.length > 0) line += ' [Aloldalak: ' + p.subpages.map(sp => sp.name + '(' + sp.slug + ')' + (sp.description ? ': ' + sp.description : '')).join(', ') + ']';\n  return line;\n}).join('\\n');\n\nconst heroInfo = data.hero && data.hero.enabled ? `Hero: YES, height: ${data.hero.height}px.` : 'Hero: NO.';\nconst headerInfo = data.header && data.header.length > 0 ? 'Header: ' + data.header.join(', ') : 'Header: standard';\nconst footerInfo = data.footer && data.footer.length > 0 ? 'Footer: ' + data.footer.join(', ') : 'Footer: standard';\nconst anyAi = [data.colors.primary,data.colors.secondary,data.colors.accent,data.colors.headerBg].filter(c => c === 'ai').length > 0;\n\nconst logoInstruction = data.logoMode === 'ai' && data.logoPrompt\n  ? `\\n\\nALSO GENERATE an SVG logo: ${data.logoPrompt}. Include the SVG code in the response under a \"logo\" key with a \"svg\" field containing the raw SVG markup.`\n  : '';\n\nconst base = `Project: ${data.businessName}\\nType: ${data.projectType}\\nLanguage: ${lang}\\nDescription: ${data.description}\\nDesign: ${data.designStyle}\\nColors - Primary: ${data.colors.primary}, Secondary: ${data.colors.secondary}, Accent: ${data.colors.accent}, Header BG: ${data.colors.headerBg}\\n${anyAi ? 'Colors marked \"ai\": choose matching hex colors.\\n' : ''}${headerInfo}\\n${footerInfo}\\n${heroInfo}\\n\\nPages:\\n${pageList}\\n\\nOutput JSON with pages, config (system, theme, colors, header, footer, plugins, logo.svg), admin_structure. Professional, SEO-optimized content.${logoInstruction}`;\n\nconst prompt = data.customPrompt ? base + '\\n\\nADDITIONAL INSTRUCTIONS: ' + data.customPrompt : base;\n\n// A teljes API request body JSON-ként, a prompt beágyazva\nconst body = JSON.stringify({\n  model: data.aiModel,\n  messages: [\n    { role: 'system', content: 'You are an expert Gravity CMS developer. Respond with valid JSON only, no markdown.' },\n    { role: 'user', content: prompt }\n  ],\n  temperature: 0.7,\n  max_tokens: 4096,\n  response_format: { type: 'json_object' }\n});\n\nreturn { body, aiModel: data.aiModel, languages: data.languages, businessName: data.businessName, notifyEmail: data.notifyEmail, logoMode: data.logoMode };"
+        "jsCode": "const data = $input.all()[0].json;\nconst lang = data.languages[0] || 'hu';\n\nconst pageList = data.pages.map(p => {\n  let line = p.name + ' (' + p.slug + ')';\n  if (p.description) line += ': ' + p.description;\n  if (p.subpages && p.subpages.length > 0) line += ' [Aloldalak: ' + p.subpages.map(sp => sp.name + '(' + sp.slug + ')' + (sp.description ? ': ' + sp.description : '')).join(', ') + ']';\n  return line;\n}).join('\\n');\n\nconst heroInfo = data.hero && data.hero.enabled ? `Hero: YES, height: ${data.hero.height}px.` : 'Hero: NO.';\nconst headerInfo = data.header && data.header.length > 0 ? 'Header: ' + data.header.join(', ') : 'Header: standard';\nconst footerInfo = data.footer && data.footer.length > 0 ? 'Footer: ' + data.footer.join(', ') : 'Footer: standard';\nconst anyAi = [data.colors.primary,data.colors.secondary,data.colors.accent,data.colors.headerBg].filter(c => c === 'ai').length > 0;\n\nconst logoInstruction = data.logoMode === 'ai' && data.logoPrompt\n  ? `\\n\\nALSO GENERATE an SVG logo: ${data.logoPrompt}. Include the SVG code in the response under a \"logo\" key with a \"svg\" field containing the raw SVG markup.`\n  : '';\n\nconst base = `Project: ${data.businessName}\\nType: ${data.projectType}\\nLanguage: ${lang}\\nDescription: ${data.description}\\nDesign: ${data.designStyle}\\nColors - Primary: ${data.colors.primary}, Secondary: ${data.colors.secondary}, Accent: ${data.colors.accent}, Header BG: ${data.colors.headerBg}\\n${anyAi ? 'Colors marked \"ai\": choose matching hex colors.\\n' : ''}${headerInfo}\\n${footerInfo}\\n${heroInfo}\\n\\nPages:\\n${pageList}\\n\\nOutput JSON with pages, config (system, theme, colors, header, footer, plugins, logo.svg), admin_structure. Professional, SEO-optimized content.${logoInstruction}`;\n\nconst prompt = data.customPrompt ? base + '\\n\\nADDITIONAL INSTRUCTIONS: ' + data.customPrompt : base;\n\nreturn { prompt, aiModel: data.aiModel, languages: data.languages, businessName: data.businessName, notifyEmail: data.notifyEmail };"
       },
       "id": "build-prompt",
-      "name": "Prompt + API body összeállítás",
+      "name": "Prompt összeállítás",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [670, 300]
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://api.deepseek.com/v1/chat/completions",
-        "sendHeaders": true,
-        "headerParameters": { "parameters": [
-          { "name": "Content-Type", "value": "application/json" },
-          { "name": "Authorization", "value": "=Bearer {{ $env.DEEPSEEK_API_KEY }}" }
-        ]},
-        "sendBody": true,
-        "bodyParameters": { "parameters": [] },
-        "specifyBody": "string",
-        "body": "={{ $json.body }}",
-        "options": { "timeout": 120000 }
+        "jsCode": "// Közvetlen API hívás a Code node-ból (megbízhatóbb)\nconst https = require('https');\n\nconst prompt = $input.all()[0].json.prompt;\nconst aiModel = $input.all()[0].json.aiModel || 'deepseek-v4-flash';\nconst apiKey = $env.DEEPSEEK_API_KEY;\n\nconst requestBody = JSON.stringify({\n  model: aiModel,\n  messages: [\n    { role: 'system', content: 'You are an expert Gravity CMS developer. Respond with valid JSON only, no markdown.' },\n    { role: 'user', content: prompt }\n  ],\n  temperature: 0.7,\n  max_tokens: 4096,\n  response_format: { type: 'json_object' }\n});\n\nconst options = {\n  hostname: 'api.deepseek.com',\n  port: 443,\n  path: '/v1/chat/completions',\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'Authorization': 'Bearer ' + apiKey,\n    'Content-Length': Buffer.byteLength(requestBody)\n  },\n  timeout: 120000\n};\n\nconst result = await new Promise((resolve, reject) => {\n  const req = https.request(options, (res) => {\n    let data = '';\n    res.on('data', chunk => data += chunk);\n    res.on('end', () => {\n      try {\n        const json = JSON.parse(data);\n        resolve(json);\n      } catch (e) {\n        reject(new Error('JSON parse error: ' + data.substring(0, 200)));\n      }\n    });\n  });\n  req.on('error', reject);\n  req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });\n  req.write(requestBody);\n  req.end();\n});\n\nreturn result;"
       },
-      "id": "ai-call",
-      "name": "AI API hívás",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [880, 300],
-      "credentials": {}
+      "id": "direct-api-call",
+      "name": "DeepSeek API hívás (Code node)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 300]
     },
     {
       "parameters": {
@@ -65,14 +53,14 @@
   ],
   "connections": {
     "Webhook (Indító)": { "main": [[ { "node": "Bemenet feldolgozása (Code)", "type": "main", "index": 0 } ]] },
-    "Bemenet feldolgozása (Code)": { "main": [[ { "node": "Prompt + API body összeállítás", "type": "main", "index": 0 } ]] },
-    "Prompt + API body összeállítás": { "main": [[ { "node": "AI API hívás", "type": "main", "index": 0 } ]] },
-    "AI API hívás": { "main": [[ { "node": "Válasz feldolgozás + CMS + SVG", "type": "main", "index": 0 } ]] },
+    "Bemenet feldolgozása (Code)": { "main": [[ { "node": "Prompt összeállítás", "type": "main", "index": 0 } ]] },
+    "Prompt összeállítás": { "main": [[ { "node": "DeepSeek API hívás (Code node)", "type": "main", "index": 0 } ]] },
+    "DeepSeek API hívás (Code node)": { "main": [[ { "node": "Válasz feldolgozás + CMS + SVG", "type": "main", "index": 0 } ]] },
     "Válasz feldolgozás + CMS + SVG": { "main": [] }
   },
   "settings": { "executionOrder": "v1", "callerPolicy": "workflowsFromSameOwner", "saveManualExecutions": true },
-  "versionId": "2.2.3",
+  "versionId": "2.2.4",
   "active": false,
-  "description": "v0.9.3: JSON BODY FIX - a prompt a Code node-ban van beágyazva a request body-ba.",
+  "description": "v0.9.4: DIRECT HTTPS - API hívás a Code node-ból, n8n HTTP Request node template bug kikerülése.",
   "tags": [{ "name": "gravity-cms" }, { "name": "ai" }, { "name": "svg" }]
 }
