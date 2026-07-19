@@ -237,38 +237,46 @@ setup_env() {
 
     local env_file="${ENV_FILE}"
     local env_example="${ENV_EXAMPLE}"
+    local is_new_env=false
 
     if [[ -f "${env_file}" ]]; then
-        log_warn "A .env fájl már létezik: ${env_file}"
-        read -rp "Felülírod egy alapértelmezett konfigurációval? [i/N] " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Ii]$ ]]; then
-            cp "${env_file}" "${env_file}.backup.$(date +%s)"
-            log_info "Biztonsági mentés: ${env_file}.backup.*"
-        else
-            log_info "Meglévő .env fájl megtartva."
-            return
+        log_info "A .env fájl már létezik: ${env_file}"
+        log_info "Csak az API kulcsot frissítem benne (a jelszavak és kulcsok változatlanok maradnak)."
+        echo ""
+    else
+        if [[ ! -f "${env_example}" ]]; then
+            log_error "Hiányzó fájl: ${env_example}"
+            exit 1
         fi
+        cp "${env_example}" "${env_file}"
+        is_new_env=true
+
+        # Véletlen jelszó és titkosítási kulcs generálása (CSAK új .env esetén!)
+        local random_password
+        random_password=$(openssl rand -base64 24 | tr -d '+/=' | head -c 20)
+
+        local encryption_key
+        encryption_key=$(openssl rand -hex 32)
+
+        # Beállítások frissítése
+        sed -i "s/CHANGE_THIS_PASSWORD/${random_password}/g" "${env_file}"
+        sed -i "s/CHANGE_DB_PASSWORD/${random_password}/g" "${env_file}"
+        sed -i "s|N8N_ENCRYPTION_KEY=.*|N8N_ENCRYPTION_KEY=${encryption_key}|g" "${env_file}"
+
+        # Ha a régi volume-ok léteznek és új .env készül, töröljük őket,
+        # mert a régi encryption key-jel titkosított adatok inkompatibilisek
+        if docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q "n8n_gravity_data"; then
+            log_warn "Régi Docker volume-ok észlelve. Az új encryption key miatt törlöm őket..."
+            docker compose -f "${COMPOSE_FILE}" down -v --remove-orphans 2>/dev/null || true
+            log_info "Régi volume-ok törölve."
+        fi
+
+        echo ""
+        echo -e "  ${GREEN}Generált admin jelszó:${NC} ${random_password}"
+        echo -e "  ${GREEN}Felhasználónév:${NC}       admin"
+        echo ""
+        log_warn "Jegyezd fel a fenti jelszót, mert az n8n bejelentkezéshez kell!"
     fi
-
-    if [[ ! -f "${env_example}" ]]; then
-        log_error "Hiányzó fájl: ${env_example}"
-        exit 1
-    fi
-
-    cp "${env_example}" "${env_file}"
-
-    # Véletlen jelszó és titkosítási kulcs generálása
-    local random_password
-    random_password=$(openssl rand -base64 24 | tr -d '+/=' | head -c 20)
-
-    local encryption_key
-    encryption_key=$(openssl rand -hex 32)
-
-    # Beállítások frissítése
-    sed -i "s/CHANGE_THIS_PASSWORD/${random_password}/g" "${env_file}"
-    sed -i "s/CHANGE_DB_PASSWORD/${random_password}/g" "${env_file}"
-    sed -i "s|N8N_ENCRYPTION_KEY=.*|N8N_ENCRYPTION_KEY=${encryption_key}|g" "${env_file}"
 
     # ===== DeepSeek API kulcs interaktív bekérése =====
     echo ""
