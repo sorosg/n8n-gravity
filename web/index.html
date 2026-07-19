@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n-gravity – Gravity CMS Weboldal Generátor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>🚀 Gravity CMS Generátor</h1>
+  <p class="subtitle">AI-vezérelt weboldal tervezés • DeepSeek API</p>
+
+  <div class="info-box">
+    🔗 Webhook: <strong id="webhookUrl">/webhook/gravity-generate</strong>
+    <br>🖥️ Szerver: <span id="serverStatus">Ellenőrzés...</span>
+    <span id="statusDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-left:6px;"></span>
+    <br>🔗 <a href="http://192.168.4.148:5678" target="_blank" style="color:#a5b4fc;">n8n →</a> | <a href="/output/" target="_blank" style="color:#a5b4fc;">📁 Fájlok →</a>
+  </div>
+
+  <form id="generatorForm">
+
+    <h3>🏢 Alapadatok</h3>
+    <div class="form-group"><label>Cégnév *</label><input type="text" id="businessName" placeholder="pl. Digitális Megoldások Kft." required></div>
+    <div class="row">
+      <div class="form-group"><label>Weboldal típusa</label><select id="projectType"><option value="landing_page">Landing Page</option><option value="blog">Blog</option><option value="portfolio">Portfólió</option><option value="shop">Webshop</option><option value="admin">Admin felület</option></select></div>
+      <div class="form-group"><label>Nyelv</label><select id="language"><option value="hu" selected>Magyar</option><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option></select></div>
+    </div>
+    <div class="form-group"><label>Projekt leírása</label><textarea id="description" placeholder="Részletes leírás..."></textarea></div>
+
+    <h3>🎨 Színek <a href="https://coolors.co" target="_blank" class="inspiration-link">(inspiráció: coolors.co →)</a></h3>
+    <div class="row">
+      <div class="form-group">
+        <label>Elsődleges (Primary) <span class="label-desc">– főcímsorok, hangsúlyos elemek</span></label>
+        <input type="color" id="primaryColor" value="#6366f1">
+        <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="primaryColor" id="ai_primary"><label for="ai_primary">🤖 AI-ra bízom</label></div>
+      </div>
+      <div class="form-group">
+        <label>Másodlagos (Secondary) <span class="label-desc">– alcímek, kiemelt részek</span></label>
+        <input type="color" id="secondaryColor" value="#8b5cf6">
+        <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="secondaryColor" id="ai_secondary"><label for="ai_secondary">🤖 AI-ra bízom</label></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Szöveg (Text) <span class="label-desc">– bekezdések, leírások</span></label>
+        <input type="color" id="textColor" value="#1f2937">
+        <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="textColor" id="ai_text"><label for="ai_text">🤖 AI-ra bízom</label></div>
+      </div>
+      <div class="form-group">
+        <label>Kiemelés (Accent) <span class="label-desc">– gombok, linkek, hover</span></label>
+        <input type="color" id="accentColor" value="#f59e0b">
+        <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="accentColor" id="ai_accent"><label for="ai_accent">🤖 AI-ra bízom</label></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Fejléc háttérszín (Header BG)</label>
+        <input type="color" id="headerBg" value="#ffffff">
+        <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="headerBg" id="ai_headerBg"><label for="ai_headerBg">🤖 AI-ra bízom</label></div>
+      </div>
+      <div class="form-group">
+        <label>Lábléc háttérszín (Footer BG)</label>
+        <input type="color" id="footerBg" value="#1f2937">
+        <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="footerBg" id="ai_footerBg"><label for="ai_footerBg">🤖 AI-ra bízom</label></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>🖼️ Fő logó</label>
+      <div class="file-upload"><label class="file-label" for="logoFile">📁 Fájl tallózása...</label><input type="file" id="logoFile" accept="image/*"><span class="file-name" id="logoFileName">Nincs kiválasztva</span></div>
+    </div>
+
+    <h3>📋 Fejléc (Header)</h3>
+    <div class="checkbox-grid">
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_logo" value="logo" checked><label for="hdr_logo">Logó</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_nav" value="navigation" checked><label for="hdr_nav">Navigációs menü</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_cta" value="cta_button"><label for="hdr_cta">CTA gomb</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_search" value="search"><label for="hdr_search">Keresőmező</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_social" value="social_icons"><label for="hdr_social">Közösségi média ikonok</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_phone" value="phone"><label for="hdr_phone">Telefonszám</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_lang" value="language_switcher"><label for="hdr_lang">Nyelvválasztó</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_sticky" value="sticky"><label for="hdr_sticky">Tapadós (sticky) fejléc</label></div>
+    </div>
+
+    <h3>🦸 Hero szekció</h3>
+    <div class="checkbox-row"><input type="checkbox" id="heroEnabled" checked><label for="heroEnabled">Legyen Hero szekció</label></div>
+    <div class="form-group"><label>Hero magasság: <span id="heroHeightValue">600</span>px</label><input type="range" id="heroHeight" min="300" max="1000" value="600" step="50"><div class="range-value">300px – 1000px</div></div>
+    <div class="checkbox-row"><input type="checkbox" id="heroImageEnabled"><label for="heroImageEnabled">Tartalmazzon képet</label></div>
+    <div class="form-group" id="heroImageGroup" style="display:none;">
+      <label>Kép forrása</label><select id="heroImageSource"><option value="ai">AI generáljon</option><option value="upload">Saját kép tallózása</option></select>
+      <div class="file-upload" id="heroImageUpload" style="display:none;margin-top:8px;"><label class="file-label" for="heroImageFile">📁 Kép tallózása...</label><input type="file" id="heroImageFile" accept="image/*"><span class="file-name" id="heroImageFileName">Nincs kiválasztva</span></div>
+    </div>
+    <div class="checkbox-row"><input type="checkbox" id="heroAnimationEnabled"><label for="heroAnimationEnabled">Tartalmazzon animációt</label></div>
+    <div class="form-group" id="heroAnimationGroup" style="display:none;">
+      <label>Animáció típusa</label><select id="heroAnimationType"><option value="fade_in">Fade-in</option><option value="parallax">Parallax</option><option value="particles">Részecske</option><option value="typing">Gépelés</option><option value="slide_up">Felcsúszás</option></select>
+    </div>
+
+    <h3>📄 Lábléc (Footer)</h3>
+    <div class="checkbox-grid">
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_logo" value="logo" checked><label for="ftr_logo">Logó</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_links" value="quick_links" checked><label for="ftr_links">Gyors linkek</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_contact" value="contact_info" checked><label for="ftr_contact">Elérhetőségek</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_social" value="social_icons" checked><label for="ftr_social">Közösségi média</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_newsletter" value="newsletter"><label for="ftr_newsletter">Hírlevél</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_copyright" value="copyright" checked><label for="ftr_copyright">Copyright</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_sitemap" value="sitemap"><label for="ftr_sitemap">Oldaltérkép</label></div>
+      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_privacy" value="privacy_links"><label for="ftr_privacy">Adatvédelmi / ÁSZF</label></div>
+    </div>
+
+    <h3>📑 Oldalak és aloldalak</h3>
+    <div id="pagesContainer"></div>
+    <button type="button" class="btn btn-add" id="addPageBtn">+ Új oldal hozzáadása</button>
+
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="step-list">
+        <div class="step" data-step="0"><span class="step-icon">⏳</span> Bemenet feldolgozása</div>
+        <div class="step" data-step="1"><span class="step-icon">⏳</span> Prompt összeállítása</div>
+        <div class="step" data-step="2"><span class="step-icon">⏳</span> DeepSeek API hívás</div>
+        <div class="step" data-step="3"><span class="step-icon">⏳</span> Válasz feldolgozása</div>
+      </div>
+    </div>
+    <a class="download-btn" id="downloadBtn" href="#" target="_blank">⬇️ Fájl letöltése</a>
+    <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
+  </form>
+
+  <div id="response"><pre id="responseContent"></pre></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
