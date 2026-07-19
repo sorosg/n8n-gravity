@@ -3,23 +3,28 @@
 **AI-vezérelt weboldal generálás Gravity CMS-hez DeepSeek API-val, n8n workflow automatizációval.**
 
 > Egy komplett, Docker-alapú megoldás, ami lehetővé teszi Gravity CMS weboldalak teljesen automatizált tervezését és generálását mesterséges intelligencia segítségével.
+>
+> **Jelenlegi verzió: v0.3.2** | [Architektúra dokumentáció](./ARCHITECTURE.md) | [GitHub](https://github.com/sorosg/n8n-gravity)
 
 ---
 
 ## 📋 Tartalomjegyzék
 
 - [Mi ez a projekt?](#mi-ez-a-projekt)
+- [Gyors áttekintés](#gyors-áttekintés)
 - [Architektúra](#architektúra)
 - [Rendszerkövetelmények](#rendszerkövetelmények)
 - [Gyors telepítés](#gyors-telepítés)
 - [Konfiguráció](#konfiguráció)
 - [Használat](#használat)
+- [Elérési címek](#elérési-címek)
 - [Workflow működése](#workflow-működése)
 - [API Referencia](#api-referencia)
 - [Karbantartás](#karbantartás)
 - [Hibaelhárítás](#hibaelhárítás)
 - [Windows-os menedzsment eszközök](#windows-os-menedzsment-eszkozok)
 - [Gyakran Ismételt Kérdések](#gyakran-ismételt-kérdések)
+- [Dokumentáció](#dokumentáció)
 - [Licensz](#licensz)
 
 ---
