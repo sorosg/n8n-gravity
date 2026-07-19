@@ -81,18 +81,6 @@
     },
     {
       "parameters": {
-        "mode": "jsonToFile",
-        "jsonDestination": "={{ '/home/node/scripts/output/' + $json.businessName.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + new Date().getTime() + '.json' }}"
-      },
-      "id": "save-json",
-      "name": "Eredmény mentése JSON fájlba (opcionális)",
-      "type": "n8n-nodes-base.writeFile",
-      "typeVersion": 1,
-      "position": [1310, 300],
-      "continueOnFail": true
-    },
-    {
-      "parameters": {
         "values": {
           "string": [
             {
@@ -160,17 +148,6 @@
       ]
     },
     "Válasz feldolgozás": {
-      "main": [
-        [
-          {
-            "node": "Eredmény mentése JSON fájlba (opcionális)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Eredmény mentése JSON fájlba (opcionális)": {
       "main": [
         [
           {
