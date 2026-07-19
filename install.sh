@@ -49,15 +49,24 @@ banner() {
 }
 
 check_root() {
-    # Nem követelünk root-ot, de docker group tagság kell
+    # Docker csoport automatikus beállítása
     if ! groups | grep -q docker && [[ "$(id -u)" != "0" ]]; then
-        log_warn "A jelenlegi felhasználó nincs a 'docker' csoportban."
-        log_warn "Futtasd a scriptet root-ként, vagy add hozzá a felhasználót a docker csoporthoz:"
-        log_warn "  sudo usermod -aG docker \$USER && newgrp docker"
-        log_warn "Ezután futtasd újra a scriptet."
-        read -rp "Folytatod így is? (lehet, hogy nem fog működni) [i/N] " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Ii]$ ]]; then
+        log_warn "A jelenlegi felhasználó ($(whoami)) nincs a 'docker' csoportban."
+        log_info "Megpróbálom automatikusan hozzáadni (ehhez sudo kell)..."
+
+        # Ha van SUDO_USER (sudo-val futtatva), a tényleges felhasználót adjuk hozzá
+        local target_user="${SUDO_USER:-$(whoami)}"
+
+        if sudo usermod -aG docker "${target_user}" 2>/dev/null; then
+            log_success "${target_user} hozzáadva a docker csoporthoz."
+            log_warn "A változtatások aktiválásához lépj ki és jelentkezz be újra,"
+            log_warn "VAGY futtasd ezt a parancsot: newgrp docker"
+            log_warn "VAGY használd a scriptet sudo-val: sudo ./install.sh"
+            log_info "A telepítés folytatódik, de lehet, hogy a docker parancsok"
+            log_info "csak a következő bejelentkezés után fognak működni."
+        else
+            log_error "Nem sikerült hozzáadni a docker csoporthoz."
+            log_error "Root joggal próbáld: sudo ./install.sh"
             exit 1
         fi
     fi
@@ -244,10 +253,47 @@ setup_env() {
     sed -i "s/CHANGE_DB_PASSWORD/${random_password}/g" "${env_file}"
     sed -i "s|N8N_ENCRYPTION_KEY=.*|N8N_ENCRYPTION_KEY=${encryption_key}|g" "${env_file}"
 
+    # ===== DeepSeek API kulcs interaktív bekérése =====
+    echo ""
+    echo -e "${CYAN}┌─────────────────────────────────────────────┐${NC}"
+    echo -e "${CYAN}│  DeepSeek API kulcs megadása               │${NC}"
+    echo -e "${CYAN}│  (https://platform.deepseek.com/api_keys)   │${NC}"
+    echo -e "${CYAN}└─────────────────────────────────────────────┘${NC}"
+    echo ""
+    log_info "Add meg a DeepSeek API kulcsodat (sk-... kezdetű)"
+    log_info "Ha még nincs kulcsod, regisztrálj itt: https://platform.deepseek.com"
+    log_info "Ha most üresen hagyod, később a nano .env paranccsal megadhatod."
+    echo ""
+
+    read -rp "DeepSeek API kulcs: " deepseek_key
+
+    if [[ -n "${deepseek_key}" ]]; then
+        # Ellenőrizzük, hogy sk- kezdetű-e
+        if [[ "${deepseek_key}" == sk-* ]]; then
+            # Escape-éljük a speciális karaktereket, hogy a sed ne törjön el
+            local escaped_key
+            escaped_key=$(printf '%s\n' "${deepseek_key}" | sed -e 's/[\/&]/\\&/g')
+            sed -i "s|DEEPSEEK_API_KEY=.*|DEEPSEEK_API_KEY=${escaped_key}|g" "${env_file}"
+            log_success "DeepSeek API kulcs elmentve!"
+        else
+            log_warn "A megadott kulcs nem 'sk-' kezdetű. Lehet, hogy hibás."
+            log_warn "A kulcs NEM lett elmentve. Ellenőrizd és használd a nano-t:"
+            log_warn "  nano ${env_file}"
+        fi
+    else
+        log_warn "Nem adtál meg API kulcsot."
+        log_warn "Később add meg a .env fájlban: nano ${env_file}"
+        log_warn "  DEEPSEEK_API_KEY=sk-..."
+    fi
+
+    echo ""
     log_success ".env fájl létrehozva."
-    log_warn "FONTOS: Szerkeszd a .env fájlt és add meg a DeepSeek API kulcsodat!"
-    log_warn "  nano ${env_file}"
-    log_warn "  DEEPSEEK_API_KEY=sk-..."
+    echo ""
+    echo -e "  ${GREEN}Generált admin jelszó:${NC} ${random_password}"
+    echo -e "  ${GREEN}Felhasználónév:${NC}       admin"
+    echo ""
+    log_warn "Jegyezd fel a fenti jelszót, mert az n8n bejelentkezéshez kell!"
+    echo ""
 }
 
 setup_firewall() {
