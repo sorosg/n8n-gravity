@@ -241,7 +241,25 @@ setup_env() {
 
     if [[ -f "${env_file}" ]]; then
         log_info "A .env fájl már létezik: ${env_file}"
-        log_info "Csak az API kulcsot frissítem benne (a jelszavak és kulcsok változatlanok maradnak)."
+        log_info "A jelszavak és kulcsok változatlanok maradnak."
+
+        # Ha régi volume-ok vannak, lehet hogy az encryption key változott
+        # (pl. korábbi újratelepítés miatt) – ilyenkor a volume-ok inkompatibilisek
+        if docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q "n8n_gravity_data"; then
+            echo ""
+            log_warn "Régi Docker volume-ok észlelve."
+            log_warn "Lehet, hogy az encryption key megváltozott és az n8n nem tud elindulni."
+            read -rp "Szeretnéd törölni a régi volume-okat? (friss telepítésnél ajánlott) [i/N] " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Ii]$ ]]; then
+                log_info "Volume-ok törlése..."
+                docker compose -f "${COMPOSE_FILE}" down -v --remove-orphans 2>/dev/null || true
+                log_success "Régi volume-ok törölve."
+            else
+                log_info "Volume-ok megtartva. Ha az n8n nem indul el, futtasd:"
+                log_info "  sudo docker compose down -v && sudo docker compose up -d"
+            fi
+        fi
         echo ""
     else
         if [[ ! -f "${env_example}" ]]; then
