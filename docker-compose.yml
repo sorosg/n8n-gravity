@@ -134,6 +134,27 @@ services:
       - ai
       - gpu
 
+  # ----- Webes felület (nginx) -----
+  web:
+    image: nginx:alpine
+    container_name: n8n-gravity-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./gravity-generator.html:/usr/share/nginx/html/gravity-generator.html:ro
+      - ./output:/output:ro
+    networks:
+      - n8n_network
+    depends_on:
+      - n8n
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   # ----- (Opcionális) Portainer CE: Docker menedzsment -----
   portainer:
     image: portainer/portainer-ce:latest

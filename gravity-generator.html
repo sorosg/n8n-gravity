@@ -23,10 +23,7 @@
     .subtitle { color: rgba(255,255,255,0.5); text-align: center; font-size: 13px; margin-bottom: 30px; }
     h3 { color: rgba(255,255,255,0.9); font-size: 15px; margin: 24px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
     .form-group { margin-bottom: 16px; }
-    label {
-      display: block; color: rgba(255,255,255,0.8); font-size: 12px;
-      font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;
-    }
+    label { display: block; color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
     input, select, textarea {
       width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,0.15);
       border-radius: 10px; background: rgba(255,255,255,0.07);
@@ -43,87 +40,49 @@
     .row .form-group { flex: 1; }
     input[type="color"] {
       width: 100%; height: 44px; padding: 4px 8px; cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
-      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; background: rgba(255,255,255,0.07);
     }
     input[type="range"] { width: 100%; margin: 6px 0; accent-color: #6366f1; }
     .range-value { color: rgba(255,255,255,0.6); font-size: 12px; text-align: right; }
     .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
     .checkbox-row input[type="checkbox"] { width: auto; accent-color: #6366f1; }
     .checkbox-row label { margin-bottom: 0; text-transform: none; font-size: 14px; font-weight: 400; }
-
-    /* Pages & subpages ----------------------------------------- */
-    .page-entry {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px; padding: 14px; margin-bottom: 12px;
-    }
+    .page-entry { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
     .page-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .page-header input { flex: 1; }
-    .btn {
-      padding: 6px 14px; border: none; border-radius: 8px; cursor: pointer;
-      font-size: 13px; font-weight: 600; transition: all 0.2s;
-    }
+    .btn { padding: 6px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
     .btn-add { background: #059669; color: #fff; }
     .btn-add:hover { background: #047857; }
     .btn-del { background: #dc2626; color: #fff; }
     .btn-del:hover { background: #b91c1c; }
     .btn-sm { background: rgba(99,102,241,0.3); color: #a5b4fc; padding: 4px 10px; font-size: 11px; }
     .btn-sm:hover { background: rgba(99,102,241,0.5); }
-    .subpage-entry {
-      display: flex; align-items: center; gap: 6px;
-      margin-left: 20px; margin-bottom: 6px;
-    }
+    .subpage-entry { display: flex; align-items: center; gap: 6px; margin-left: 20px; margin-bottom: 6px; }
     .subpage-entry input { flex: 1; font-size: 13px; padding: 8px 10px; }
     .subpages-container { margin-top: 6px; }
-
-    /* File upload ----------------------------------------------- */
-    .file-upload {
-      display: flex; align-items: center; gap: 10px;
-    }
+    .file-upload { display: flex; align-items: center; gap: 10px; }
     .file-upload input[type="file"] { display: none; }
     .file-label {
       padding: 10px 18px; background: rgba(99,102,241,0.25); color: #a5b4fc;
       border: 1px dashed rgba(99,102,241,0.5); border-radius: 10px;
-      cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap;
-      transition: all 0.2s;
+      cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; transition: all 0.2s;
     }
     .file-label:hover { background: rgba(99,102,241,0.4); }
     .file-name { color: rgba(255,255,255,0.6); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    /* Submit button --------------------------------------------- */
     button[type="submit"] {
       width: 100%; padding: 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
       color: #fff; border: none; border-radius: 14px; font-size: 17px;
-      font-weight: 700; cursor: pointer; letter-spacing: 0.5px;
-      transition: all 0.3s; margin-top: 12px;
+      font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: all 0.3s; margin-top: 12px;
     }
-    button[type="submit"]:hover {
-      transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.5);
-    }
+    button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.5); }
     button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    #response {
-      margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.35);
-      border-radius: 12px; max-height: 400px; overflow-y: auto; display: none;
-    }
-    #response pre {
-      color: #a5b4fc; font-size: 12px; white-space: pre-wrap; word-break: break-all;
-      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.6;
-    }
+    #response { margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.35); border-radius: 12px; max-height: 400px; overflow-y: auto; display: none; }
+    #response pre { color: #a5b4fc; font-size: 12px; white-space: pre-wrap; word-break: break-all; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; line-height: 1.6; }
     .status-ok { color: #4ade80 !important; }
     .status-error { color: #f87171 !important; }
-    .spinner {
-      display: inline-block; width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
-      border-radius: 50%; animation: spin 0.6s linear infinite;
-      margin-right: 8px; vertical-align: middle;
-    }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 8px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .info-box {
-      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
-      border-radius: 10px; padding: 10px 16px; margin-bottom: 20px;
-      font-size: 12px; color: rgba(255,255,255,0.55);
-    }
+    .info-box { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 12px; color: rgba(255,255,255,0.55); }
   </style>
 </head>
 <body>
@@ -132,15 +91,15 @@
   <p class="subtitle">AI-vezérelt weboldal tervezés • DeepSeek API</p>
 
   <div class="info-box">
-    🔗 Webhook: <strong id="webhookUrl">http://192.168.4.148:5678/webhook/gravity-generate</strong>
+    🔗 Webhook: <strong id="webhookUrl">/webhook/gravity-generate</strong>
     <br>🖥️ Szerver státusz: <span id="serverStatus">Ellenőrzés...</span>
     <span id="statusDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-left:6px;"></span>
     <br>⚡ A workflow-nak <strong>Active</strong> állapotban kell lennie az n8n-ben!
+    <br>🔗 <a href="http://192.168.4.148:5678" target="_blank" style="color:#a5b4fc;">n8n felület megnyitása →</a>
+    <br>📁 <a href="/output/" target="_blank" style="color:#a5b4fc;">Generált fájlok böngészése →</a>
   </div>
 
   <form id="generatorForm">
-
-    <!-- ---- ALAPADATOK ---- -->
     <h3>🏢 Alapadatok</h3>
     <div class="form-group">
       <label>Cégnév / Projekt név *</label>
@@ -172,7 +131,6 @@
       <textarea id="description" placeholder="Részletes leírás a cégről, tevékenységről, célcsoportról..."></textarea>
     </div>
 
-    <!-- ---- MEGJELENÉS ---- -->
     <h3>🎨 Megjelenés</h3>
     <div class="row">
       <div class="form-group">
@@ -197,7 +155,6 @@
       </div>
     </div>
 
-    <!-- ---- LOGÓ ---- -->
     <div class="form-group">
       <label>🖼️ Logó tallózása</label>
       <div class="file-upload">
@@ -207,7 +164,6 @@
       </div>
     </div>
 
-    <!-- ---- HERO ---- -->
     <h3>🦸 Hero szekció (főoldali banner)</h3>
     <div class="checkbox-row">
       <input type="checkbox" id="heroEnabled" checked>
@@ -219,52 +175,52 @@
       <div class="range-value">300px (kicsi) – 1000px (teljes képernyős)</div>
     </div>
 
-    <!-- ---- OLDALAK ---- -->
     <h3>📑 Oldalak és aloldalak</h3>
     <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;">
-      Adj meg tetszőleges oldalakat. Minden oldalhoz megadhatsz leírást (mi szerepeljen rajta), és hozzáadhatsz aloldalakat.
+      Adj meg tetszőleges oldalakat. Minden oldalhoz megadhatsz leírást, és hozzáadhatsz aloldalakat.
     </p>
-
-    <div id="pagesContainer">
-      <!-- default pages -->
-    </div>
-
+    <div id="pagesContainer"></div>
     <button type="button" class="btn btn-add" id="addPageBtn">+ Új oldal hozzáadása</button>
 
-    <!-- ---- SUBMIT ---- -->
     <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
   </form>
 
-  <div id="response">
-    <pre id="responseContent"></pre>
-  </div>
+  <div id="response"><pre id="responseContent"></pre></div>
 </div>
 
 <script>
-const SERVER_BASE = 'http://192.168.4.148:5678';
+// Automatikus URL érzékelés – ugyanarról a szerverről töltjük be
+const SERVER_BASE = window.location.origin;
 const WEBHOOK_URL = SERVER_BASE + '/webhook/gravity-generate';
+const N8N_URL = 'http://192.168.4.148:5678';
 document.getElementById('webhookUrl').textContent = WEBHOOK_URL;
 
-// ---- Szerver státusz ellenőrzése (élő) ----
+// ---- Szerver státusz ellenőrzése (same-origin, működik!) ----
 const serverStatus = document.getElementById('serverStatus');
 const statusDot = document.getElementById('statusDot');
 
-function checkServerStatus() {
-  const img = new Image();
-  const ts = Date.now();
-
-  img.onload = () => {
-    serverStatus.textContent = 'Online ✅';
+function updateStatus(online) {
+  if (online) {
+    serverStatus.innerHTML = 'Online ✅ <a href="' + N8N_URL + '" target="_blank" style="color:#4ade80;text-decoration:underline;">(n8n)</a>';
     serverStatus.style.color = '#4ade80';
     statusDot.style.background = '#4ade80';
-  };
-  img.onerror = () => {
+  } else {
     serverStatus.textContent = 'Offline ❌';
     serverStatus.style.color = '#f87171';
     statusDot.style.background = '#f87171';
-  };
-  // Favicon vagy bármilyen létező erőforrás betöltése – ha betölt, a szerver él
-  img.src = SERVER_BASE + '/favicon.ico?t=' + ts;
+  }
+}
+
+async function checkServerStatus() {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    await fetch('/healthz', { signal: controller.signal });
+    clearTimeout(timeoutId);
+    updateStatus(true);
+  } catch (err) {
+    updateStatus(false);
+  }
 }
 
 // Ellenőrzés azonnal, majd 30 másodpercenként
@@ -313,32 +269,23 @@ function createPageEntry(pageData = null) {
   div.dataset.pageIndex = idx;
   div.innerHTML = `
     <div class="page-header">
-      <input type="text" class="page-name" placeholder="Oldal neve (pl. Szolgáltatások)" value="${escapeHtml(name)}" style="flex:2;">
-      <input type="text" class="page-slug" placeholder="URL slug (pl. services)" value="${escapeHtml(slug)}" style="flex:1;">
+      <input type="text" class="page-name" placeholder="Oldal neve" value="${escapeHtml(name)}" style="flex:2;">
+      <input type="text" class="page-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">
       ${isDefault ? '' : '<button type="button" class="btn btn-del remove-page">✕</button>'}
     </div>
     <div class="form-group" style="margin-bottom:4px;">
       <label>Oldal tartalma / leírás</label>
-      <textarea class="page-description" rows="2" placeholder="Mi jelenjen meg ezen az oldalon? (pl. Szolgáltatások felsorolása, árak...)">${escapeHtml(desc)}</textarea>
+      <textarea class="page-description" rows="2" placeholder="Mi jelenjen meg ezen az oldalon?">${escapeHtml(desc)}</textarea>
     </div>
-    <div class="subpages-container" data-subpages="${idx}"></div>
+    <div class="subpages-container"></div>
     <button type="button" class="btn btn-sm add-subpage">+ Aloldal</button>
   `;
 
-  // Aloldalak
   const subContainer = div.querySelector('.subpages-container');
   subpages.forEach(sp => addSubpageEntry(subContainer, sp.name, sp.slug, sp.description));
-
-  // Aloldal gomb
-  div.querySelector('.add-subpage').addEventListener('click', () => {
-    addSubpageEntry(subContainer, '', '', '');
-  });
-
-  // Törlés gomb
+  div.querySelector('.add-subpage').addEventListener('click', () => addSubpageEntry(subContainer, '', '', ''));
   const removeBtn = div.querySelector('.remove-page');
-  if (removeBtn) {
-    removeBtn.addEventListener('click', () => div.remove());
-  }
+  if (removeBtn) removeBtn.addEventListener('click', () => div.remove());
 
   return div;
 }
@@ -356,15 +303,10 @@ function addSubpageEntry(container, name = '', slug = '', desc = '') {
   container.appendChild(div);
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
-}
+function escapeHtml(str) { return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"'); }
 
-// Alap oldalak
 defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
-document.getElementById('addPageBtn').addEventListener('click', () => {
-  pagesContainer.appendChild(createPageEntry());
-});
+document.getElementById('addPageBtn').addEventListener('click', () => pagesContainer.appendChild(createPageEntry()));
 
 // ---- Submit ----
 const form = document.getElementById('generatorForm');
@@ -375,7 +317,6 @@ const responseContent = document.getElementById('responseContent');
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // Oldalak összegyűjtése
   const pages = [];
   document.querySelectorAll('.page-entry').forEach(entry => {
     const name = entry.querySelector('.page-name')?.value.trim() || '';
@@ -400,14 +341,10 @@ form.addEventListener('submit', async (e) => {
     primaryColor: document.getElementById('primaryColor').value,
     secondaryColor: document.getElementById('secondaryColor').value,
     logo: logoBase64 ? { filename: logoFilename, data: logoBase64 } : null,
-    hero: {
-      enabled: document.getElementById('heroEnabled').checked,
-      height: parseInt(heroHeight.value)
-    },
+    hero: { enabled: document.getElementById('heroEnabled').checked, height: parseInt(heroHeight.value) },
     pages: pages
   };
 
-  // UI: töltés
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span>Generálás folyamatban...';
   responseDiv.style.display = 'block';
@@ -415,24 +352,14 @@ form.addEventListener('submit', async (e) => {
   responseContent.className = '';
 
   try {
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
+    const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     const data = await res.json();
-
-    if (!res.ok || data.error) {
-      throw new Error(data.message || data.error || `HTTP ${res.status}`);
-    }
-
+    if (!res.ok || data.error) throw new Error(data.message || data.error || `HTTP ${res.status}`);
     responseContent.className = 'status-ok';
     responseContent.textContent = JSON.stringify(data, null, 2);
   } catch (err) {
     responseContent.className = 'status-error';
-    responseContent.textContent = '❌ HIBA: ' + err.message +
-      '\n\nEllenőrizd:\n1. Szerver: http://192.168.4.148:5678\n2. Workflow Active?\n3. API kulcs helyes?\n4. Webhook URL: ' + WEBHOOK_URL;
+    responseContent.textContent = '❌ HIBA: ' + err.message + '\n\nEllenőrizd:\n1. Szerver: ' + SERVER_BASE + '\n2. Workflow Active?\n3. API kulcs helyes?';
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerHTML = '⚡ Weboldal generálása AI-val';
