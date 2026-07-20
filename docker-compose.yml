@@ -132,7 +132,7 @@ services:
           rm -rf /tmp/grav /tmp/grav.zip 2>/dev/null &&
           php -r \"copy('https://github.com/getgrav/grav/releases/download/1.7.44/grav-admin-v1.7.44.zip', '/tmp/grav.zip');\" &&
           unzip -qo /tmp/grav.zip -d /tmp/grav &&
-          cp -r /tmp/grav/grav-admin/* . &&
+          cp -r /tmp/grav/grav-admin/. . &&
           rm -rf /tmp/grav /tmp/grav.zip &&
           chown -R www-data:www-data . &&
           echo 'Gravity CMS telepítve!'
