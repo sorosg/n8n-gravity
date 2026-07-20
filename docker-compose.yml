@@ -126,7 +126,7 @@ services:
         cd /gravity-cms &&
         if [ ! -f index.php ]; then
           echo 'Gravity CMS letöltése...' &&
-          wget -q https://github.com/getgrav/grav/releases/download/1.7.44/grav-admin-v1.7.44.zip -O /tmp/grav.zip &&
+          php -r \"copy('https://github.com/getgrav/grav/releases/download/1.7.44/grav-admin-v1.7.44.zip', '/tmp/grav.zip');\" &&
           unzip -qo /tmp/grav.zip -d /tmp/grav &&
           cp -r /tmp/grav/grav-admin/* . &&
           rm -rf /tmp/grav /tmp/grav.zip &&
