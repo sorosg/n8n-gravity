@@ -132,10 +132,11 @@ services:
           unzip -qo /tmp/grav.zip -d /tmp/grav &&
           cp -r /tmp/grav/grav-admin/* . &&
           rm -rf /tmp/grav /tmp/grav.zip &&
-          chmod -R 777 cache logs backup tmp user &&
           a2enmod rewrite &&
           echo 'Gravity CMS telepítve!'
         fi &&
+        chown -R www-data:www-data . &&
+        chmod -R 777 cache logs backup tmp user &&
         echo 'Gravity CMS (Apache) indítása...' &&
         apache2-foreground
       "
