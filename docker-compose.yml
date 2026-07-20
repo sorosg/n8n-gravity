@@ -135,6 +135,7 @@ services:
           rm -rf /tmp/grav /tmp/grav.zip &&
           echo 'Gravity CMS telepítve!'
         fi &&
+        mkdir -p user/config &&
         chmod -R 777 cache logs backup tmp user &&
         echo 'Gravity CMS indítása a 80-as porton...' &&
         php -S 0.0.0.0:80 system/router.php
