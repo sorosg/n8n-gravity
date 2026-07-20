@@ -4,7 +4,7 @@
 
 > Egy komplett, Docker-alapú megoldás, ami lehetővé teszi Gravity CMS weboldalak teljesen automatizált tervezését és generálását mesterséges intelligencia segítségével.
 >
-> **Jelenlegi verzió: v0.3.2** | [Architektúra dokumentáció](./ARCHITECTURE.md) | [GitHub](https://github.com/sorosg/n8n-gravity)
+> **Jelenlegi verzió: v1.0.6** | [Architektúra dokumentáció](./ARCHITECTURE.md) | [GitHub](https://github.com/sorosg/n8n-gravity)
 
 ---
 
@@ -37,11 +37,12 @@
 |----------|-------|
 | **Szerver** | `192.168.4.148` (Ubuntu, Docker) |
 | **Webes űrlap** | `http://192.168.4.148:8080` |
+| **Előnézet oldal** | `http://192.168.4.148:8080/preview.html` |
 | **n8n felület** | `http://192.168.4.148:5678` |
-| **AI motor** | DeepSeek (deepseek-chat) |
+| **AI motor** | DeepSeek V4 Flash/Pro + GPT-4o + Claude |
 | **Költség** | ~0,15-0,30 Ft / generálás |
 | **Telepítés** | `git clone` + `sudo ./install.sh` |
-| **Verzió** | v0.3.3 |
+| **Verzió** | v1.0.6 |
 
 ---
 
@@ -50,8 +51,10 @@
 | Szolgáltatás | URL |
 |-------------|-----|
 | **🌐 Gravity CMS Generátor űrlap** | `http://192.168.4.148:8080` |
+| **📄 Előnézet oldal** | `http://192.168.4.148:8080/preview.html` |
 | **🧠 n8n felület** | `http://192.168.4.148:5678` |
 | **📁 Generált fájlok** | `http://192.168.4.148:8080/output/` |
+| **🧪 Gravity CMS** | `http://192.168.4.148:8080/gravity/` |
 | **📖 epub-translate** (meglévő) | `http://192.168.4.148` (80-as port) |
 
 > **Részletes architektúra:** [ARCHITECTURE.md](./ARCHITECTURE.md)

@@ -2,7 +2,7 @@
 
 > **Teljes körű műszaki dokumentáció az AI-alapú Gravity CMS weboldal generátorról.**
 > 
-> Verzió: **v0.3.2** | Frissítve: 2026. július 19.
+> Verzió: **v1.0.6** | Frissítve: 2026. július 20.
 
 ---
 
@@ -204,7 +204,11 @@ n8n-gravity/
 ├── nginx.conf                # nginx konfiguráció
 ├── install.sh                # Automatikus telepítő script
 ├── deploy.sh                 # Verziózó és GitHub push script
-├── gravity-generator.html    # Webes űrlap (HTML + CSS + JS)
+├── web/                      # Webes űrlap (HTML + CSS + JS, több fájl)
+│   ├── index.html            # Generátor űrlap
+│   ├── preview.html          # Statikus HTML előnézet (drag & drop)
+│   ├── style.css             # Stílusok (desktop optimalizált)
+│   └── script.js             # JavaScript logika
 ├── ARCHITECTURE.md           # Ez a dokumentum
 ├── README.md                 # Felhasználói dokumentáció (magyar)
 ├── felhasznaloikezikonyv.md  # Részletes Windows felhasználói kézikönyv
@@ -359,26 +363,48 @@ A script:
 | **writeFile node hiányzik** | Az n8n ezen verziója nem támogatja a writeFile node-ot | Code node-ban `fs.writeFileSync` |
 | **Credential menüpont hiányzik** | Az n8n Cloud Dashboard nézetben nincs Credentials | `$env.DEEPSEEK_API_KEY` használata credential helyett |
 | **file:// CORS** | Helyi fájlból nyíló HTML nem tud fetch-elni | nginx konténer (8080) szolgálja ki same-origin |
-| **Státuszellenőrzés file://-ról** | A `fetch` blokkolva van | nginx proxy `/healthz` → same-origin működik |
-| **Logo base64 küldése** | Nagy fájlok (~1MB+) problémát okozhatnak | Csak kis logók ajánlottak; fájlméret ellenőrzés nincs |
+| **Code node sandbox** | `require('fs')`, `require('https')` blokkolva | `NODE_FUNCTION_ALLOW_BUILTIN` + `NODE_FUNCTION_ALLOW_EXTERNAL` engedélyezés |
+| **Környezeti változók** | `$env` blokkolva a Code node-ban | `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` |
+| **n8n HTTP Request template** | A `jsonBody` nem támogatja a template-eket | Code node `JSON.stringify` + `body: "={{ $json.body }}"` |
+| **curl nem elérhető** | Alpine konténerben nincs curl | Node.js natív `https` modul használata |
 
 ---
 
 ## 12. Következő lépések / TODO
 
-### 12.1 Elvégzett feladatok ✅
+### 12.1 Elvégzett feladatok ✅ (v1.0.6)
 
-- [x] n8n + PostgreSQL Docker stack
+- [x] n8n + PostgreSQL + nginx Docker stack
 - [x] DeepSeek API integráció (környezeti változóból)
 - [x] Webhook alapú workflow POST támogatással
-- [x] Fájlba mentés Code node-on keresztül
-- [x] nginx webes felület (8080-as port)
+- [x] Fájlba mentés Code node-on keresztül (`fs.writeFileSync`)
+- [x] nginx webes felület (8080-as port) + Gravity CMS proxy (8085)
 - [x] Interaktív telepítő script (API kulcs bekérése, docker csoport automatikus)
 - [x] Automatikus deploy script (verziózás + GitHub push)
-- [x] Webes űrlap: színek, hero, logó, dinamikus oldalak/aloldalak
+- [x] Webes űrlap (3 fájl: index.html, style.css, script.js)
+- [x] Desktop-optimalizált UI (1220px, drag & drop zónák, szekciók dobozokban)
+- [x] Téma előnézet (live preview a színek és stílus alapján)
+- [x] 6 színválasztó AI toggle-el (primary, secondary, accent, text, headerBG, footerBG)
+- [x] Header/Footer opciók (8-8 bejelölhető elem)
+- [x] Hero szekció: háttérkép (AI/saját), animáció
+- [x] Dynamikus oldalak AI/manuális tartalom módokkal, oldalankénti képmennyiség
+- [x] Képoptimalizálás canvas resize-zal (WebP/JPEG/PNG formátumválasztó)
+- [x] AI SVG logó generálás
 - [x] Progress bar + lépéskijelző + letöltés gomb
-- [x] Szerver státuszjelző (same-origin)
-- [x] Teljes dokumentáció (README.md, felhasznaloikezikonyv.md)
+- [x] Szerver státuszjelző (same-origin, /healthz)
+- [x] Generálási napló panel (localStorage, törölhető)
+- [x] Gravity CMS tesztkörnyezet (8085-ös port, auto-install)
+- [x] Workflow → Gravity CMS automatikus deploy (.md fájlok)
+- [x] Verziókövetés (output/versions/)
+- [x] Több AI modell támogatása (DeepSeek V4 Flash/Pro, GPT-4o, Claude)
+- [x] Egyedi prompt módosítása a webes űrlapon
+- [x] Többnyelvű generálás (HU, EN, DE, FR, ES, IT)
+- [x] API kulcs felülbírálási mező a webes űrlapon
+- [x] Statikus HTML előnézet (preview.html, drag & drop JSON fájl)
+- [x] Fájlnév a businessName alapján (timestamp-es)
+- [x] Teljes dokumentáció (README.md, ARCHITECTURE.md, felhasznaloikezikonyv.md, TODO.md)
+- [x] Sandbox engedélyek: `NODE_FUNCTION_ALLOW_BUILTIN`, `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`
+- [x] `user: root` az n8n konténerben (fájlírási jogok)
 - [x] GitHub repo: https://github.com/sorosg/n8n-gravity
 
 ### 12.2 Jövőbeli fejlesztési lehetőségek
