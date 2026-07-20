@@ -1,5 +1,5 @@
 /* ================================================================
-   n8n-gravity – JavaScript (v1.0)
+   n8n-gravity – JavaScript (v1.0.4)
    Drag & drop, formátumválasztó, AI/manuális tartalom módok
    ================================================================ */
 
@@ -60,12 +60,7 @@ function setupDragDrop(zoneId, fileInputId) {
     }
   });
 
-  // Kattintás a zónára megnyitja a fájlválasztót (csak ha nem a file inputra kattintottunk)
-  zone.addEventListener('click', (e) => {
-    if (e.target !== fileInput) fileInput.click();
-  });
-
-  // Megakadályozzuk, hogy a file input click eseménye felbuborékoljon a zónára
+  zone.addEventListener('click', (e) => { if (e.target !== fileInput) fileInput.click(); });
   fileInput.addEventListener('click', (e) => e.stopPropagation());
 }
 
@@ -112,149 +107,107 @@ function handleFileUpload(fileInputId, fileNameId, formatSelectId, onOptimized) 
   });
 }
 
-/* ---- File uploads ---- */
-let headerLogoBase64 = null, headerLogoFilename = null;
-let footerLogoBase64 = null, footerLogoFilename = null;
-let heroBgBase64 = null, heroBgFilename = null;
-
-handleFileUpload('headerLogoFile', 'headerLogoFileName', 'logoFormat', (data, name) => { headerLogoBase64 = data; headerLogoFilename = name; });
-handleFileUpload('footerLogoFile', 'footerLogoFileName', 'logoFormat', (data, name) => { footerLogoBase64 = data; footerLogoFilename = name; });
-handleFileUpload('heroBgFile', 'heroBgFileName', 'logoFormat', (data, name) => { heroBgBase64 = data; heroBgFilename = name; });
-
+let headerLogoBase64 = null, headerLogoFilename = null, footerLogoBase64 = null, footerLogoFilename = null, heroBgBase64 = null, heroBgFilename = null;
+handleFileUpload('headerLogoFile', 'headerLogoFileName', 'logoFormat', (d, n) => { headerLogoBase64 = d; headerLogoFilename = n; });
+handleFileUpload('footerLogoFile', 'footerLogoFileName', 'logoFormat', (d, n) => { footerLogoBase64 = d; footerLogoFilename = n; });
+handleFileUpload('heroBgFile', 'heroBgFileName', 'logoFormat', (d, n) => { heroBgBase64 = d; heroBgFilename = n; });
 setupDragDrop('headerLogoDrop', 'headerLogoFile');
 setupDragDrop('footerLogoDrop', 'footerLogoFile');
 setupDragDrop('heroBgDrop', 'heroBgFile');
 
 /* ---- Téma előnézet ---- */
 function updatePreview() {
-  const primary = document.getElementById('primaryColor').value, secondary = document.getElementById('secondaryColor').value,
-    accent = document.getElementById('accentColor').value, headerBg = document.getElementById('headerBg').value;
-  document.getElementById('previewHeader').style.background = headerBg;
-  document.getElementById('previewHeader').style.color = (headerBg === '#ffffff' || headerBg === '#fff') ? '#333' : '#fff';
-  document.getElementById('previewHero').style.background = 'linear-gradient(135deg, ' + primary + ', ' + secondary + ')';
-  const btn = document.querySelector('.preview-btn'); if (btn) btn.style.background = accent;
+  const p = document.getElementById('primaryColor').value, s = document.getElementById('secondaryColor').value,
+    a = document.getElementById('accentColor').value, h = document.getElementById('headerBg').value;
+  document.getElementById('previewHeader').style.background = h;
+  document.getElementById('previewHeader').style.color = (h === '#ffffff' || h === '#fff') ? '#333' : '#fff';
+  document.getElementById('previewHero').style.background = 'linear-gradient(135deg, ' + p + ', ' + s + ')';
+  const btn = document.querySelector('.preview-btn'); if (btn) btn.style.background = a;
 }
 updatePreview();
 
-/* ---- Hero slider ---- */
+/* ---- Hero ---- */
 const heroHeight = document.getElementById('heroHeight');
 document.getElementById('heroHeightValue').textContent = heroHeight.value;
 heroHeight.addEventListener('input', () => { document.getElementById('heroHeightValue').textContent = heroHeight.value; });
 
-/* ---- Dinamikus oldalak ---- */
+/* ---- Oldalak ---- */
 let pageCounter = 0; const pagesContainer = document.getElementById('pagesContainer');
-const defaultPages = [{ name: 'Kezdőlap', slug: 'home', description: 'Főoldal', mode: 'ai', imageCount: 0, subpages: [] }, { name: 'Rólunk', slug: 'about', description: 'Cégbemutató', mode: 'ai', imageCount: 0, subpages: [] }, { name: 'Kapcsolat', slug: 'contact', description: 'Elérhetőségek', mode: 'ai', imageCount: 0, subpages: [] }];
-
-function escapeHtml(s) { return s.replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"'); }
-
-function addSubpageEntry(c, n, s, d) {
+const defaultPages = [{ name: 'Kezdőlap', slug: 'home', desc: 'Főoldal', mode: 'ai', img: 0, sub: [] }, { name: 'Rólunk', slug: 'about', desc: 'Cégbemutató', mode: 'ai', img: 0, sub: [] }, { name: 'Kapcsolat', slug: 'contact', desc: 'Elérhetőségek', mode: 'ai', img: 0, sub: [] }];
+function esc(s) { return s.replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"'); }
+function addSub(c, n, s, d) {
   const div = document.createElement('div'); div.className = 'subpage-entry';
-  div.innerHTML = `<input type="text" class="subpage-name" placeholder="Aloldal neve" value="${escapeHtml(n||'')}" style="flex:2;"><input type="text" class="subpage-slug" placeholder="slug" value="${escapeHtml(s||'')}" style="flex:1;"><input type="text" class="subpage-desc" placeholder="Leírás" value="${escapeHtml(d||'')}" style="flex:2;"><button type="button" class="btn btn-del remove-subpage" style="font-size:11px;padding:4px 8px;">✕</button>`;
-  div.querySelector('.remove-subpage').addEventListener('click', () => div.remove()); c.appendChild(div);
+  div.innerHTML = `<input class="sub-name" placeholder="Aloldal" value="${esc(n||'')}" style="flex:2;"><input class="sub-slug" placeholder="slug" value="${esc(s||'')}" style="flex:1;"><input class="sub-desc" placeholder="Leírás" value="${esc(d||'')}" style="flex:2;"><button class="btn btn-del rem-sub" style="font-size:11px;padding:4px 8px;">✕</button>`;
+  div.querySelector('.rem-sub').addEventListener('click', () => div.remove()); c.appendChild(div);
 }
-
 function createPageEntry(pd) {
-  const isDefault = !!pd, name = pd ? pd.name : '', slug = pd ? pd.slug : '', desc = pd ? pd.description : '', mode = pd ? (pd.mode || 'ai') : 'ai', imageCount = pd ? (pd.imageCount || 0) : 0, subpages = pd ? (pd.subpages || []) : [];
+  const isD = !!pd, name = pd ? pd.name : '', slug = pd ? pd.slug : '', desc = pd ? pd.desc : '', mode = pd ? (pd.mode || 'ai') : 'ai', img = pd ? (pd.img || 0) : 0, sub = pd ? (pd.sub || []) : [];
   const div = document.createElement('div'); div.className = 'page-entry';
-  div.innerHTML = `<div class="page-header"><input type="text" class="page-name" placeholder="Oldal neve" value="${escapeHtml(name)}" style="flex:2;"><input type="text" class="page-slug" placeholder="URL slug" value="${escapeHtml(slug)}" style="flex:1;">${isDefault ? '' : '<button type="button" class="btn btn-del remove-page">✕</button>'}</div><div class="page-content-mode" style="margin-bottom:6px;"><label><input type="radio" name="mode_${pageCounter}" value="ai" ${mode==='ai'?'checked':''} class="page-mode-radio"> 🧠 AI generáljon</label><label><input type="radio" name="mode_${pageCounter}" value="manual" ${mode==='manual'?'checked':''} class="page-mode-radio"> ✏️ Saját szöveg</label></div><div class="form-row"><div class="form-group full"><textarea class="page-description" rows="2" placeholder="${mode==='ai'?'Írd le, miről szóljon az oldal (az AI ez alapján generál)':'Írd meg az oldal teljes szövegét'}">${escapeHtml(desc)}</textarea></div></div><div class="form-row"><div class="form-group half"><label>🖼️ AI által generált képek száma</label><input type="number" class="page-image-count" value="${imageCount}" min="0" max="10"></div></div><div class="subpages-container"></div><button type="button" class="btn btn-sm add-subpage">+ Aloldal</button>`;
-
+  div.innerHTML = `<div class="page-header"><input class="page-name" placeholder="Oldal neve" value="${esc(name)}" style="flex:2;"><input class="page-slug" placeholder="URL slug" value="${esc(slug)}" style="flex:1;">${isD ? '' : '<button class="btn btn-del rem-page">✕</button>'}</div><div class="page-content-mode"><label><input type="radio" name="m_${pageCounter}" value="ai" ${mode==='ai'?'checked':''} class="page-mode"> 🧠 AI</label><label><input type="radio" name="m_${pageCounter}" value="manual" ${mode==='manual'?'checked':''} class="page-mode"> ✏️ Saját</label></div><div class="form-row"><div class="form-group full"><textarea class="page-desc" rows="2" placeholder="${mode==='ai'?'Írd le, miről szóljon (AI generál)':'Írd meg a teljes szöveget'}">${esc(desc)}</textarea></div></div><div class="form-row"><div class="form-group half"><label>🖼️ Képek száma</label><input type="number" class="page-img" value="${img}" min="0" max="10"></div></div><div class="sub-container"></div><button class="btn btn-sm add-sub">+ Aloldal</button>`;
   pageCounter++;
-
-  // Mode váltás: frissíti a placeholder-t
-  div.querySelectorAll('.page-mode-radio').forEach(r => {
-    r.addEventListener('change', function() {
-      const ta = div.querySelector('.page-description');
-      ta.placeholder = this.value === 'ai' ? 'Írd le, miről szóljon az oldal (az AI ez alapján generál)' : 'Írd meg az oldal teljes szövegét';
-    });
-  });
-
-  const sc = div.querySelector('.subpages-container'); subpages.forEach(sp => addSubpageEntry(sc, sp.name, sp.slug, sp.description));
-  div.querySelector('.add-subpage').addEventListener('click', () => addSubpageEntry(sc, '', '', ''));
-  const rb = div.querySelector('.remove-page'); if (rb) rb.addEventListener('click', () => div.remove());
+  div.querySelectorAll('.page-mode').forEach(r => r.addEventListener('change', function() { div.querySelector('.page-desc').placeholder = this.value === 'ai' ? 'Írd le, miről szóljon (AI generál)' : 'Írd meg a teljes szöveget'; }));
+  const sc = div.querySelector('.sub-container'); sub.forEach(s => addSub(sc, s.name, s.slug, s.description));
+  div.querySelector('.add-sub').addEventListener('click', () => addSub(sc, '', '', ''));
+  const rb = div.querySelector('.rem-page'); if (rb) rb.addEventListener('click', () => div.remove());
   return div;
 }
 try {
   defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
-  document.getElementById('addPageBtn').addEventListener('click', () => {
-    try {
-      pagesContainer.appendChild(createPageEntry());
-    } catch (e) { console.error('Oldal hozzáadás hiba:', e); alert('Hiba: ' + e.message); }
-  });
-} catch (e) { console.error('Default oldalak hiba:', e); }
+  document.getElementById('addPageBtn').addEventListener('click', () => { try { pagesContainer.appendChild(createPageEntry()); } catch (e) { alert('Hiba: ' + e.message); } });
+} catch (e) {}
 
 /* ---- Log panel ---- */
-const LOG_KEY = 'n8n_gravity_logs';
-const logPanel = document.getElementById('logPanel'), logEntries = document.getElementById('logEntries');
+const LOG_KEY = 'n8n_gravity_logs', logPanel = document.getElementById('logPanel'), logEntries = document.getElementById('logEntries');
 function getLogs() { try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch (e) { return []; } }
 function saveLogs(logs) { if (logs.length > 200) logs = logs.slice(-200); localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }
-function addLogEntry(entry) { const logs = getLogs(); logs.push(entry); saveLogs(logs); renderLogs(); logPanel.style.display = 'block'; }
+function addLogEntry(e) { getLogs().push(e); saveLogs(getLogs()); renderLogs(); logPanel.style.display = 'block'; }
 function renderLogs() {
   const logs = getLogs();
-  if (logs.length === 0) { logEntries.innerHTML = '<span style="color:rgba(255,255,255,0.4);">Nincsenek naplóbejegyzések.</span>'; }
-  else { logEntries.innerHTML = logs.reverse().map(l => { const icon = l.status === 'success' ? '✅' : '❌'; const time = new Date(l.time).toLocaleTimeString('hu-HU'); let line = `${icon} <strong>${time}</strong> – ${l.business} (${l.type})`; if (l.file) line += ` – <a href="/output/${l.file}" target="_blank" style="color:#4ade80;">📄 ${l.file}</a>`; if (l.message) line += ` – <span style="color:#f87171;">${l.message}</span>`; return `<div style="margin-bottom:3px;">${line}</div>`; }).join(''); }
-  logPanel.style.display = 'block';
-  updateProjectList();
+  logEntries.innerHTML = logs.length === 0 ? '<span style="color:rgba(255,255,255,0.4);">Nincsenek naplóbejegyzések.</span>' : logs.reverse().map(l => { const icon = l.status === 'success' ? '✅' : '❌'; const time = new Date(l.time).toLocaleTimeString('hu-HU'); let line = `${icon} <strong>${time}</strong> – ${l.business} (${l.type})`; if (l.file) line += ` – <a href="/output/${l.file}" target="_blank" style="color:#4ade80;">📄 ${l.file}</a>`; if (l.message) line += ` – <span style="color:#f87171;">${l.message}</span>`; return `<div>${line}</div>`; }).join('');
+  logPanel.style.display = 'block'; updateProjectList();
 }
-document.getElementById('clearLogsBtn').addEventListener('click', () => { if (confirm('Biztosan törlöd?')) { localStorage.removeItem(LOG_KEY); renderLogs(); } });
-document.getElementById('refreshLogsBtn').addEventListener('click', renderLogs);
+document.getElementById('clearLogsBtn')?.addEventListener('click', () => { if (confirm('Törlöd?')) { localStorage.removeItem(LOG_KEY); renderLogs(); } });
+document.getElementById('refreshLogsBtn')?.addEventListener('click', renderLogs);
 renderLogs();
 
-/* ---- Gravity CMS projekt választó ---- */
+/* ---- Projekt választó ---- */
 const projectSelector = document.getElementById('projectSelector'), openGravityBtn = document.getElementById('openGravityBtn');
 async function fetchServerProjects() {
   try {
     const res = await fetch('/output/');
-    if (!res.ok) return [];
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const html = await res.text();
-    const files = [];
-    const regex = /href="([^"]+\.json)"/g;
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      const filename = match[1];
-      // Cégnév kinyerése: safeName_timestamp.json
-      const underscoreIdx = filename.indexOf('_');
-      if (underscoreIdx > 0) {
-        const safeName = filename.substring(0, underscoreIdx);
-        // Visszaalakítás: alulvonások → szóköz
-        const business = safeName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        files.push({ business, filename, fromServer: true });
+    const files = [], regex = /href="([^"]+\.json)"/g; let m;
+    while ((m = regex.exec(html)) !== null) {
+      const fn = m[1], idx = fn.indexOf('_');
+      if (idx > 0) {
+        const biz = fn.substring(0, idx).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        files.push({ business: biz, filename: fn, fromServer: true });
       }
     }
     return files;
   } catch (e) {
+    console.warn('Szerver projektek betöltése sikertelen:', e.message);
     return [];
   }
 }
-
 async function updateProjectList() {
   const logs = getLogs(), projects = [], seen = new Set();
-  
-  // Helyi naplóból
   logs.forEach(l => { if (l.status === 'success' && l.business && !seen.has(l.business)) { seen.add(l.business); projects.push(l); } });
-  
-  // Szerverről (ha nincs a naplóban)
-  const serverProjects = await fetchServerProjects();
-  serverProjects.forEach(p => {
-    if (!seen.has(p.business)) {
-      seen.add(p.business);
-      projects.push({ business: p.business, type: 'szerver', status: 'success', file: p.filename });
-    }
-  });
-  
-  projectSelector.innerHTML = '<option value="">-- Válassz generált projektet --</option>';
-  projects.forEach(p => { 
-    const o = document.createElement('option'); 
-    o.value = p.business; 
-    o.textContent = '📁 ' + p.business + (p.fromServer ? ' (fájl)' : ' (' + (p.type || '?') + ')'); 
-    projectSelector.appendChild(o); 
-  });
+  const sp = await fetchServerProjects();
+  sp.forEach(p => { if (!seen.has(p.business)) { seen.add(p.business); projects.push({ business: p.business, type: 'szerver', status: 'success', file: p.filename, fromServer: true }); } });
+  projectSelector.innerHTML = '<option value="">-- Válassz projektet --</option>';
+  if (projects.length === 0) {
+    projectSelector.innerHTML += '<option disabled>Nincs találat – generálj egy oldalt, vagy kattints a 📁 Fájlok linkre</option>';
+  } else {
+    projects.forEach(p => { const o = document.createElement('option'); o.value = p.business; o.textContent = '📁 ' + p.business + (p.fromServer ? ' (fájl)' : ''); projectSelector.appendChild(o); });
+  }
   if (projects.length > 0) projectSelector.value = projects[projects.length - 1].business;
   projectSelector.dispatchEvent(new Event('change'));
 }
 projectSelector.addEventListener('change', () => {
   const b = projectSelector.value;
-  if (b) { openGravityBtn.href = '/gravity/01.' + b.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 30); openGravityBtn.style.opacity = '1'; }
-  else { openGravityBtn.href = '/gravity/'; openGravityBtn.style.opacity = '0.5'; }
+  openGravityBtn.href = b ? '/gravity/01.' + b.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 30) : '/gravity/';
 });
 updateProjectList();
 
@@ -262,31 +215,27 @@ updateProjectList();
 const progressContainer = document.getElementById('progressContainer'), progressFill = document.getElementById('progressFill'), steps = document.querySelectorAll('.step'), downloadBtn = document.getElementById('downloadBtn');
 function resetUI() { progressContainer.style.display = 'none'; progressFill.className = 'progress-fill'; progressFill.style.width = '0%'; progressFill.style.background = ''; downloadBtn.style.display = 'none'; downloadBtn.href = '#'; steps.forEach(s => { s.className = 'step'; s.querySelector('.step-icon').textContent = '⏳'; }); }
 function setStep(i, t) { const s = steps[i]; if (!s) return; if (t === 'active') { s.className = 'step active'; s.querySelector('.step-icon').textContent = '🔄'; } else if (t === 'done') { s.className = 'step done'; s.querySelector('.step-icon').textContent = '✅'; } else if (t === 'error') { s.className = 'step error'; s.querySelector('.step-icon').textContent = '❌'; } }
-function getChecked(sel) { const v = []; document.querySelectorAll(sel + ':checked').forEach(c => v.push(c.value)); return v; }
+function getChecked(s) { const v = []; document.querySelectorAll(s + ':checked').forEach(c => v.push(c.value)); return v; }
 function getColorOrAi(id, aiId) { return document.getElementById(aiId).checked ? 'ai' : document.getElementById(id).value; }
 
 /* ---- Submit ---- */
 const form = document.getElementById('generatorForm'), submitBtn = document.getElementById('submitBtn'), responseDiv = document.getElementById('response'), responseContent = document.getElementById('responseContent');
-
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const pages = [];
   document.querySelectorAll('.page-entry').forEach(entry => {
-    const name = entry.querySelector('.page-name')?.value.trim() || '', slug = entry.querySelector('.page-slug')?.value.trim() || name.toLowerCase().replace(/\s+/g, '_'), desc = entry.querySelector('.page-description')?.value.trim() || '', imageCount = parseInt(entry.querySelector('.page-image-count')?.value || 0);
-    const modeRadio = entry.querySelector('.page-mode-radio:checked');
-    const mode = modeRadio ? modeRadio.value : 'ai';
-    const subpages = [];
-    entry.querySelectorAll('.subpage-entry').forEach(sp => { const sn = sp.querySelector('.subpage-name')?.value.trim() || '', ss = sp.querySelector('.subpage-slug')?.value.trim() || sn.toLowerCase().replace(/\s+/g, '_'), sd = sp.querySelector('.subpage-desc')?.value.trim() || ''; if (sn) subpages.push({ name: sn, slug: ss, description: sd }); });
-    pages.push({ name, slug, description: desc, mode, imageCount, subpages });
+    const name = entry.querySelector('.page-name')?.value.trim() || '', slug = entry.querySelector('.page-slug')?.value.trim() || name.toLowerCase().replace(/\s+/g, '_'), desc = entry.querySelector('.page-desc')?.value.trim() || '', img = parseInt(entry.querySelector('.page-img')?.value || 0);
+    const modeR = entry.querySelector('.page-mode:checked'), mode = modeR ? modeR.value : 'ai';
+    const sub = [];
+    entry.querySelectorAll('.subpage-entry').forEach(sp => { const sn = sp.querySelector('.sub-name')?.value.trim() || '', ss = sp.querySelector('.sub-slug')?.value.trim() || sn.toLowerCase().replace(/\s+/g, '_'), sd = sp.querySelector('.sub-desc')?.value.trim() || ''; if (sn) sub.push({ name: sn, slug: ss, description: sd }); });
+    pages.push({ name, slug, description: desc, mode, imageCount: img, subpages: sub });
   });
-
-  const languages = getChecked('.lang-opt'); if (languages.length === 0) languages.push('hu');
+  const langs = getChecked('.lang-opt'); if (langs.length === 0) langs.push('hu');
   const logoMode = document.querySelector('input[name="logoMode"]:checked').value;
-
   const payload = {
     businessName: document.getElementById('businessName').value.trim(),
     projectType: document.getElementById('projectType').value,
-    languages, description: document.getElementById('description').value.trim(),
+    languages: langs, description: document.getElementById('description').value.trim(),
     designStyle: document.getElementById('designStyle').value,
     apiKeyOverride: document.getElementById('apiKeyOverride').value.trim(),
     aiModel: document.getElementById('aiModel').value,
@@ -297,27 +246,16 @@ form.addEventListener('submit', async (e) => {
     headerLogo: (logoMode==='upload' && headerLogoBase64) ? { filename: headerLogoFilename, data: headerLogoBase64 } : null,
     footerLogo: (logoMode==='upload' && footerLogoBase64) ? { filename: footerLogoFilename, data: footerLogoBase64 } : null,
     header: getChecked('.header-opt'),
-    hero: {
-      enabled: document.getElementById('heroEnabled').checked,
-      height: parseInt(heroHeight.value),
-      bgMode: document.getElementById('heroBgModeSelect').value,
-      bgPrompt: document.getElementById('heroBgPrompt').value.trim(),
-      bgImage: heroBgBase64 ? { filename: heroBgFilename, data: heroBgBase64 } : null,
-      bgCount: parseInt(document.getElementById('heroBgCount')?.value || 1)
-    },
-    footer: getChecked('.footer-opt'),
-    pages
+    hero: { enabled: document.getElementById('heroEnabled').checked, height: parseInt(heroHeight.value), bgMode: document.getElementById('heroBgModeSelect').value, bgPrompt: document.getElementById('heroBgPrompt').value.trim(), bgImage: heroBgBase64 ? { filename: heroBgFilename, data: heroBgBase64 } : null, bgCount: parseInt(document.getElementById('heroBgCount')?.value || 1) },
+    footer: getChecked('.footer-opt'), pages
   };
-
   resetUI(); responseContent.textContent = ''; responseContent.className = ''; responseDiv.style.display = 'none';
   submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner"></span>Generálás...';
   progressContainer.style.display = 'block'; progressFill.className = 'progress-fill indeterminate'; setStep(0, 'active');
   const st = []; st.push(setTimeout(() => { setStep(0, 'done'); setStep(1, 'active'); progressFill.style.width = '25%'; }, 500));
-
   try {
     const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    st.forEach(t => clearTimeout(t)); setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'active'); setStep(3, 'active');
-    progressFill.className = 'progress-fill'; progressFill.style.width = '75%';
+    st.forEach(t => clearTimeout(t)); setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'active'); setStep(3, 'active'); progressFill.className = 'progress-fill'; progressFill.style.width = '75%';
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.message || data.error || `HTTP ${res.status}`);
     setStep(2, 'done'); setStep(3, 'done'); progressFill.style.width = '100%';
@@ -327,9 +265,7 @@ form.addEventListener('submit', async (e) => {
     setTimeout(() => { progressFill.style.width = '0%'; }, 2000);
   } catch (err) {
     addLogEntry({ time: new Date().toISOString(), business: payload ? payload.businessName : '?', type: payload ? payload.projectType : '?', status: 'error', message: err.message });
-    st.forEach(t => clearTimeout(t)); setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'error'); setStep(3, 'error');
-    progressFill.className = 'progress-fill'; progressFill.style.background = '#f87171'; progressFill.style.width = '100%';
-    responseContent.className = 'status-error'; responseContent.textContent = '❌ HIBA: ' + err.message + '\n\n' + SERVER_BASE;
-    responseDiv.style.display = 'block';
+    st.forEach(t => clearTimeout(t)); setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'error'); setStep(3, 'error'); progressFill.className = 'progress-fill'; progressFill.style.background = '#f87171'; progressFill.style.width = '100%';
+    responseContent.className = 'status-error'; responseContent.textContent = '❌ HIBA: ' + err.message + '\n\n' + SERVER_BASE; responseDiv.style.display = 'block';
   } finally { submitBtn.disabled = false; submitBtn.innerHTML = '⚡ Weboldal generálása AI-val'; }
 });
