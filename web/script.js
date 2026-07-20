@@ -136,6 +136,212 @@ document.getElementById('clearLogsBtn')?.addEventListener('click',()=>{if(confir
 document.getElementById('refreshLogsBtn')?.addEventListener('click',renderLogs);
 renderLogs();
 
+/* ---- Dokumentum import / export / mintaadatok ---- */
+const docDropZone = document.getElementById('docDropZone');
+const docFileInput = document.getElementById('docFileInput');
+const docFileName = document.getElementById('docFileName');
+const docStatus = document.getElementById('docStatus');
+const exportJsonBtn = document.getElementById('exportJsonBtn');
+const loadSampleBtn = document.getElementById('loadSampleBtn');
+
+// Drag & drop a dokumentum zónához
+if (docDropZone && docFileInput) {
+  ['dragenter','dragover','dragleave','drop'].forEach(ev => docDropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
+  docDropZone.addEventListener('dragover', () => docDropZone.classList.add('drag-over'));
+  docDropZone.addEventListener('dragleave', () => docDropZone.classList.remove('drag-over'));
+  docDropZone.addEventListener('drop', e => {
+    docDropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length > 0) {
+      docFileInput.files = e.dataTransfer.files;
+      docFileInput.dispatchEvent(new Event('change'));
+    }
+  });
+  docDropZone.addEventListener('click', () => docFileInput.click());
+  docFileInput.addEventListener('click', e => e.stopPropagation());
+}
+
+// Fájl beolvasása és AI elemzés
+docFileInput?.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  docFileName.textContent = '📄 ' + file.name + ' – elemzés...';
+  docStatus.textContent = '⏳ AI feldolgozás folyamatban...';
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const text = reader.result;
+    try {
+      // API kulcs lekérése
+      const apiKey = document.getElementById('apiKeyOverride').value.trim() || 'MISSING';
+      if (apiKey === 'MISSING' || !apiKey.startsWith('sk-')) {
+        throw new Error('Hiányzó API kulcs! Add meg az API Kulcs felülbírálása mezőben.');
+      }
+
+      // AI elemzés a DeepSeek API-n keresztül (nginx proxy)
+      const response = await fetch('/deepseek/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + apiKey
+        },
+        body: JSON.stringify({
+          model: 'deepseek-v4-flash',
+          messages: [
+            { role: 'system', content: 'You are a form parser. Extract web design project data from the following text. Return ONLY valid JSON with these fields: businessName (string), projectType (one of: landing_page, corporate, blog, portfolio, shop, admin), language (one of: hu, en, de, fr, es, it), description (string), designStyle (one of: modern, minimal, classic, bold, corporate, creative), primaryColor (hex color like #6366f1), secondaryColor (hex color like #8b5cf6), accentColor (hex color like #f59e0b), headerBg (hex color like #ffffff), footerBg (hex color like #1f2937), heroEnabled (boolean), heroHeight (number 300-1000), pages (array of {name, slug, description, mode: "ai"|"manual", imageCount}). If any field is not mentioned, use sensible defaults. No markdown, pure JSON only.' },
+            { role: 'user', content: text.substring(0, 8000) }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000,
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message || 'API hiba');
+
+      const parsed = JSON.parse(data.choices[0].message.content);
+
+      // Űrlap kitöltése
+      fillFormFromData(parsed);
+      docFileName.textContent = '✅ ' + file.name + ' – feldolgozva!';
+      docStatus.textContent = '✅ Az űrlap kitöltve az AI által elemzett adatokkal. Ellenőrizd és módosítsd, majd generálj!';
+    } catch (err) {
+      docFileName.textContent = '❌ ' + file.name;
+      docStatus.textContent = '❌ Hiba: ' + err.message;
+    }
+  };
+  reader.readAsText(file);
+});
+
+// Űrlap adatok kinyerése JSON exportáláshoz
+function getFormData() {
+  const pages = [];
+  document.querySelectorAll('.page-entry').forEach(entry => {
+    const name = entry.querySelector('.page-name')?.value.trim() || '';
+    const slug = entry.querySelector('.page-slug')?.value.trim() || name.toLowerCase().replace(/\s+/g, '_');
+    const desc = entry.querySelector('.page-desc')?.value.trim() || '';
+    const img = parseInt(entry.querySelector('.page-img')?.value || 0);
+    const modeR = entry.querySelector('.page-mode:checked');
+    const mode = modeR ? modeR.value : 'ai';
+    const sub = [];
+    entry.querySelectorAll('.subpage-entry').forEach(sp => {
+      const sn = sp.querySelector('.sub-name')?.value.trim() || '';
+      const ss = sp.querySelector('.sub-slug')?.value.trim() || sn.toLowerCase().replace(/\s+/g, '_');
+      const sd = sp.querySelector('.sub-desc')?.value.trim() || '';
+      if (sn) sub.push({ name: sn, slug: ss, description: sd });
+    });
+    pages.push({ name, slug, description: desc, mode, imageCount: img, subpages: sub });
+  });
+
+  return {
+    businessName: document.getElementById('businessName').value.trim(),
+    projectType: document.getElementById('projectType').value,
+    languages: getChecked('.lang-opt'),
+    description: document.getElementById('description').value.trim(),
+    designStyle: document.getElementById('designStyle').value,
+    aiModel: document.getElementById('aiModel').value,
+    customPrompt: document.getElementById('customPrompt').value.trim(),
+    notifyEmail: document.getElementById('notifyEmail').value.trim(),
+    logoMode: document.querySelector('input[name="logoMode"]:checked')?.value || 'upload',
+    colors: {
+      primary: document.getElementById('primaryColor').value,
+      secondary: document.getElementById('secondaryColor').value,
+      accent: document.getElementById('accentColor').value,
+      headerBg: document.getElementById('headerBg').value,
+      footerBg: document.getElementById('footerBg').value
+    },
+    heroEnabled: document.getElementById('heroEnabled').checked,
+    heroHeight: parseInt(document.getElementById('heroHeight').value),
+    heroBgMode: document.getElementById('heroBgModeSelect').value,
+    pages: pages
+  };
+}
+
+// Űrlap kitöltése adatokból (AI elemzés vagy JSON import után)
+function fillFormFromData(data) {
+  if (data.businessName) document.getElementById('businessName').value = data.businessName;
+  if (data.projectType) document.getElementById('projectType').value = data.projectType;
+  if (data.description) document.getElementById('description').value = data.description;
+  if (data.designStyle) document.getElementById('designStyle').value = data.designStyle;
+  if (data.aiModel) document.getElementById('aiModel').value = data.aiModel;
+  if (data.customPrompt) document.getElementById('customPrompt').value = data.customPrompt;
+  if (data.notifyEmail) document.getElementById('notifyEmail').value = data.notifyEmail;
+  if (data.logoMode) {
+    const radio = document.querySelector(`input[name="logoMode"][value="${data.logoMode}"]`);
+    if (radio) { radio.checked = true; toggleLogoMode(); }
+  }
+  if (data.colors) {
+    if (data.colors.primary) document.getElementById('primaryColor').value = data.colors.primary;
+    if (data.colors.secondary) document.getElementById('secondaryColor').value = data.colors.secondary;
+    if (data.colors.accent) document.getElementById('accentColor').value = data.colors.accent;
+    if (data.colors.headerBg) document.getElementById('headerBg').value = data.colors.headerBg;
+    if (data.colors.footerBg) document.getElementById('footerBg').value = data.colors.footerBg;
+  }
+  if (data.heroEnabled !== undefined) document.getElementById('heroEnabled').checked = data.heroEnabled;
+  if (data.heroHeight) { document.getElementById('heroHeight').value = data.heroHeight; document.getElementById('heroHeightValue').textContent = data.heroHeight; }
+  if (data.heroBgMode) { document.getElementById('heroBgModeSelect').value = data.heroBgMode; toggleHeroBgMode(); }
+
+  // Oldalak frissítése
+  if (data.pages && Array.isArray(data.pages)) {
+    // Meglévő oldalak törlése
+    document.querySelectorAll('.page-entry').forEach(el => el.remove());
+    // Új oldalak hozzáadása
+    data.pages.forEach(p => {
+      try {
+        pagesContainer.appendChild(createPageEntry({
+          name: p.name || '', slug: p.slug || '', desc: p.description || '',
+          mode: p.mode || 'ai', img: p.imageCount || 0, sub: p.subpages || []
+        }));
+      } catch (e) {}
+    });
+  }
+
+  updatePreview();
+}
+
+// JSON export
+exportJsonBtn?.addEventListener('click', () => {
+  const data = getFormData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (data.businessName || 'urlap') + '_export.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  docStatus.textContent = '✅ Űrlap letöltve JSON-ként!';
+});
+
+// Mintaadatok betöltése
+loadSampleBtn?.addEventListener('click', () => {
+  const sample = {
+    businessName: 'Digitális Megoldások Kft.',
+    projectType: 'landing_page',
+    languages: ['hu'],
+    description: 'Professzionális webfejlesztő és digitális marketing ügynökség. 10 év tapasztalat, több mint 100 elégedett ügyfél. Szolgáltatásaink: egyedi weboldalak, webshopok, SEO optimalizálás, online marketing.',
+    designStyle: 'modern',
+    aiModel: 'deepseek-v4-flash',
+    customPrompt: 'Legyen professzionális, letisztult design. Használj modern tipográfiát.',
+    logoMode: 'ai',
+    colors: { primary: '#2563eb', secondary: '#1e40af', accent: '#f59e0b', headerBg: '#ffffff', footerBg: '#1e293b' },
+    heroEnabled: true,
+    heroHeight: 600,
+    heroBgMode: 'none',
+    pages: [
+      { name: 'Kezdőlap', slug: 'home', description: 'Főoldal hero szekcióval, szolgáltatások bemutatása, referenciák, ügyfélvélemények', mode: 'ai', imageCount: 3, subpages: [] },
+      { name: 'Szolgáltatások', slug: 'services', description: 'Részletes szolgáltatás leírások: webfejlesztés, SEO, marketing', mode: 'ai', imageCount: 2, subpages: [
+        { name: 'Webfejlesztés', slug: 'web', description: 'Egyedi weboldalak és webshopok fejlesztése' },
+        { name: 'SEO', slug: 'seo', description: 'Keresőoptimalizálás és tartalommarketing' }
+      ]},
+      { name: 'Kapcsolat', slug: 'contact', description: 'Kapcsolatfelvételi űrlap, elérhetőségek, térkép', mode: 'ai', imageCount: 0, subpages: [] }
+    ]
+  };
+
+  fillFormFromData(sample);
+  docStatus.textContent = '✅ Mintaadatok betöltve! Ellenőrizd és módosítsd, majd generálj!';
+  updatePreview();
+});
+
 // A projektválasztó és Gravity CMS előnézet átkerült a preview.html oldalra
 
 /* ---- Statikus HTML előnézet generálása ---- */

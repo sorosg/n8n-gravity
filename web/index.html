@@ -273,6 +273,25 @@
       <a href="preview.html" class="btn btn-add" style="text-decoration:none;display:inline-block;">📄 Előnézet megnyitása</a>
     </div>
 
+    <!-- ====== IMPORT / EXPORT ====== -->
+    <div class="section-box" style="text-align:center;">
+      <h3>📂 Adatok importálása / exportálása</h3>
+      <p class="section-desc">
+        Tölts fel egy dokumentumot (.txt, .md) – az AI elemzi, és automatikusan kitölti az űrlapot.<br>
+        Vagy töltsd le az űrlap adatait JSON fájlként, illetve tölts be mintaadatokat.
+      </p>
+      <div class="drag-drop-zone" id="docDropZone" style="margin-bottom:10px;">
+        <span>📄 Húzz ide egy dokumentumot, vagy <u>kattints a tallózáshoz</u></span>
+        <input type="file" id="docFileInput" accept=".txt,.md,.json">
+        <span class="file-name" id="docFileName" style="display:block;margin-top:6px;color:#4ade80;font-size:12px;"></span>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm" id="exportJsonBtn">📥 Űrlap letöltése (JSON)</button>
+        <button type="button" class="btn btn-sm" id="loadSampleBtn">📋 Mintaadatok betöltése</button>
+      </div>
+      <span id="docStatus" style="color:rgba(255,255,255,0.5);font-size:12px;display:block;margin-top:6px;"></span>
+    </div>
+
     <!-- ====== PROGRESS + LOG ====== -->
     <div class="progress-container" id="progressContainer">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
