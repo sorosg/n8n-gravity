@@ -22,7 +22,7 @@ services:
       - N8N_USER_MANAGEMENT_DISABLED=${N8N_USER_MANAGEMENT_DISABLED:-false}
       - N8N_SECURE_COOKIE=false
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
-      - NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,path
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,path,https,http,url
       - NODE_FUNCTION_ALLOW_EXTERNAL=*
       - N8N_DIAGNOSTICS_ENABLED=false
       - DB_TYPE=postgresdb
