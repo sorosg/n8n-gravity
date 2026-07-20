@@ -201,11 +201,53 @@ renderLogs();
 
 /* ---- Gravity CMS projekt választó ---- */
 const projectSelector = document.getElementById('projectSelector'), openGravityBtn = document.getElementById('openGravityBtn');
-function updateProjectList() {
+async function fetchServerProjects() {
+  try {
+    const res = await fetch('/output/');
+    if (!res.ok) return [];
+    const html = await res.text();
+    const files = [];
+    const regex = /href="([^"]+\.json)"/g;
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+      const filename = match[1];
+      // Cégnév kinyerése: safeName_timestamp.json
+      const underscoreIdx = filename.indexOf('_');
+      if (underscoreIdx > 0) {
+        const safeName = filename.substring(0, underscoreIdx);
+        // Visszaalakítás: alulvonások → szóköz
+        const business = safeName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        files.push({ business, filename, fromServer: true });
+      }
+    }
+    return files;
+  } catch (e) {
+    return [];
+  }
+}
+
+async function updateProjectList() {
   const logs = getLogs(), projects = [], seen = new Set();
+  
+  // Helyi naplóból
   logs.forEach(l => { if (l.status === 'success' && l.business && !seen.has(l.business)) { seen.add(l.business); projects.push(l); } });
+  
+  // Szerverről (ha nincs a naplóban)
+  const serverProjects = await fetchServerProjects();
+  serverProjects.forEach(p => {
+    if (!seen.has(p.business)) {
+      seen.add(p.business);
+      projects.push({ business: p.business, type: 'szerver', status: 'success', file: p.filename });
+    }
+  });
+  
   projectSelector.innerHTML = '<option value="">-- Válassz generált projektet --</option>';
-  projects.forEach(p => { const o = document.createElement('option'); o.value = p.business; o.textContent = '📁 ' + p.business + ' (' + (p.type || '?') + ')'; projectSelector.appendChild(o); });
+  projects.forEach(p => { 
+    const o = document.createElement('option'); 
+    o.value = p.business; 
+    o.textContent = '📁 ' + p.business + (p.fromServer ? ' (fájl)' : ' (' + (p.type || '?') + ')'); 
+    projectSelector.appendChild(o); 
+  });
   if (projects.length > 0) projectSelector.value = projects[projects.length - 1].business;
   projectSelector.dispatchEvent(new Event('change'));
 }
