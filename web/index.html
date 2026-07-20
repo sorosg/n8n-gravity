@@ -3,177 +3,279 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>n8n-gravity – Gravity CMS Weboldal Generátor v0.9</title>
+  <title>n8n-gravity – Gravity CMS Weboldal Generátor v1.0</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
   <h1>🚀 Gravity CMS Generátor</h1>
-  <p class="subtitle">AI-vezérelt weboldal tervezés • SVG logó • Képoptimalizálás</p>
+  <p class="subtitle">AI-vezérelt weboldal tervezés</p>
 
   <div class="info-box">
     🔗 Webhook: <strong id="webhookUrl">/webhook/gravity-generate</strong>
-    <br>🖥️ Szerver: <span id="serverStatus">Ellenőrzés...</span><span id="statusDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-left:6px;"></span>
-    <br>🔗 <a href="http://192.168.4.148:5678" target="_blank" style="color:#a5b4fc;">n8n →</a> |
-    <a href="/output/" target="_blank" style="color:#a5b4fc;">📁 Fájlok →</a> |
-    <a href="/gravity/" target="_blank" style="color:#a5b4fc;">🧪 CMS →</a> |
-    <a href="/output/versions/" target="_blank" style="color:#a5b4fc;">🕐 Verziók →</a>
+    <br>🖥️ Szerver: <span id="serverStatus">Ellenőrzés...</span><span id="statusDot"></span>
+    <br>
+    <a href="http://192.168.4.148:5678" target="_blank">n8n →</a> |
+    <a href="/output/" target="_blank">📁 Fájlok →</a> |
+    <a href="/gravity/" target="_blank">🧪 CMS →</a> |
+    <a href="/output/versions/" target="_blank">🕐 Verziók →</a>
   </div>
 
   <form id="generatorForm">
 
-    <div class="form-group">
-      <label>🔑 API Kulcs felülbírálása <span class="label-desc">– opcionális: ha itt megadsz egy kulcsot, ezt használja a rendszer a .env fájlban lévő helyett</span></label>
-      <input type="password" id="apiKeyOverride" placeholder="sk-... (ha üres, a .env fájlban lévőt használja)">
+    <!-- ====== API KULCS ====== -->
+    <div class="section-box">
+      <h3>🔑 API Kulcs felülbírálása</h3>
+      <p class="section-desc">Ha itt megadsz egy kulcsot, ezt használja a rendszer a .env fájlban lévő helyett.</p>
+      <input type="password" id="apiKeyOverride" placeholder="sk-... (üres = .env fájlból)">
     </div>
 
-    <h3>🏢 Alapadatok</h3>
-    <div class="form-group"><label>Cégnév *</label><input type="text" id="businessName" placeholder="pl. Digitális Megoldások Kft." required></div>
-    <div class="row">
-      <div class="form-group">
-        <label>Weboldal típusa</label>
-        <select id="projectType" onchange="updatePreview()">
-          <option value="landing_page">📄 Landing Page – egyoldalas, figyelemfelkeltő</option>
-          <option value="corporate">🏢 Céges weboldal – többoldalas, professzionális</option>
-          <option value="blog">📝 Blog – cikkes, hírportál jellegű</option>
-          <option value="portfolio">🖼️ Portfólió – munkák bemutatása</option>
-          <option value="shop">🛒 Webshop – termékkatalógus, kosár</option>
-          <option value="admin">⚙️ Admin felület – belső dashboard</option>
-        </select>
+    <!-- ====== ALAPADATOK ====== -->
+    <div class="section-box">
+      <h3>🏢 Alapadatok</h3>
+      <div class="form-row">
+        <div class="form-group full">
+          <label>✏️ Cégnév / Projekt név *</label>
+          <input type="text" id="businessName" placeholder="pl. Digitális Megoldások Kft." required>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Design stílus</label>
-        <select id="designStyle" onchange="updatePreview()">
-          <option value="modern">✨ Modern – letisztult, friss</option>
-          <option value="minimal">🤍 Minimalista – egyszerű, elegáns</option>
-          <option value="classic">🏛️ Klasszikus – hagyományos elrendezés</option>
-          <option value="bold">🔥 Feltűnő – erős színek, nagy elemek</option>
-          <option value="corporate">💼 Elegáns üzleti – visszafogott</option>
-          <option value="creative">🎨 Kreatív – egyedi, művészi</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group half">
+          <label>📄 Weboldal típusa</label>
+          <select id="projectType" onchange="updatePreview()">
+            <option value="landing_page">📄 Landing Page – egyoldalas, figyelemfelkeltő</option>
+            <option value="corporate">🏢 Céges weboldal – többoldalas, professzionális</option>
+            <option value="blog">📝 Blog – cikkes, hírportál jellegű</option>
+            <option value="portfolio">🖼️ Portfólió – munkák bemutatása</option>
+            <option value="shop">🛒 Webshop – termékkatalógus, kosár</option>
+            <option value="admin">⚙️ Admin felület – belső dashboard</option>
+          </select>
+        </div>
+        <div class="form-group half">
+          <label>🎨 Design stílus</label>
+          <select id="designStyle" onchange="updatePreview()">
+            <option value="modern">✨ Modern – letisztult, friss</option>
+            <option value="minimal">🤍 Minimalista – egyszerű, elegáns</option>
+            <option value="classic">🏛️ Klasszikus – hagyományos</option>
+            <option value="bold">🔥 Feltűnő – erős színek</option>
+            <option value="corporate">💼 Elegáns üzleti – visszafogott</option>
+            <option value="creative">🎨 Kreatív – egyedi, művészi</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group half">
+          <label>🤖 AI Modell</label>
+          <select id="aiModel">
+            <option value="deepseek-v4-flash">🤖 DeepSeek V4 Flash (gyors, olcsó)</option>
+            <option value="deepseek-v4-pro">🧠 DeepSeek V4 Pro (alapos)</option>
+            <option value="gpt-4o">🧠 OpenAI GPT-4o</option>
+            <option value="claude-3-5-sonnet">📝 Claude 3.5 Sonnet</option>
+          </select>
+        </div>
+        <div class="form-group half">
+          <label>📧 Email értesítés</label>
+          <input type="email" id="notifyEmail" placeholder="email@example.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label>✏️ Projekt leírása <span class="ai-badge">🧠 AI generál a szöveg alapján</span></label>
+          <textarea id="description" rows="3" placeholder="Részletes leírás a cégről, tevékenységről, célcsoportról... (minél részletesebb, annál jobb az AI által generált tartalom)"></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label>✏️ Egyedi AI prompt módosítása <span class="ai-badge">🧠 AI további instrukciók</span></label>
+          <textarea id="customPrompt" rows="2" placeholder="Pl.: Legyen sötét téma, használj gradiens hátteret, a célcsoport fiatal vállalkozók..."></textarea>
+        </div>
       </div>
     </div>
-    <div class="row">
-      <div class="form-group">
-        <label>AI Modell</label>
-        <select id="aiModel">
-          <option value="deepseek-v4-flash">🤖 DeepSeek V4 Flash (gyors)</option>
-          <option value="deepseek-v4-pro">🧠 DeepSeek V4 Pro (alapos)</option>
-          <option value="gpt-4o">🧠 OpenAI GPT-4o</option>
-          <option value="claude-3-5-sonnet">📝 Claude 3.5 Sonnet</option>
-        </select>
+
+    <!-- ====== SZÍNEK ====== -->
+    <div class="section-box">
+      <h3>🎨 Színek <a href="https://coolors.co" target="_blank" class="inspiration-link">(inspiráció: coolors.co)</a></h3>
+      <p class="section-desc">Válaszd ki a színeket kézzel, vagy bízd az AI-ra az adott szín kiválasztását.</p>
+      <div class="form-row">
+        <div class="form-group third">
+          <label>🎨 Elsődleges (Primary)<br><small>Címsorok, hangsúlyos elemek</small></label>
+          <input type="color" id="primaryColor" value="#6366f1" onchange="updatePreview()">
+          <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="primaryColor" id="ai_primary"><label for="ai_primary">🧠 AI választ</label></div>
+        </div>
+        <div class="form-group third">
+          <label>🎨 Másodlagos (Secondary)<br><small>Alcímek, kiemelt részek</small></label>
+          <input type="color" id="secondaryColor" value="#8b5cf6" onchange="updatePreview()">
+          <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="secondaryColor" id="ai_secondary"><label for="ai_secondary">🧠 AI választ</label></div>
+        </div>
+        <div class="form-group third">
+          <label>🎨 Kiemelés (Accent)<br><small>Gombok, linkek, hover</small></label>
+          <input type="color" id="accentColor" value="#f59e0b" onchange="updatePreview()">
+          <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="accentColor" id="ai_accent"><label for="ai_accent">🧠 AI választ</label></div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Email értesítés</label>
-        <input type="email" id="notifyEmail" placeholder="email@example.com">
+      <div class="form-row">
+        <div class="form-group half">
+          <label>🎨 Fejléc háttérszín</label>
+          <input type="color" id="headerBg" value="#ffffff" onchange="updatePreview()">
+          <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="headerBg" id="ai_headerBg"><label for="ai_headerBg">🧠 AI választ</label></div>
+        </div>
+        <div class="form-group half">
+          <label>🎨 Lábléc háttérszín</label>
+          <input type="color" id="footerBg" value="#1f2937" onchange="updatePreview()">
+          <div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="footerBg" id="ai_footerBg"><label for="ai_footerBg">🧠 AI választ</label></div>
+        </div>
       </div>
     </div>
 
     <!-- Téma előnézet -->
-    <div class="preview-card" id="themePreview">
-      <div class="preview-header" id="previewHeader">Header</div>
-      <div class="preview-hero" id="previewHero">
-        <div class="preview-hero-title">Cégnév</div>
-        <div class="preview-hero-sub">Alcím / leírás</div>
-        <button class="preview-btn">CTA Gomb</button>
-      </div>
-      <div class="preview-content">
-        <div class="preview-section-title">Szekció címe</div>
-        <div class="preview-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-      </div>
-      <div class="preview-footer" id="previewFooter">Footer</div>
-    </div>
-
-    <h3>🖼️ Logó beállítás</h3>
-    <div class="checkbox-row"><input type="radio" name="logoMode" id="logoModeUpload" value="upload" checked onchange="toggleLogoMode()"><label for="logoModeUpload">📁 Saját logó feltöltése (automatikus optimalizálással 800px, WebP)</label></div>
-    <div class="checkbox-row"><input type="radio" name="logoMode" id="logoModeAi" value="ai" onchange="toggleLogoMode()"><label for="logoModeAi">🤖 AI generáljon SVG logót</label></div>
-
-    <div id="logoUploadGroup">
-      <div class="form-group"><label>🖼️ Fejléc logó</label><div class="file-upload"><label class="file-label" for="headerLogoFile">📁 Tallózás...</label><input type="file" id="headerLogoFile" accept="image/*"><span class="file-name" id="headerLogoFileName">Nincs kiválasztva</span></div></div>
-      <div class="form-group"><label>🖼️ Lábléc logó (opcionális)</label><div class="file-upload"><label class="file-label" for="footerLogoFile">📁 Tallózás...</label><input type="file" id="footerLogoFile" accept="image/*"><span class="file-name" id="footerLogoFileName">Nincs kiválasztva</span></div></div>
-    </div>
-
-    <div id="logoAiGroup" style="display:none;">
-      <div class="form-group">
-        <label>🤖 Logó prompt (írd le milyen logót szeretnél)</label>
-        <textarea id="logoPrompt" rows="2" placeholder="Pl.: Modern tech logó, kék-fehér színben, minimalista stílus, a cég nevének kezdőbetűjével..."></textarea>
+    <div class="section-box">
+      <h3>👁️ Téma előnézet</h3>
+      <div class="preview-card" id="themePreview">
+        <div class="preview-header" id="previewHeader">Fejléc</div>
+        <div class="preview-hero" id="previewHero">
+          <div class="preview-hero-title">Cégnév</div>
+          <div class="preview-hero-sub">Alcím / leírás</div>
+          <button class="preview-btn">CTA Gomb</button>
+        </div>
+        <div class="preview-content">
+          <div class="preview-section-title">Szekció címe</div>
+          <div class="preview-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+        </div>
+        <div class="preview-footer" id="previewFooter">Lábléc</div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label>🌍 Nyelvek</label>
-      <div class="checkbox-grid">
-        <div class="checkbox-row"><input type="checkbox" class="lang-opt" id="lang_hu" value="hu" checked><label for="lang_hu">🇭🇺 HU</label></div>
-        <div class="checkbox-row"><input type="checkbox" class="lang-opt" id="lang_en" value="en"><label for="lang_en">🇬🇧 EN</label></div>
-        <div class="checkbox-row"><input type="checkbox" class="lang-opt" id="lang_de" value="de"><label for="lang_de">🇩🇪 DE</label></div>
-        <div class="checkbox-row"><input type="checkbox" class="lang-opt" id="lang_fr" value="fr"><label for="lang_fr">🇫🇷 FR</label></div>
-        <div class="checkbox-row"><input type="checkbox" class="lang-opt" id="lang_es" value="es"><label for="lang_es">🇪🇸 ES</label></div>
-        <div class="checkbox-row"><input type="checkbox" class="lang-opt" id="lang_it" value="it"><label for="lang_it">🇮🇹 IT</label></div>
+    <!-- ====== LOGÓ ====== -->
+    <div class="section-box">
+      <h3>🖼️ Logó beállítás</h3>
+      <p class="section-desc">Válaszd ki, hogy saját logót töltesz fel, vagy az AI generáljon SVG logót.</p>
+      <div class="form-row">
+        <div class="form-group half">
+          <label><input type="radio" name="logoMode" id="logoModeUpload" value="upload" checked onchange="toggleLogoMode()"> 📁 Saját logó feltöltése</label>
+          <div id="logoUploadGroup">
+            <div class="drag-drop-zone" id="headerLogoDrop">
+              <span class="drag-drop-icon">📁</span>
+              <span>Húzd ide a fejléc logót, vagy <u>kattints a tallózáshoz</u></span>
+              <input type="file" id="headerLogoFile" accept="image/*">
+              <span class="file-name" id="headerLogoFileName">Nincs kiválasztva</span>
+            </div>
+            <div class="drag-drop-zone" id="footerLogoDrop">
+              <span class="drag-drop-icon">📁</span>
+              <span>Húzd ide a lábléc logót (opcionális), vagy <u>kattints a tallózáshoz</u></span>
+              <input type="file" id="footerLogoFile" accept="image/*">
+              <span class="file-name" id="footerLogoFileName">Nincs kiválasztva</span>
+            </div>
+            <div class="form-row" style="margin-top:8px;">
+              <div class="form-group half">
+                <label>Kimeneti formátum</label>
+                <select id="logoFormat">
+                  <option value="image/webp">WebP (ajánlott, kisebb fájl)</option>
+                  <option value="image/jpeg">JPEG</option>
+                  <option value="image/png">PNG</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group half">
+          <label><input type="radio" name="logoMode" id="logoModeAi" value="ai" onchange="toggleLogoMode()"> 🧠 AI generáljon SVG logót</label>
+          <div id="logoAiGroup" style="display:none;">
+            <div class="form-group">
+              <label>🧠 Logó prompt (írd le milyen logót szeretnél)</label>
+              <textarea id="logoPrompt" rows="2" placeholder="Pl.: Modern tech logó, kék-fehér színben, minimalista stílus, a cég nevének kezdőbetűjével..."></textarea>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="form-group"><label>Projekt leírása</label><textarea id="description" placeholder="Részletes leírás..."></textarea></div>
-    <div class="form-group"><label>✏️ Egyedi prompt</label><textarea id="customPrompt" rows="2" placeholder="Pl.: Sötét téma, gradiens háttér..."></textarea></div>
+    <!-- ====== HERO ====== -->
+    <div class="section-box">
+      <h3>🦸 Hero szekció</h3>
+      <div class="form-row">
+        <div class="form-group full">
+          <label><input type="checkbox" id="heroEnabled" checked> Legyen Hero szekció a főoldalon</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group half">
+          <label>📏 Hero magasság: <span id="heroHeightValue">600</span>px</label>
+          <input type="range" id="heroHeight" min="300" max="1000" value="600" step="50">
+          <small>300px (kicsi) – 1000px (teljes képernyős)</small>
+        </div>
+        <div class="form-group half">
+          <label>🖼️ Hero háttérkép</label>
+          <select id="heroBgModeSelect" onchange="toggleHeroBgMode()">
+            <option value="none">🎨 Nincs háttérkép (sima színátmenet)</option>
+            <option value="ai">🧠 AI generáljon háttérképet</option>
+            <option value="upload">📁 Saját kép feltöltése</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" id="heroBgAiPromptGroup" style="display:none;">
+        <div class="form-group half">
+          <label>🧠 Háttérkép prompt</label>
+          <textarea id="heroBgPrompt" rows="2" placeholder="Pl.: Modern irodaház belső tér, világos színekkel..."></textarea>
+        </div>
+        <div class="form-group half">
+          <label>🔢 Hány háttérképet generáljon?</label>
+          <input type="number" id="heroBgCount" value="1" min="1" max="5">
+        </div>
+      </div>
+      <div class="form-row" id="heroBgUploadGroup" style="display:none;">
+        <div class="form-group full">
+          <div class="drag-drop-zone" id="heroBgDrop">
+            <span class="drag-drop-icon">🖼️</span>
+            <span>Húzd ide a hero háttérképet, vagy <u>kattints a tallózáshoz</u></span>
+            <input type="file" id="heroBgFile" accept="image/*">
+            <span class="file-name" id="heroBgFileName">Nincs kiválasztva</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <h3>🎨 Színek <a href="https://coolors.co" target="_blank" class="inspiration-link">(coolors.co →)</a></h3>
-    <div class="row">
-      <div class="form-group"><label>Elsődleges</label><input type="color" id="primaryColor" value="#6366f1" onchange="updatePreview()"><div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="primaryColor" id="ai_primary"><label for="ai_primary">🤖 AI</label></div></div>
-      <div class="form-group"><label>Másodlagos</label><input type="color" id="secondaryColor" value="#8b5cf6" onchange="updatePreview()"><div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="secondaryColor" id="ai_secondary"><label for="ai_secondary">🤖 AI</label></div></div>
-    </div>
-    <div class="row">
-      <div class="form-group"><label>Kiemelés</label><input type="color" id="accentColor" value="#f59e0b" onchange="updatePreview()"><div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="accentColor" id="ai_accent"><label for="ai_accent">🤖 AI</label></div></div>
-      <div class="form-group"><label>Fejléc BG</label><input type="color" id="headerBg" value="#ffffff" onchange="updatePreview()"><div class="ai-toggle"><input type="checkbox" class="ai-check" data-target="headerBg" id="ai_headerBg"><label for="ai_headerBg">🤖 AI</label></div></div>
-    </div>
-
-    <h3>📋 Header | 🦸 Hero | 📄 Footer</h3>
-    <div class="checkbox-grid">
-      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_logo" value="logo" checked><label>Logó</label></div>
-      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_nav" value="navigation" checked><label>Nav</label></div>
-      <div class="checkbox-row"><input type="checkbox" class="header-opt" id="hdr_sticky" value="sticky"><label>Sticky</label></div>
-    </div>
-    <div class="checkbox-row"><input type="checkbox" id="heroEnabled" checked><label>🦸 Hero</label></div>
-    <div class="form-group"><label>Magasság: <span id="heroHeightValue">600</span>px</label><input type="range" id="heroHeight" min="300" max="1000" value="600" step="50"></div>
-
-    <div class="form-group">
-      <label>🖼️ Hero háttérkép</label>
-      <div class="checkbox-row"><input type="radio" name="heroBgMode" id="heroBgNone" value="none" checked onchange="toggleHeroBgMode()"><label for="heroBgNone">🎨 Nem kérek háttérképet (sima háttérszín)</label></div>
-      <div class="checkbox-row"><input type="radio" name="heroBgMode" id="heroBgAi" value="ai" onchange="toggleHeroBgMode()"><label for="heroBgAi">🤖 AI generáljon háttérképet</label></div>
-      <div class="checkbox-row"><input type="radio" name="heroBgMode" id="heroBgUpload" value="upload" onchange="toggleHeroBgMode()"><label for="heroBgUpload">📁 Saját kép feltöltése</label></div>
-    </div>
-    <div class="form-group" id="heroBgAiPromptGroup" style="display:none;">
-      <label>🤖 Háttérkép prompt (írd le milyen képet szeretnél)</label>
-      <textarea id="heroBgPrompt" rows="2" placeholder="Pl.: Modern irodaház belső tér, világos színekkel, természetes fénnyel..."></textarea>
-    </div>
-    <div class="form-group" id="heroBgUploadGroup" style="display:none;">
-      <label>🖼️ Hero háttérkép feltöltése</label>
-      <div class="file-upload"><label class="file-label" for="heroBgFile">📁 Tallózás...</label><input type="file" id="heroBgFile" accept="image/*"><span class="file-name" id="heroBgFileName">Nincs kiválasztva</span></div>
+    <!-- ====== NYELVEK ====== -->
+    <div class="section-box">
+      <h3>🌍 Nyelvek</h3>
+      <p class="section-desc">Válaszd ki, milyen nyelveken generáljon a rendszer (több is választható).</p>
+      <div class="lang-grid">
+        <label><input type="checkbox" class="lang-opt" value="hu" checked> 🇭🇺 Magyar</label>
+        <label><input type="checkbox" class="lang-opt" value="en"> 🇬🇧 English</label>
+        <label><input type="checkbox" class="lang-opt" value="de"> 🇩🇪 Deutsch</label>
+        <label><input type="checkbox" class="lang-opt" value="fr"> 🇫🇷 Français</label>
+        <label><input type="checkbox" class="lang-opt" value="es"> 🇪🇸 Español</label>
+        <label><input type="checkbox" class="lang-opt" value="it"> 🇮🇹 Italiano</label>
+      </div>
     </div>
 
-    <div class="checkbox-grid">
-      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_links" value="quick_links" checked><label>Linkek</label></div>
-      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_contact" value="contact_info" checked><label>Elérhetőség</label></div>
-      <div class="checkbox-row"><input type="checkbox" class="footer-opt" id="ftr_copyright" value="copyright" checked><label>Copyright</label></div>
+    <!-- ====== OLDALAK ====== -->
+    <div class="section-box">
+      <h3>📑 Oldalak és aloldalak</h3>
+      <p class="section-desc">
+        Adj meg tetszőleges oldalakat. Minden oldalnál megadhatod, hogy
+        <strong>🧠 az AI generáljon tartalmat</strong> (a leírás alapján),
+        vagy <strong>✏️ te magad írd meg</strong> a teljes szöveget.
+        <br>Megadhatod oldalanként, hány AI által generált képet szeretnél.
+      </p>
+      <div id="pagesContainer"></div>
+      <button type="button" class="btn btn-add" id="addPageBtn">+ Új oldal hozzáadása</button>
     </div>
 
-    <h3>📑 Oldalak</h3>
-    <div id="pagesContainer"></div>
-    <button type="button" class="btn btn-add" id="addPageBtn">+ Új oldal</button>
-
-    <div style="margin-top:12px;text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px;">
-      <small style="color:rgba(255,255,255,0.5);">🧪 Gravity CMS előnézet:</small><br>
-      <select id="projectSelector" style="margin:8px 0;width:auto;min-width:200px;display:inline-block;">
-        <option value="">-- Válassz projektet --</option>
+    <!-- ====== GRAVITY CMS ELŐNÉZET ====== -->
+    <div class="section-box" style="text-align:center;">
+      <h3>🧪 Gravity CMS előnézet</h3>
+      <select id="projectSelector" style="width:auto;min-width:250px;">
+        <option value="">-- Válassz generált projektet --</option>
       </select>
-      <br>
-      <a href="#" id="openGravityBtn" class="btn-sm" style="text-decoration:none;display:inline-block;margin:4px;" target="_blank">🌐 Megnyitás Gravity CMS-ben</a>
-      <small style="color:rgba(255,255,255,0.3);display:block;margin-top:4px;">A generálás után a projekt automatikusan megjelenik a listában.<br>Ha nem látod, frissítsd az oldalt (F5).</small>
+      <a href="#" id="openGravityBtn" class="btn btn-add" style="text-decoration:none;display:inline-block;margin-left:8px;" target="_blank">🌐 Megnyitás</a>
     </div>
 
+    <!-- ====== PROGRESS + LOG ====== -->
     <div class="progress-container" id="progressContainer">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       <div class="step-list">
-        <div class="step" data-step="0"><span class="step-icon">⏳</span> Bemenet + képoptimalizálás</div>
-        <div class="step" data-step="1"><span class="step-icon">⏳</span> AI generálás (szöveg + SVG logó)</div>
+        <div class="step" data-step="0"><span class="step-icon">⏳</span> Bemenet + optimalizálás</div>
+        <div class="step" data-step="1"><span class="step-icon">⏳</span> AI generálás</div>
         <div class="step" data-step="2"><span class="step-icon">⏳</span> CMS deploy</div>
         <div class="step" data-step="3"><span class="step-icon">⏳</span> Kész</div>
       </div>
@@ -181,13 +283,14 @@
     <a class="download-btn" id="downloadBtn" href="#" target="_blank">⬇️ Fájl letöltése</a>
     <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
   </form>
+
+  <!-- Válasz megjelenítése -->
   <div id="response"><pre id="responseContent"></pre></div>
 
-  <div id="logPanel" style="margin-top:20px;display:none;">
-    <h3>📋 Generálási napló / fájlok</h3>
-    <div id="logEntries" style="max-height:300px;overflow-y:auto;background:rgba(0,0,0,0.3);border-radius:8px;padding:10px;font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:10px;">
-      Betöltés...
-    </div>
+  <!-- Napló panel -->
+  <div id="logPanel" style="margin-top:30px;display:none;">
+    <h3>📋 Generálási napló</h3>
+    <div id="logEntries" style="max-height:300px;overflow-y:auto;background:rgba(0,0,0,0.3);border-radius:8px;padding:10px;font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:10px;">Betöltés...</div>
     <button type="button" id="clearLogsBtn" class="btn btn-del" style="margin-right:8px;">🗑️ Napló törlése</button>
     <button type="button" id="refreshLogsBtn" class="btn btn-sm">🔄 Frissítés</button>
   </div>
