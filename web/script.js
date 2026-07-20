@@ -201,6 +201,7 @@ function renderLogs() {
     }).join('');
   }
   logPanel.style.display = 'block';
+  updateProjectList();  // lista frissítése minden renderelés után
 }
 clearLogsBtn.addEventListener('click', () => {
   if (confirm('Biztosan törlöd az összes naplóbejegyzést?')) {
@@ -212,6 +213,55 @@ refreshLogsBtn.addEventListener('click', renderLogs);
 
 // Inicializálás
 renderLogs();
+
+/* ---- Gravity CMS projekt választó ---- */
+const projectSelector = document.getElementById('projectSelector');
+const openGravityBtn = document.getElementById('openGravityBtn');
+
+function updateProjectList() {
+  const logs = getLogs();
+  const projects = [];
+  const seen = new Set();
+  
+  logs.forEach(l => {
+    if (l.status === 'success' && l.business && !seen.has(l.business)) {
+      seen.add(l.business);
+      projects.push(l);
+    }
+  });
+  
+  // Meglévő opciók megtartása, kivéve a default-ot
+  projectSelector.innerHTML = '<option value="">-- Válassz projektet --</option>';
+  projects.forEach(p => {
+    const option = document.createElement('option');
+    option.value = p.business;
+    option.textContent = '📁 ' + p.business + ' (' + (p.type || '?') + ')';
+    projectSelector.appendChild(option);
+  });
+  
+  // Ha vannak projektek, az utolsót válasszuk ki
+  if (projects.length > 0) {
+    projectSelector.value = projects[projects.length - 1].business;
+  }
+}
+
+projectSelector.addEventListener('change', () => {
+  const business = projectSelector.value;
+  if (business) {
+    const safeName = business.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 30);
+    openGravityBtn.href = '/gravity/01.' + safeName;
+    openGravityBtn.style.opacity = '1';
+    openGravityBtn.style.pointerEvents = 'auto';
+  } else {
+    openGravityBtn.href = '/gravity/';
+    openGravityBtn.style.opacity = '0.5';
+    openGravityBtn.style.pointerEvents = 'none';
+  }
+});
+
+// Kezdeti betöltés
+updateProjectList();
+projectSelector.dispatchEvent(new Event('change'));
 
 /* ---- Progress ---- */
 const progressContainer = document.getElementById('progressContainer'), progressFill = document.getElementById('progressFill'),
