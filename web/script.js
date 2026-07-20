@@ -165,6 +165,54 @@ function createPageEntry(pd) {
 defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
 document.getElementById('addPageBtn').addEventListener('click', () => pagesContainer.appendChild(createPageEntry()));
 
+/* ---- Log panel ---- */
+const LOG_KEY = 'n8n_gravity_logs';
+const logPanel = document.getElementById('logPanel');
+const logEntries = document.getElementById('logEntries');
+const clearLogsBtn = document.getElementById('clearLogsBtn');
+const refreshLogsBtn = document.getElementById('refreshLogsBtn');
+
+function getLogs() {
+  try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch (e) { return []; }
+}
+function saveLogs(logs) {
+  // Max 200 sor
+  if (logs.length > 200) logs = logs.slice(-200);
+  localStorage.setItem(LOG_KEY, JSON.stringify(logs));
+}
+function addLogEntry(entry) {
+  const logs = getLogs();
+  logs.push(entry);
+  saveLogs(logs);
+  renderLogs();
+}
+function renderLogs() {
+  const logs = getLogs();
+  if (logs.length === 0) {
+    logEntries.innerHTML = '<span style="color:rgba(255,255,255,0.4);">Nincsenek naplóbejegyzések.</span>';
+  } else {
+    logEntries.innerHTML = logs.reverse().map(l => {
+      const icon = l.status === 'success' ? '✅' : '❌';
+      const time = new Date(l.time).toLocaleTimeString('hu-HU');
+      let line = `${icon} <strong>${time}</strong> – ${l.business} (${l.type})`;
+      if (l.file) line += ` – <a href="/output/${l.file}" target="_blank" style="color:#4ade80;">📄 ${l.file}</a>`;
+      if (l.message) line += ` – <span style="color:#f87171;">${l.message}</span>`;
+      return `<div style="margin-bottom:3px;">${line}</div>`;
+    }).join('');
+  }
+  logPanel.style.display = 'block';
+}
+clearLogsBtn.addEventListener('click', () => {
+  if (confirm('Biztosan törlöd az összes naplóbejegyzést?')) {
+    localStorage.removeItem(LOG_KEY);
+    renderLogs();
+  }
+});
+refreshLogsBtn.addEventListener('click', renderLogs);
+
+// Inicializálás
+renderLogs();
+
 /* ---- Progress ---- */
 const progressContainer = document.getElementById('progressContainer'), progressFill = document.getElementById('progressFill'),
   steps = document.querySelectorAll('.step'), downloadBtn = document.getElementById('downloadBtn');
@@ -241,8 +289,24 @@ form.addEventListener('submit', async (e) => {
     setStep(2, 'done'); setStep(3, 'done'); progressFill.style.width = '100%';
     responseContent.className = 'status-ok'; responseContent.textContent = JSON.stringify(data, null, 2); responseDiv.style.display = 'block';
     if (data.saved_to) { const fn = data.saved_to.split('/').pop(); downloadBtn.href = '/output/' + fn; downloadBtn.textContent = '⬇️ ' + fn + ' letöltése'; downloadBtn.style.display = 'block'; }
+    // Log mentése
+    addLogEntry({
+      time: new Date().toISOString(),
+      business: payload.businessName,
+      type: payload.projectType,
+      status: 'success',
+      file: data.saved_to ? data.saved_to.split('/').pop() : null
+    });
+
     setTimeout(() => { progressFill.style.width = '0%'; }, 2000);
   } catch (err) {
+    addLogEntry({
+      time: new Date().toISOString(),
+      business: payload ? payload.businessName : '?',
+      type: payload ? payload.projectType : '?',
+      status: 'error',
+      message: err.message
+    });
     st.forEach(t => clearTimeout(t)); setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'error'); setStep(3, 'error');
     progressFill.className = 'progress-fill'; progressFill.style.background = '#f87171'; progressFill.style.width = '100%';
     responseContent.className = 'status-error'; responseContent.textContent = '❌ HIBA: ' + err.message + '\n\n' + SERVER_BASE;

@@ -9,6 +9,7 @@ services:
     image: n8nio/n8n:latest
     container_name: n8n-gravity
     restart: unless-stopped
+    user: root
     ports:
       - "${N8N_PORT:-5678}:5678"
     environment:

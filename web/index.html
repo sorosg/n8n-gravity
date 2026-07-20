@@ -179,6 +179,15 @@
     <button type="submit" id="submitBtn">⚡ Weboldal generálása AI-val</button>
   </form>
   <div id="response"><pre id="responseContent"></pre></div>
+
+  <div id="logPanel" style="margin-top:20px;display:none;">
+    <h3>📋 Generálási napló / fájlok</h3>
+    <div id="logEntries" style="max-height:300px;overflow-y:auto;background:rgba(0,0,0,0.3);border-radius:8px;padding:10px;font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:10px;">
+      Betöltés...
+    </div>
+    <button type="button" id="clearLogsBtn" class="btn btn-del" style="margin-right:8px;">🗑️ Napló törlése</button>
+    <button type="button" id="refreshLogsBtn" class="btn btn-sm">🔄 Frissítés</button>
+  </div>
 </div>
 <script src="script.js"></script>
 </body>
