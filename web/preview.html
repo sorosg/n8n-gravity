@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gravity CMS Előnézet – n8n-gravity</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 30px;
+    }
+    .container {
+      max-width: 1200px; width: 100%;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 40px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    }
+    h1 { color: #fff; font-size: 28px; text-align: center; margin-bottom: 8px; }
+    .sub { color: rgba(255,255,255,0.45); text-align: center; font-size: 14px; margin-bottom: 28px; }
+    .drag-zone {
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-bottom: 20px;
+    }
+    .drag-zone:hover, .drag-zone.drag-over {
+      border-color: #6366f1;
+      background: rgba(99,102,241,0.08);
+      color: #a5b4fc;
+    }
+    .drag-zone input { display: none; }
+    .drag-zone .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+    .file-name { color: #4ade80; font-size: 14px; font-weight: 600; margin-top: 8px; }
+    .btn-row { text-align: center; margin-bottom: 20px; }
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #6366f1; color: #fff; border: none;
+      border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; text-decoration: none; margin: 6px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #4f46e5; }
+    .btn-back { background: rgba(255,255,255,0.1); }
+    .btn-back:hover { background: rgba(255,255,255,0.2); }
+    #preview {
+      background: #fff; border-radius: 14px; overflow: hidden;
+      color: #111; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: none;
+    }
+    #preview pre {
+      padding: 20px; color: #666; font-size: 13px;
+      white-space: pre-wrap; word-break: break-all;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🧪 Gravity CMS Előnézet</h1>
+  <p class="sub">Drag & drop vagy tallózással tölts fel egy generált JSON fájlt az előnézethez</p>
+
+  <div class="btn-row">
+    <a href="index.html" class="btn btn-back">← Vissza a generátorhoz</a>
+  </div>
+
+  <div class="drag-zone" id="dropZone">
+    <span class="icon">📂</span>
+    <span id="dropText">Húzd ide a JSON fájlt, vagy <u>kattints a tallózáshoz</u></span>
+    <input type="file" id="fileInput" accept=".json">
+    <div class="file-name" id="fileName"></div>
+  </div>
+
+  <div id="preview"></div>
+</div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileName = document.getElementById('fileName');
+const preview = document.getElementById('preview');
+const dropText = document.getElementById('dropText');
+
+// Drag & drop
+['dragenter','dragover','dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
+dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-over'));
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files.length > 0) {
+    fileInput.files = e.dataTransfer.files;
+    fileInput.dispatchEvent(new Event('change'));
+  }
+});
+dropZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('click', e => e.stopPropagation());
+fileInput.addEventListener('change', handleFile);
+
+function handleFile() {
+  const file = fileInput.files[0];
+  if (!file) { fileName.textContent = ''; preview.innerHTML = ''; preview.style.display = 'none'; return; }
+  fileName.textContent = '✅ ' + file.name;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      renderPreview(data);
+    } catch (e) {
+      preview.style.display = 'block';
+      preview.innerHTML = '<pre style="color:#dc2626;">❌ Érvénytelen JSON fájl!</pre>';
+    }
+  };
+  reader.readAsText(file);
+}
+
+function renderPreview(data) {
+  // Támogatjuk mind a régi (közvetlen pages) mind az új (generated.pages) formátumot
+  const gen = data.generated || data;
+  if (!gen.pages) {
+    preview.style.display = 'block';
+    preview.innerHTML = '<pre>Nincs "pages" mező a JSON-ben. Ellenőrizd, hogy a megfelelő fájlt töltötted-e fel.</pre>';
+    return;
+  }
+
+  const cfg = gen.config || {};
+  const theme = cfg.theme || {};
+  const colors = theme.colors || { primary: '#6366f1', secondary: '#8b5cf6', accent: '#f59e0b', text: '#1f2937' };
+  const home = gen.pages.home || gen.pages[Object.keys(gen.pages)[0]] || {};
+  const hero = (home.content && home.content.hero) || {};
+
+  let html = `<div style="background:${colors.primary||'#6366f1'};color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px;font-weight:700;">`;
+  html += `<span>🏠 ${cfg.system?.site_name || 'Weboldal'}</span>`;
+  html += `<nav style="margin-left:auto;display:flex;gap:16px;font-size:14px;font-weight:400;">`;
+  Object.keys(gen.pages).forEach(s => { if (s !== 'home') html += `<a href="#" style="color:rgba(255,255,255,0.8);text-decoration:none;">${gen.pages[s].title || s}</a>`; });
+  html += `</nav></div>`;
+
+  if (hero.title) {
+    html += `<div style="background:linear-gradient(135deg, ${colors.primary||'#6366f1'}, ${colors.secondary||'#8b5cf6'});color:#fff;padding:60px 24px;text-align:center;">`;
+    html += `<h1 style="font-size:36px;margin:0 0 10px;font-weight:800;">${hero.title}</h1>`;
+    if (hero.subtitle) html += `<p style="font-size:18px;opacity:0.9;margin:0 0 16px;">${hero.subtitle}</p>`;
+    if (hero.cta_text) html += `<button style="padding:12px 32px;background:${colors.accent||'#f59e0b'};color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;">${hero.cta_text}</button>`;
+    html += `</div>`;
+  }
+
+  if (home.content && home.content.sections) {
+    home.content.sections.forEach(sec => {
+      html += `<div style="padding:30px 24px;max-width:800px;margin:0 auto;">`;
+      html += `<h2 style="color:${colors.primary||'#6366f1'};font-size:22px;margin:0 0 10px;">${sec.title || ''}</h2>`;
+      html += `<p style="color:${colors.text||'#1f2937'};line-height:1.7;">${sec.content || ''}</p>`;
+      html += `</div>`;
+    });
+  }
+
+  html += `<footer style="background:${colors.footerBg||'#1f2937'};color:rgba(255,255,255,0.6);padding:20px 24px;text-align:center;font-size:13px;">© ${cfg.system?.site_name || 'Weboldal'} – AI generált előnézet</footer>`;
+
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+  preview.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
