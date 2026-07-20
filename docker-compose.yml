@@ -138,7 +138,8 @@ services:
           echo 'Gravity CMS telepítve!'
         fi &&
         chown -R www-data:www-data . 2>/dev/null &&
-        chmod -R 777 cache logs backup tmp user 2>/dev/null &&
+        mkdir -p user/pages &&
+        chmod -R 777 cache logs backup tmp user user/pages 2>/dev/null &&
         rm -rf cache/* &&
         echo 'Gravity CMS (Apache) indítása...' &&
         apache2-foreground
