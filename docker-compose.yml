@@ -123,8 +123,9 @@ services:
       - n8n_network
     command: >
       sh -c "
-        apt-get update -qq && apt-get install -y -qq libpng-dev libjpeg-dev libfreetype6-dev unzip 2>/dev/null &&
-        docker-php-ext-install gd 2>/dev/null &&
+        apt-get update -qq && apt-get install -y -qq libpng-dev libjpeg-dev libfreetype6-dev libzip-dev unzip 2>/dev/null &&
+        docker-php-ext-configure gd --with-jpeg --with-freetype 2>/dev/null &&
+        docker-php-ext-install gd zip 2>/dev/null &&
         cd /gravity-cms &&
         if [ ! -f index.php ]; then
           echo 'Gravity CMS letöltése...' &&
