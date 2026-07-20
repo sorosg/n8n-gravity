@@ -4,7 +4,7 @@
 
 > Egy komplett, Docker-alapú megoldás, ami lehetővé teszi Gravity CMS weboldalak teljesen automatizált tervezését és generálását mesterséges intelligencia segítségével.
 >
-> **Jelenlegi verzió: v1.0.6** | [Architektúra dokumentáció](./ARCHITECTURE.md) | [GitHub](https://github.com/sorosg/n8n-gravity)
+> **Jelenlegi verzió: v1.1.7** | [Architektúra dokumentáció](./ARCHITECTURE.md) | [GitHub](https://github.com/sorosg/n8n-gravity)
 
 ---
 
@@ -42,7 +42,7 @@
 | **AI motor** | DeepSeek V4 Flash/Pro + GPT-4o + Claude |
 | **Költség** | ~0,15-0,30 Ft / generálás |
 | **Telepítés** | `git clone` + `sudo ./install.sh` |
-| **Verzió** | v1.0.6 |
+| **Verzió** | v1.1.7 |
 
 ---
 
@@ -54,7 +54,8 @@
 | **📄 Előnézet oldal** | `http://192.168.4.148:8080/preview.html` |
 | **🧠 n8n felület** | `http://192.168.4.148:5678` |
 | **📁 Generált fájlok** | `http://192.168.4.148:8080/output/` |
-| **🧪 Gravity CMS** | `http://192.168.4.148:8080/gravity/` |
+| **🧪 Gravity CMS** | `http://192.168.4.148:8085` |
+| **🧪 CMS Admin** | `http://192.168.4.148:8085/admin` |
 | **📖 epub-translate** (meglévő) | `http://192.168.4.148` (80-as port) |
 
 > **Részletes architektúra:** [ARCHITECTURE.md](./ARCHITECTURE.md)
