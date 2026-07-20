@@ -130,7 +130,7 @@ function aLE(e){gL().push(e);sL(gL());renderLogs();lP.style.display='block';}
 function renderLogs(){
   const l=gL();
   lE.innerHTML=l.length===0?'<span style="color:rgba(255,255,255,0.4);">Nincsenek naplóbejegyzések.</span>':l.reverse().map(x=>{const icon=x.status==='success'?'✅':'❌';const t=new Date(x.time).toLocaleTimeString('hu-HU');let line=`${icon} <strong>${t}</strong> – ${x.business} (${x.type})`;if(x.file)line+=` – <a href="/output/${x.file}" target="_blank" style="color:#4ade80;">📄 ${x.file}</a>`;if(x.message)line+=` – <span style="color:#f87171;">${x.message}</span>`;return`<div>${line}</div>`;}).join('');
-  lP.style.display='block';updateProjectList();
+  lP.style.display='block';
 }
 document.getElementById('clearLogsBtn')?.addEventListener('click',()=>{if(confirm('Törlöd?')){localStorage.removeItem(LK);renderLogs();}});
 document.getElementById('refreshLogsBtn')?.addEventListener('click',renderLogs);
