@@ -111,13 +111,14 @@ services:
 
   # ----- Gravity CMS teszt környezet (PHP built-in server) -----
   gravity:
-    image: php:8.2-apache
+    image: php:8.2-cli
     container_name: n8n-gravity-cms
     restart: unless-stopped
     ports:
       - "${GRAVITY_PORT:-8085}:80"
+    working_dir: /gravity-cms
     volumes:
-      - ./gravity-cms:/var/www/html
+      - ./gravity-cms:/gravity-cms
     networks:
       - n8n_network
     command: >
@@ -125,20 +126,18 @@ services:
         apt-get update -qq && apt-get install -y -qq libpng-dev libjpeg-dev libfreetype6-dev libzip-dev unzip 2>/dev/null &&
         docker-php-ext-configure gd --with-jpeg --with-freetype 2>/dev/null &&
         docker-php-ext-install gd zip 2>/dev/null &&
-        cd /var/www/html &&
+        cd /gravity-cms &&
         if [ ! -f index.php ]; then
           echo 'Gravity CMS letöltése...' &&
           php -r \"copy('https://github.com/getgrav/grav/releases/download/1.7.44/grav-admin-v1.7.44.zip', '/tmp/grav.zip');\" &&
           unzip -qo /tmp/grav.zip -d /tmp/grav &&
           cp -r /tmp/grav/grav-admin/* . &&
           rm -rf /tmp/grav /tmp/grav.zip &&
-          a2enmod rewrite &&
           echo 'Gravity CMS telepítve!'
         fi &&
-        chown -R www-data:www-data . &&
         chmod -R 777 cache logs backup tmp user &&
-        echo 'Gravity CMS (Apache) indítása...' &&
-        apache2-foreground
+        echo 'Gravity CMS indítása a 80-as porton...' &&
+        php -S 0.0.0.0:80 system/router.php
       "
     logging:
       driver: "json-file"
