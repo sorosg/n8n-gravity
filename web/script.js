@@ -136,43 +136,7 @@ document.getElementById('clearLogsBtn')?.addEventListener('click',()=>{if(confir
 document.getElementById('refreshLogsBtn')?.addEventListener('click',renderLogs);
 renderLogs();
 
-/* ---- Projekt választó (csak valódi timestamp-es projektek) ---- */
-const pS=document.getElementById('projectSelector'),oGB=document.getElementById('openGravityBtn');
-async function fSP(){
-  try{
-    const res=await fetch('/output/');
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const html=await res.text();
-    const files=[],re=/href="([^"]+\.json)"/g; let m;
-    while((m=re.exec(html))!==null){
-      const fn=m[1];
-      // Csak timestamp-es fájlokat veszünk (tartalmaz _ és legalább 20 karakter hosszú)
-      if(fn==='request.json'||fn==='call_api.sh'||fn==='.gitkeep') continue;
-      const idx=fn.indexOf('_');
-      if(idx>0&&fn.length>20){
-        const biz=fn.substring(0,idx).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-        files.push({business:biz,filename:fn,fromServer:true});
-      }
-    }
-    return files;
-  }catch(e){console.warn('Szerver lista:',e.message);return[];}
-}
-async function updateProjectList(){
-  const logs=gL(),proj=[],seen=new Set();
-  logs.forEach(l=>{if(l.status==='success'&&l.business&&!seen.has(l.business)){seen.add(l.business);proj.push(l);}});
-  const sp=await fSP();
-  sp.forEach(p=>{if(!seen.has(p.business)){seen.add(p.business);proj.push({business:p.business,type:'szerver',status:'success',file:p.filename,fromServer:true});}});
-  pS.innerHTML='<option value="">-- Válassz projektet --</option>';
-  if(proj.length===0){pS.innerHTML+='<option disabled>Nincs találat – generálj egy oldalt</option>';}
-  else{proj.forEach(p=>{const o=document.createElement('option');o.value=p.business;o.textContent='📁 '+p.business+(p.fromServer?' (fájl)':'');pS.appendChild(o);});}
-  if(proj.length>0)pS.value=proj[proj.length-1].business;
-  pS.dispatchEvent(new Event('change'));
-}
-pS.addEventListener('change',()=>{
-  const b=pS.value;
-  oGB.href=b?'/gravity/01.'+b.toLowerCase().replace(/[^a-z0-9]/g,'_').substring(0,30):'/gravity/';
-});
-updateProjectList();
+// A projektválasztó és Gravity CMS előnézet átkerült a preview.html oldalra
 
 /* ---- Statikus HTML előnézet generálása ---- */
 function renderStaticPreview(data) {
