@@ -111,7 +111,7 @@ services:
 
   # ----- Gravity CMS teszt környezet (PHP built-in server) -----
   gravity:
-    image: php:8.2-cli-alpine
+    image: php:8.2-cli
     container_name: n8n-gravity-cms
     restart: unless-stopped
     ports:
@@ -123,6 +123,7 @@ services:
       - n8n_network
     command: >
       sh -c "
+        docker-php-ext-install gd 2>/dev/null &&
         cd /gravity-cms &&
         if [ ! -f index.php ]; then
           echo 'Gravity CMS letöltése...' &&
