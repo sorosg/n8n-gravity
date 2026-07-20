@@ -1,5 +1,5 @@
 {
-  "name": "Gravity CMS Weboldal Generátor - v0.10.2",
+  "name": "Gravity CMS Weboldal Generátor - v0.10.4",
   "nodes": [
     {
       "parameters": { "httpMethod": "POST", "options": {} },
@@ -22,39 +22,27 @@
     },
     {
       "parameters": {
-        "jsCode": "const data = $input.all()[0].json;\nconst lang = data.languages[0] || 'hu';\n\nconst pageList = data.pages.map(p => {\n  let line = p.name + ' (' + p.slug + ')';\n  if (p.description) line += ': ' + p.description;\n  if (p.subpages && p.subpages.length > 0) line += ' [Aloldalak: ' + p.subpages.map(sp => sp.name + '(' + sp.slug + ')' + (sp.description ? ': ' + sp.description : '')).join(', ') + ']';\n  return line;\n}).join('\\n');\n\nconst heroInfo = data.hero && data.hero.enabled ? `Hero: YES, height: ${data.hero.height}px.` : 'Hero: NO.';\nconst headerInfo = data.header && data.header.length > 0 ? 'Header: ' + data.header.join(', ') : 'Header: standard';\nconst footerInfo = data.footer && data.footer.length > 0 ? 'Footer: ' + data.footer.join(', ') : 'Footer: standard';\nconst anyAi = [data.colors.primary,data.colors.secondary,data.colors.accent,data.colors.headerBg].filter(c => c === 'ai').length > 0;\n\nconst logoInstruction = data.logoMode === 'ai' && data.logoPrompt\n  ? `\\n\\nALSO GENERATE an SVG logo: ${data.logoPrompt}. Include the SVG code in the response under a \"logo\" key with a \"svg\" field containing the raw SVG markup.`\n  : '';\n\nconst base = `Project: ${data.businessName}\\nType: ${data.projectType}\\nLanguage: ${lang}\\nDescription: ${data.description}\\nDesign: ${data.designStyle}\\nColors - Primary: ${data.colors.primary}, Secondary: ${data.colors.secondary}, Accent: ${data.colors.accent}, Header BG: ${data.colors.headerBg}\\n${anyAi ? 'Colors marked \"ai\": choose matching hex colors.\\n' : ''}${headerInfo}\\n${footerInfo}\\n${heroInfo}\\n\\nPages:\\n${pageList}\\n\\nOutput JSON with pages, config (system, theme, colors, header, footer, plugins, logo.svg), admin_structure. Professional, SEO-optimized content.${logoInstruction}`;\n\nconst prompt = data.customPrompt ? base + '\\n\\nADDITIONAL INSTRUCTIONS: ' + data.customPrompt : base;\nconst apiKey = data.apiKeyOverride || $env.DEEPSEEK_API_KEY || '';\n\n// A teljes HTTP request body előkészítése JSON stringként\nconst requestBody = JSON.stringify({\n  model: data.aiModel,\n  messages: [\n    { role: 'system', content: 'You are an expert Gravity CMS developer. Respond with valid JSON only, no markdown.' },\n    { role: 'user', content: prompt }\n  ],\n  temperature: 0.7,\n  max_tokens: 4096,\n  response_format: { type: 'json_object' }\n});\n\nreturn { body: requestBody, apiKey: apiKey, businessName: data.businessName };"
+        "jsCode": "const fs = require('fs');\nconst data = $input.all()[0].json;\nconst lang = data.languages[0] || 'hu';\n\nconst pageList = data.pages.map(p => {\n  let line = p.name + ' (' + p.slug + ')';\n  if (p.description) line += ': ' + p.description;\n  if (p.subpages && p.subpages.length > 0) line += ' [Aloldalak: ' + p.subpages.map(sp => sp.name + '(' + sp.slug + ')' + (sp.description ? ': ' + sp.description : '')).join(', ') + ']';\n  return line;\n}).join('\\n');\n\nconst heroInfo = data.hero && data.hero.enabled ? `Hero: YES, height: ${data.hero.height}px.` : 'Hero: NO.';\nconst headerInfo = data.header && data.header.length > 0 ? 'Header: ' + data.header.join(', ') : 'Header: standard';\nconst footerInfo = data.footer && data.footer.length > 0 ? 'Footer: ' + data.footer.join(', ') : 'Footer: standard';\nconst anyAi = [data.colors.primary,data.colors.secondary,data.colors.accent,data.colors.headerBg].filter(c => c === 'ai').length > 0;\n\nconst logoInstruction = data.logoMode === 'ai' && data.logoPrompt\n  ? `\\n\\nALSO GENERATE an SVG logo: ${data.logoPrompt}. Include the SVG code in the response under a \"logo\" key with a \"svg\" field containing the raw SVG markup.`\n  : '';\n\nconst base = `Project: ${data.businessName}\\nType: ${data.projectType}\\nLanguage: ${lang}\\nDescription: ${data.description}\\nDesign: ${data.designStyle}\\nColors - Primary: ${data.colors.primary}, Secondary: ${data.colors.secondary}, Accent: ${data.colors.accent}, Header BG: ${data.colors.headerBg}\\n${anyAi ? 'Colors marked \"ai\": choose matching hex colors.\\n' : ''}${headerInfo}\\n${footerInfo}\\n${heroInfo}\\n\\nPages:\\n${pageList}\\n\\nOutput JSON with pages, config (system, theme, colors, header, footer, plugins, logo.svg), admin_structure. Professional, SEO-optimized content.${logoInstruction}`;\n\nconst prompt = data.customPrompt ? base + '\\n\\nADDITIONAL INSTRUCTIONS: ' + data.customPrompt : base;\n\n// API request body JSON fájlba írása\nconst requestBody = JSON.stringify({\n  model: data.aiModel,\n  messages: [\n    { role: 'system', content: 'You are an expert Gravity CMS developer. Respond with valid JSON only, no markdown.' },\n    { role: 'user', content: prompt }\n  ],\n  temperature: 0.7,\n  max_tokens: 4096,\n  response_format: { type: 'json_object' }\n});\n\nconst outputDir = '/home/node/output';\nif (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });\n\n// JSON request fájl\nfs.writeFileSync(outputDir + '/request.json', requestBody, 'utf8');\n\n// Shell script a curl híváshoz\nconst apiKey = data.apiKeyOverride || $env.DEEPSEEK_API_KEY || '';\nconst script = `#!/bin/sh\\ncurl -s -X POST https://api.deepseek.com/v1/chat/completions \\\\\\n  -H 'Content-Type: application/json' \\\\\\n  -H 'Authorization: Bearer ${apiKey}' \\\\\\n  -d @${outputDir}/request.json`;\n\nconst scriptPath = outputDir + '/call_api.sh';\nfs.writeFileSync(scriptPath, script, { mode: 0o755 });\n\nreturn { scriptPath, businessName: data.businessName };"
       },
       "id": "build-request",
-      "name": "API kérés összeállítás",
+      "name": "API kérés + script fájl",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [670, 300]
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://api.deepseek.com/v1/chat/completions",
-        "sendHeaders": true,
-        "headerParameters": { "parameters": [
-          { "name": "Content-Type", "value": "application/json" },
-          { "name": "Authorization", "value": "=Bearer {{ $json.apiKey }}" }
-        ]},
-        "sendBody": true,
-        "bodyParameters": { "parameters": [] },
-        "specifyBody": "string",
-        "body": "={{ $json.body }}",
-        "options": { "timeout": 120000 }
+        "command": "={{ $json.scriptPath }}"
       },
-      "id": "api-call",
-      "name": "DeepSeek API hívás",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [880, 300],
-      "credentials": {}
+      "id": "curl-call",
+      "name": "DeepSeek API hívás (script)",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [880, 300]
     },
     {
       "parameters": {
-        "jsCode": "const fs = require('fs');\nconst path = require('path');\nconst response = $input.all()[0].json;\n\nlet content;\ntry {\n  const aiResponse = response.choices[0].message.content;\n  let jsonStr = aiResponse;\n  if (jsonStr.includes('```json')) jsonStr = jsonStr.split('```json')[1].split('```')[0].trim();\n  else if (jsonStr.includes('```')) jsonStr = jsonStr.split('```')[1].split('```')[0].trim();\n  content = JSON.parse(jsonStr);\n} catch (e) {\n  content = { error: \"Parse failed\", raw: response.choices[0].message.content };\n}\n\nconst bizName = ($items('Bemenet feldolgozása (Code)').$node['Bemenet feldolgozása (Code)'].json || {}).businessName || 'unknown';\nconst safeName = bizName.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 30);\nconst ts = new Date().toISOString().replace(/[:.]/g, '-');\n\nconst outputDir = '/home/node/output';\nconst jsonFile = path.join(outputDir, safeName + '_' + ts + '.json');\ntry { if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true }); fs.writeFileSync(jsonFile, JSON.stringify(content, null, 2), 'utf8'); } catch (err) {}\n\nconst versionsDir = path.join(outputDir, 'versions');\ntry { if (!fs.existsSync(versionsDir)) fs.mkdirSync(versionsDir, { recursive: true }); fs.writeFileSync(path.join(versionsDir, safeName + '_' + ts + '.json'), JSON.stringify(content, null, 2), 'utf8'); } catch (err) {}\n\nlet svgSaved = null;\nif (content.config && content.config.logo && content.config.logo.svg) {\n  const svgDir = path.join(outputDir, 'logos');\n  const svgFile = path.join(svgDir, safeName + '_logo.svg');\n  try { if (!fs.existsSync(svgDir)) fs.mkdirSync(svgDir, { recursive: true }); fs.writeFileSync(svgFile, content.config.logo.svg, 'utf8'); svgSaved = '/output/logos/' + safeName + '_logo.svg'; } catch (err) {}\n}\n\nif (content.pages) {\n  const gravPagesDir = '/home/node/gravity-pages';\n  try {\n    if (!fs.existsSync(gravPagesDir)) fs.mkdirSync(gravPagesDir, { recursive: true });\n    Object.keys(content.pages).forEach(slug => {\n      const page = content.pages[slug];\n      const pageDir = path.join(gravPagesDir, '01.' + safeName);\n      if (!fs.existsSync(pageDir)) fs.mkdirSync(pageDir, { recursive: true });\n      const mdName = slug === 'home' ? 'default.md' : slug + '.md';\n      let md = '---\\ntitle: \"' + (page.title || slug) + '\"\\n';\n      if (page.meta) md += 'metadata:\\n  description: \"' + (page.meta.description || '') + '\"\\n';\n      md += 'visible: true\\n---\\n\\n';\n      if (page.content && page.content.hero) { md += '# ' + (page.content.hero.title || '') + '\\n\\n' + (page.content.hero.subtitle || '') + '\\n\\n'; }\n      if (page.content && page.content.sections) { page.content.sections.forEach(sec => { md += '## ' + (sec.title || '') + '\\n\\n' + (sec.content || '') + '\\n\\n'; }); }\n      fs.writeFileSync(path.join(pageDir, mdName), md, 'utf8');\n    });\n  } catch (err) {}\n}\n\nreturn { generated: content, saved_to: jsonFile, svg_logo: svgSaved, gravity_deployed: !!content.pages, timestamp: new Date().toISOString(), model: response.model || 'deepseek-v4-flash', usage: response.usage || {} };"
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst rawOutput = $input.all()[0].json.stdout || '{}';\nlet response;\ntry { response = JSON.parse(rawOutput); } catch (e) { response = { error: 'Invalid JSON from API', raw: rawOutput.substring(0, 300) }; }\n\nlet content;\nif (response.choices) {\n  try {\n    const aiResponse = response.choices[0].message.content;\n    let jsonStr = aiResponse;\n    if (jsonStr.includes('```json')) jsonStr = jsonStr.split('```json')[1].split('```')[0].trim();\n    else if (jsonStr.includes('```')) jsonStr = jsonStr.split('```')[1].split('```')[0].trim();\n    content = JSON.parse(jsonStr);\n  } catch (e) {\n    content = { error: \"Parse failed\", raw: response.choices[0].message.content };\n  }\n} else {\n  content = { error: \"No choices in response\", apiResponse: response };\n}\n\nconst bizName = ($items('Bemenet feldolgozása (Code)').$node['Bemenet feldolgozása (Code)'].json || {}).businessName || 'unknown';\nconst safeName = bizName.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 30);\nconst ts = new Date().toISOString().replace(/[:.]/g, '-');\n\nconst outputDir = '/home/node/output';\nconst jsonFile = path.join(outputDir, safeName + '_' + ts + '.json');\ntry { if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true }); fs.writeFileSync(jsonFile, JSON.stringify(content, null, 2), 'utf8'); } catch (err) {}\n\nconst versionsDir = path.join(outputDir, 'versions');\ntry { if (!fs.existsSync(versionsDir)) fs.mkdirSync(versionsDir, { recursive: true }); fs.writeFileSync(path.join(versionsDir, safeName + '_' + ts + '.json'), JSON.stringify(content, null, 2), 'utf8'); } catch (err) {}\n\nlet svgSaved = null;\nif (content.config && content.config.logo && content.config.logo.svg) {\n  const svgDir = path.join(outputDir, 'logos');\n  const svgFile = path.join(svgDir, safeName + '_logo.svg');\n  try { if (!fs.existsSync(svgDir)) fs.mkdirSync(svgDir, { recursive: true }); fs.writeFileSync(svgFile, content.config.logo.svg, 'utf8'); svgSaved = '/output/logos/' + safeName + '_logo.svg'; } catch (err) {}\n}\n\nif (content.pages) {\n  const gravPagesDir = '/home/node/gravity-pages';\n  try {\n    if (!fs.existsSync(gravPagesDir)) fs.mkdirSync(gravPagesDir, { recursive: true });\n    Object.keys(content.pages).forEach(slug => {\n      const page = content.pages[slug];\n      const pageDir = path.join(gravPagesDir, '01.' + safeName);\n      if (!fs.existsSync(pageDir)) fs.mkdirSync(pageDir, { recursive: true });\n      const mdName = slug === 'home' ? 'default.md' : slug + '.md';\n      let md = '---\\ntitle: \"' + (page.title || slug) + '\"\\n';\n      if (page.meta) md += 'metadata:\\n  description: \"' + (page.meta.description || '') + '\"\\n';\n      md += 'visible: true\\n---\\n\\n';\n      if (page.content && page.content.hero) { md += '# ' + (page.content.hero.title || '') + '\\n\\n' + (page.content.hero.subtitle || '') + '\\n\\n'; }\n      if (page.content && page.content.sections) { page.content.sections.forEach(sec => { md += '## ' + (sec.title || '') + '\\n\\n' + (sec.content || '') + '\\n\\n'; }); }\n      fs.writeFileSync(path.join(pageDir, mdName), md, 'utf8');\n    });\n  } catch (err) {}\n}\n\nreturn { generated: content, saved_to: jsonFile, svg_logo: svgSaved, gravity_deployed: !!content.pages, timestamp: new Date().toISOString(), model: response.model || 'deepseek-v4-flash', usage: response.usage || {} };"
       },
       "id": "process-response",
       "name": "Válasz feldolgozás + CMS + SVG",
@@ -65,14 +53,14 @@
   ],
   "connections": {
     "Webhook (Indító)": { "main": [[ { "node": "Bemenet feldolgozása (Code)", "type": "main", "index": 0 } ]] },
-    "Bemenet feldolgozása (Code)": { "main": [[ { "node": "API kérés összeállítás", "type": "main", "index": 0 } ]] },
-    "API kérés összeállítás": { "main": [[ { "node": "DeepSeek API hívás", "type": "main", "index": 0 } ]] },
-    "DeepSeek API hívás": { "main": [[ { "node": "Válasz feldolgozás + CMS + SVG", "type": "main", "index": 0 } ]] },
+    "Bemenet feldolgozása (Code)": { "main": [[ { "node": "API kérés + script fájl", "type": "main", "index": 0 } ]] },
+    "API kérés + script fájl": { "main": [[ { "node": "DeepSeek API hívás (script)", "type": "main", "index": 0 } ]] },
+    "DeepSeek API hívás (script)": { "main": [[ { "node": "Válasz feldolgozás + CMS + SVG", "type": "main", "index": 0 } ]] },
     "Válasz feldolgozás + CMS + SVG": { "main": [] }
   },
   "settings": { "executionOrder": "v1", "callerPolicy": "workflowsFromSameOwner", "saveManualExecutions": true },
-  "versionId": "3.0.2",
+  "versionId": "3.0.4",
   "active": false,
-  "description": "v0.10.2: HTTP Request body string + $json.apiKey – a prompt biztonságosan JSON.stringify-elve",
+  "description": "v0.10.4: Execute Command + shell script fájl – a curl parancs fix fájlban, nincs template escaping!",
   "tags": [{ "name": "gravity-cms" }, { "name": "ai" }, { "name": "stable" }]
 }
