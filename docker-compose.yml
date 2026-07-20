@@ -111,40 +111,37 @@ services:
 
   # ----- Gravity CMS teszt környezet (PHP built-in server) -----
   gravity:
-    image: php:8.2-cli
+    image: php:8.2-apache
     container_name: n8n-gravity-cms
     restart: unless-stopped
     ports:
       - "${GRAVITY_PORT:-8085}:80"
-    working_dir: /gravity-cms
     volumes:
-      - ./gravity-cms:/gravity-cms
+      - ./gravity-cms:/var/www/html
     networks:
       - n8n_network
     command: >
       sh -c "
         apt-get update -qq && apt-get install -y -qq libpng-dev libjpeg-dev libfreetype6-dev libzip-dev unzip 2>/dev/null &&
         docker-php-ext-configure gd --with-jpeg --with-freetype 2>/dev/null &&
-        docker-php-ext-install gd zip 2>/dev/null &&
-        cd /gravity-cms &&
-        if [ ! -f index.php ]; then
+        docker-php-ext-install gd zip fileinfo 2>/dev/null &&
+        a2enmod rewrite &&
+        cd /var/www/html &&
+        if [ ! -f index.php ] || [ ! -f .htaccess ]; then
           echo 'Gravity CMS letöltése...' &&
+          rm -rf /tmp/grav /tmp/grav.zip 2>/dev/null &&
           php -r \"copy('https://github.com/getgrav/grav/releases/download/1.7.44/grav-admin-v1.7.44.zip', '/tmp/grav.zip');\" &&
           unzip -qo /tmp/grav.zip -d /tmp/grav &&
           cp -r /tmp/grav/grav-admin/* . &&
           rm -rf /tmp/grav /tmp/grav.zip &&
+          chown -R www-data:www-data . &&
           echo 'Gravity CMS telepítve!'
         fi &&
-        # Saját system.yaml visszaírása (a cp felülírta a Grav default-jával)
-        echo 'absolute_urls: true' > user/config/system.yaml &&
-        echo 'base_url_absolute: http://192.168.4.148:8080/gravity' >> user/config/system.yaml &&
-        echo 'pages:' >> user/config/system.yaml &&
-        echo '  theme: quark' >> user/config/system.yaml &&
-        mkdir -p user/config &&
-        chmod -R 777 cache logs backup tmp user &&
+        chown -R www-data:www-data . 2>/dev/null &&
+        chmod -R 777 cache logs backup tmp user 2>/dev/null &&
         rm -rf cache/* &&
-        echo 'Gravity CMS indítása a 80-as porton...' &&
-        php -S 0.0.0.0:80 system/router.php
+        echo 'Gravity CMS (Apache) indítása...' &&
+        apache2-foreground
       "
     logging:
       driver: "json-file"

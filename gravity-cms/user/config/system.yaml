@@ -1,4 +1,4 @@
 absolute_urls: true
-base_url_absolute: http://192.168.4.148:8080/gravity
+
 pages:
   theme: quark
