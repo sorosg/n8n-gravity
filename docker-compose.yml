@@ -123,8 +123,7 @@ services:
       - n8n_network
     command: >
       sh -c "
-        apt-get update -qq && apt-get install -y -qq libpng-dev libjpeg-dev libfreetype6-dev 2>/dev/null &&
-        docker-php-ext-configure gd --with-freetype --with-jpeg 2>/dev/null &&
+        apt-get update -qq && apt-get install -y -qq libpng-dev libjpeg-dev libfreetype6-dev unzip 2>/dev/null &&
         docker-php-ext-install gd 2>/dev/null &&
         cd /gravity-cms &&
         if [ ! -f index.php ]; then
