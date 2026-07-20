@@ -60,8 +60,13 @@ function setupDragDrop(zoneId, fileInputId) {
     }
   });
 
-  // Kattintás a zónára megnyitja a fájlválasztót
-  zone.addEventListener('click', () => fileInput.click());
+  // Kattintás a zónára megnyitja a fájlválasztót (csak ha nem a file inputra kattintottunk)
+  zone.addEventListener('click', (e) => {
+    if (e.target !== fileInput) fileInput.click();
+  });
+
+  // Megakadályozzuk, hogy a file input click eseménye felbuborékoljon a zónára
+  fileInput.addEventListener('click', (e) => e.stopPropagation());
 }
 
 /* ---- Képoptimalizálás ---- */
@@ -168,15 +173,21 @@ function createPageEntry(pd) {
   const rb = div.querySelector('.remove-page'); if (rb) rb.addEventListener('click', () => div.remove());
   return div;
 }
-defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
-document.getElementById('addPageBtn').addEventListener('click', () => pagesContainer.appendChild(createPageEntry()));
+try {
+  defaultPages.forEach(p => pagesContainer.appendChild(createPageEntry(p)));
+  document.getElementById('addPageBtn').addEventListener('click', () => {
+    try {
+      pagesContainer.appendChild(createPageEntry());
+    } catch (e) { console.error('Oldal hozzáadás hiba:', e); alert('Hiba: ' + e.message); }
+  });
+} catch (e) { console.error('Default oldalak hiba:', e); }
 
 /* ---- Log panel ---- */
 const LOG_KEY = 'n8n_gravity_logs';
 const logPanel = document.getElementById('logPanel'), logEntries = document.getElementById('logEntries');
 function getLogs() { try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch (e) { return []; } }
 function saveLogs(logs) { if (logs.length > 200) logs = logs.slice(-200); localStorage.setItem(LOG_KEY, JSON.stringify(logs)); }
-function addLogEntry(entry) { const logs = getLogs(); logs.push(entry); saveLogs(logs); renderLogs(); }
+function addLogEntry(entry) { const logs = getLogs(); logs.push(entry); saveLogs(logs); renderLogs(); logPanel.style.display = 'block'; }
 function renderLogs() {
   const logs = getLogs();
   if (logs.length === 0) { logEntries.innerHTML = '<span style="color:rgba(255,255,255,0.4);">Nincsenek naplóbejegyzések.</span>'; }
