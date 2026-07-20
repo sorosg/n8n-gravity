@@ -135,8 +135,14 @@ services:
           rm -rf /tmp/grav /tmp/grav.zip &&
           echo 'Gravity CMS telepítve!'
         fi &&
+        # Saját system.yaml visszaírása (a cp felülírta a Grav default-jával)
+        echo 'absolute_urls: true' > user/config/system.yaml &&
+        echo 'base_url_absolute: http://192.168.4.148:8080/gravity' >> user/config/system.yaml &&
+        echo 'pages:' >> user/config/system.yaml &&
+        echo '  theme: quark' >> user/config/system.yaml &&
         mkdir -p user/config &&
         chmod -R 777 cache logs backup tmp user &&
+        rm -rf cache/* &&
         echo 'Gravity CMS indítása a 80-as porton...' &&
         php -S 0.0.0.0:80 system/router.php
       "
