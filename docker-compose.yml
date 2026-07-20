@@ -114,6 +114,7 @@ services:
     image: php:8.2-apache
     container_name: n8n-gravity-cms
     restart: unless-stopped
+    user: root
     ports:
       - "${GRAVITY_PORT:-8085}:80"
     volumes:
