@@ -38,7 +38,31 @@ function toggleHeroBgMode() {
   document.getElementById('heroBgUploadGroup').style.display = mode === 'upload' ? 'flex' : 'none';
 }
 
-// A setupDragDrop függvény és a handleFileUpload már definiálva van fentebb
+/* ---- Drag & Drop ---- */
+function setupDragDrop(zoneId, fileInputId) {
+  const zone = document.getElementById(zoneId);
+  const fileInput = document.getElementById(fileInputId);
+  if (!zone || !fileInput) return;
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    zone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); });
+  });
+
+  zone.addEventListener('dragover', () => zone.classList.add('drag-over'));
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', (e) => {
+    zone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length > 0) {
+      const dt = new DataTransfer();
+      dt.items.add(e.dataTransfer.files[0]);
+      fileInput.files = dt.files;
+      fileInput.dispatchEvent(new Event('change'));
+    }
+  });
+
+  // Kattintás a zónára megnyitja a fájlválasztót
+  zone.addEventListener('click', () => fileInput.click());
+}
 
 /* ---- Képoptimalizálás ---- */
 async function optimizeImage(file, maxWidth = 800, quality = 0.8, format = 'image/webp') {
